@@ -1,0 +1,5 @@
+**/__pycache__/
+/jetson-inference
+/backend/__pycache__/*
+__pycache__/
+*.pyc
