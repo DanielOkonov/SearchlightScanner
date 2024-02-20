@@ -1,4 +1,3 @@
-import os
 from jetson_inference import detectNet
 
 
