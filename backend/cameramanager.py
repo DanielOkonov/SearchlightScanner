@@ -55,3 +55,12 @@ class CameraManager:
             raise ValueError("Camera not open, open camera before closing")
         self.input.Close()
         self.input = None
+
+    def is_open(self):
+        """
+        Returns whether the camera is open.
+
+        Returns:
+            bool: True if the camera is open, False otherwise
+        """
+        return self.input is not None
