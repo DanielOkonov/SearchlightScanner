@@ -9,7 +9,7 @@ class AIProcessor:
 
     def __init__(self):
         """
-        Initializer for AIProcessor, model is not loaded by default
+        Initializer for AIProcessor, model is not loaded by default.
         """
         self.net = None
         self.model_loaded = False
@@ -23,17 +23,11 @@ class AIProcessor:
             conf_level (float, optional): The confidence level for the model. Defaults to 0.5.
 
         Raises:
-            ValueError: If the model_path is not a string
             ValueError: If the conf_level is not a number
             ValueError: If the conf_level is not between 0 and 1
-            ValueError: If the model_path does not exist
         """
-        if not isinstance(model_path, str):
-            raise ValueError("model_path must be a string")
         if not isinstance(conf_level, (int, float)):
             raise ValueError("conf_level must be a number")
-        if not os.path.exists(model_path):
-            raise ValueError("Invalid model path")
         if not 0 <= conf_level <= 1:
             raise ValueError("conf_level must be between 0 and 1")
         self.net = detectNet(model_path, threshold=conf_level)
