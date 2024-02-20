@@ -33,17 +33,6 @@ class CameraManager:
         except Exception as e:
             raise ValueError(f"Failed to open video source {uri}: {e}") from e
 
-    def fetch_frame(self):
-        """
-        Fetches a frame from the camera.
-
-        Raises:
-            ValueError: If the camera is not open
-        """
-        if self.input is None:
-            raise ValueError("Camera not open, open camera before fetching frame")
-        return self.input.Capture()
-
     def close(self):
         """
         Closes the camera.
@@ -55,6 +44,17 @@ class CameraManager:
             raise ValueError("Camera not open, open camera before closing")
         self.input.Close()
         self.input = None
+
+    def fetch_frame(self):
+        """
+        Fetches a frame from the camera.
+
+        Raises:
+            ValueError: If the camera is not open
+        """
+        if self.input is None:
+            raise ValueError("Camera not open, open camera before fetching frame")
+        return self.input.Capture()
 
     def is_open(self):
         """
