@@ -44,7 +44,13 @@ class AIProcessor:
         Detects objects in the given image using the loaded model.
 
         Args:
+            image (unknown): The image to detect objects in
 
+        Raises:
+            ValueError: If the model is not loaded
+
+        Returns:
+            unknown: The detected objects
         """
         if not self.model_loaded or self.net is None:
             raise ValueError("Model not loaded")
