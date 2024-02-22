@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import font as tkFont
 from camera_frame import MainFrame
 from settings2 import SettingsFrame
 
