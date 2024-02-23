@@ -12,12 +12,11 @@ class SettingsFrame(tk.Frame):
         self.toggle_segment_visibility(self.segmentation_switch_state['is_on'])
 
     def targets_button_color(self, button):
-        # Check the current color and change it based on whether it's grey or green
         current_color = button.cget('bg')
-        if current_color == '#697283':  # If the button is grey, change to green
-            button.config(bg='#24D215')  # Change the color to green
-        else:  # If the button is green, change back to grey
-            button.config(bg='#697283')  # Change the color back to grey
+        if current_color == '#697283':
+            button.config(bg='#24D215')
+        else:
+            button.config(bg='#697283')
 
 
     def toggle_operator_switch(self, switch_canvas, switch_background, switch_indicator, switch_state):
@@ -36,12 +35,12 @@ class SettingsFrame(tk.Frame):
         
         if switch_state['is_on']:
             switch_canvas.itemconfig(switch_background, fill="#24D215")
-            switch_canvas.coords(switch_indicator, 60, 10, 90, 40)  # Move to the right
-            self.toggle_segment_visibility(True)  # Show the segment buttons
+            switch_canvas.coords(switch_indicator, 60, 10, 90, 40)
+            self.toggle_segment_visibility(True)
         else:
             switch_canvas.itemconfig(switch_background, fill="#697283")
-            switch_canvas.coords(switch_indicator, 10, 10, 40, 40)  # Move to the left
-            self.toggle_segment_visibility(False)  # Hide the segment buttons
+            switch_canvas.coords(switch_indicator, 10, 10, 40, 40)
+            self.toggle_segment_visibility(False)
 
 
     def set_button_active(self, selected_button):
@@ -52,44 +51,42 @@ class SettingsFrame(tk.Frame):
         selected_button.config(bg='#24D215')
 
     def toggle_segment_visibility(self, show):
+        #############################################################################################################
+        #SEGMENTATION FRAME
+
         if show:
-            self.segments_frame.grid(row=0, column=1, padx=10, pady=5, sticky="nes")  # Show the segments_frame
+            self.segments_frame.grid(row=0, column=1, padx=10, pady=5, sticky="nes")
 
         else:
-            self.segments_frame.grid_remove()  # Hide the segments_frame
+            self.segments_frame.grid_remove()
 
     def create_widgets(self):
         font_used = tkFont.Font(family="Helvetica", size=12, weight="bold")
-        # Add all your widget creation here, using self instead of root
-        # For example:
         self.targets_frame = tk.Frame(self, bg='#7C889C', highlightbackground='black', highlightthickness=2, width=605, height=405)
         self.targets_frame.grid(row=0, column=0, padx=10, pady=5)
         self.targets_frame.grid_propagate(False)
 
-        # Add content to the targets_frame
         targets_label = tk.Label(self.targets_frame, text='SELECT TARGETS TO DETECT', bg='#7C889C', fg='black', font=font_used)
         targets_label.grid(row=0, column=0, columnspan=3, padx=10, pady=10)
 
         targets = ["PEOPLE", "CAR", "BICYCLE", "MOTORCYCLE", "TRUCK", "BUS", "TRAIN", "AIRPLANE", "BOAT"]
         target_buttons = {}
         for i, target in enumerate(targets):
-            button = tk.Button(self.targets_frame, bg='#697283', fg='white', text=target, font=font_used, width=18, height=5)  # Adjusted height for visibility
+            button = tk.Button(self.targets_frame, bg='#697283', fg='white', text=target, font=font_used, width=18, height=5)
             button.grid(row=(i//3)+1, column=i%3, padx=5, pady=5)
-            button.config(command=lambda b=button: self.targets_button_color(b))  # Pass the button to the callback
+            button.config(command=lambda b=button: self.targets_button_color(b))
             target_buttons[target] = button
 
 
         #############################################################################################################
         #BUTTON FOR TOGGLING OPERATOR ALERTS ON OR OFF
 
-        # Create a Frame with a "border" for toggle button
-        self.operator_alerts_toggle_frame = tk.Frame(self, bg='#7C889C', highlightbackground='black', highlightcolor='black', highlightthickness=2, width=200, height=100)  # Adjusted height for layout
-        self.operator_alerts_toggle_frame.grid(row=1, column=0, padx=10, pady=10, sticky="ew")  # Placed in row=1, added more pady for spacing
+        self.operator_alerts_toggle_frame = tk.Frame(self, bg='#7C889C', highlightbackground='black', highlightcolor='black', highlightthickness=2, width=200, height=100)
+        self.operator_alerts_toggle_frame.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
 
         self.operator_alerts_toggle_frame.grid_propagate(False)
 
-        # Add content to the operator_alerts_toggle_frame
-        operator_toggle_label = tk.Label(self.operator_alerts_toggle_frame, text='OPERATOR ALERTS', bg='#7C889C', fg='black', font=font_used)  # Corrected to add to operator_alerts_toggle_frame
+        operator_toggle_label = tk.Label(self.operator_alerts_toggle_frame, text='OPERATOR ALERTS', bg='#7C889C', fg='black', font=font_used)
         operator_toggle_label.place(x = 20, y = 30)
 
         operator_alerts_switch_state = {'is_on': False}
@@ -97,7 +94,6 @@ class SettingsFrame(tk.Frame):
         operator_toggle_canvas = tk.Canvas(self.operator_alerts_toggle_frame, width=100, height=50, bg="#7C889C", highlightthickness=0)
         operator_toggle_canvas.place(x=485, y=17)
 
-        # Create the background and switch in the operator_toggle_canvas
         operator_switch_background = operator_toggle_canvas.create_rectangle(5, 10, 95, 40, outline="black", fill="#697283")
         operator_switch = operator_toggle_canvas.create_oval(10, 10, 40, 40, outline="black", fill="white")
         operator_toggle_canvas.tag_bind(operator_switch, "<Button-1>", lambda event: self.toggle_operator_switch(
@@ -128,13 +124,13 @@ class SettingsFrame(tk.Frame):
         self.segments_frame.grid_propagate(False)
 
         segments_label = tk.Label(self.segments_frame, text='CHOOSE AN AMOUNT OF SEGMENTS', bg='#7C889C', fg='black', font=font_used)
-        segments_label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)  # Adjust columnspan as needed
+        segments_label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
 
         segments = [1, 25, 4, 40, 9, 60, 16, 84]
 
         for i, segment in enumerate(segments):
             button = tk.Button(self.segments_frame, bg='#697283', fg='white', text=str(segment), font=font_used, width=26, height=3)
-            button.grid(row=(i//2)+1, column=i%2, sticky='ew', padx=5, pady=5)  # Adjusted column index
+            button.grid(row=(i//2)+1, column=i%2, sticky='ew', padx=5, pady=5)
             button.config(command=lambda b=button: self.set_button_active(b))
             self.segment_buttons[segment] = button
 
@@ -147,16 +143,12 @@ class SettingsFrame(tk.Frame):
 
         self.segmentation_toggle_frame.grid_propagate(False)
 
-        # Add content to the operator_alerts_toggle_frame
         segmentation_toggle_label = tk.Label(self.segmentation_toggle_frame, text='SEGMENTATION', bg='#7C889C', fg='black', font=font_used)  # Corrected to add to operator_alerts_toggle_frame
         segmentation_toggle_label.place(x = 20, y = 30)
-
-        # toggle_segment_visibility(segmentation_switch_state['is_on'])
 
         segmentation_toggle_canvas = tk.Canvas(self.segmentation_toggle_frame, width=100, height=50, bg="#7C889C", highlightthickness=0)
         segmentation_toggle_canvas.place(x=440, y=17)
 
-        # Create the background and switch in the segmentation_toggle_canvas
         segmentation_switch_background = segmentation_toggle_canvas.create_rectangle(5, 10, 95, 40, outline="black", fill="#697283")
         segmentation_switch = segmentation_toggle_canvas.create_oval(10, 10, 40, 40, outline="black", fill="white")
         segmentation_toggle_canvas.tag_bind(segmentation_switch, "<Button-1>", lambda event: self.toggle_segmentation_switch(
