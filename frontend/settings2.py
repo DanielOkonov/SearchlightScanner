@@ -62,7 +62,7 @@ class SettingsFrame(tk.Frame):
         font_used = tkFont.Font(family="Helvetica", size=12, weight="bold")
         # Add all your widget creation here, using self instead of root
         # For example:
-        self.targets_frame = tk.Frame(self, bg='#7C889C', highlightbackground='black', highlightthickness=2, width=635, height=405)
+        self.targets_frame = tk.Frame(self, bg='#7C889C', highlightbackground='black', highlightthickness=2, width=605, height=405)
         self.targets_frame.grid(row=0, column=0, padx=10, pady=5)
         self.targets_frame.grid_propagate(False)
 
@@ -73,10 +73,11 @@ class SettingsFrame(tk.Frame):
         targets = ["PEOPLE", "CAR", "BICYCLE", "MOTORCYCLE", "TRUCK", "BUS", "TRAIN", "AIRPLANE", "BOAT"]
         target_buttons = {}
         for i, target in enumerate(targets):
-            button = tk.Button(self.targets_frame, bg='#697283', fg='white', text=target, font=font_used, width=19, height=5)  # Adjusted height for visibility
+            button = tk.Button(self.targets_frame, bg='#697283', fg='white', text=target, font=font_used, width=18, height=5)  # Adjusted height for visibility
             button.grid(row=(i//3)+1, column=i%3, padx=5, pady=5)
             button.config(command=lambda b=button: self.targets_button_color(b))  # Pass the button to the callback
             target_buttons[target] = button
+
 
         #############################################################################################################
         #BUTTON FOR TOGGLING OPERATOR ALERTS ON OR OFF
@@ -94,7 +95,7 @@ class SettingsFrame(tk.Frame):
         operator_alerts_switch_state = {'is_on': False}
 
         operator_toggle_canvas = tk.Canvas(self.operator_alerts_toggle_frame, width=100, height=50, bg="#7C889C", highlightthickness=0)
-        operator_toggle_canvas.place(x=450, y=17)
+        operator_toggle_canvas.place(x=485, y=17)
 
         # Create the background and switch in the operator_toggle_canvas
         operator_switch_background = operator_toggle_canvas.create_rectangle(5, 10, 95, 40, outline="black", fill="#697283")
@@ -102,6 +103,7 @@ class SettingsFrame(tk.Frame):
         operator_toggle_canvas.tag_bind(operator_switch, "<Button-1>", lambda event: self.toggle_operator_switch(
             operator_toggle_canvas, operator_switch_background, operator_switch, operator_alerts_switch_state))
         
+
         #############################################################################################################
         #BUTTONS FOR SELECTING WHICH SETTINGS MENU TO GO TO
 
@@ -116,10 +118,11 @@ class SettingsFrame(tk.Frame):
         settings2_button=tk.Button(self.settings_toggle_frame, text="SETTINGS 2", font=font_used, width=25, height=5)
         settings2_button.grid(row=0, column=1)
 
+
         #############################################################################################################
         #SEGMENTATION FRAME
 
-        self.segments_frame = tk.Frame(self, bg='#7C889C', highlightbackground='black', highlightcolor='black', highlightthickness=2, width=590, height=300)
+        self.segments_frame = tk.Frame(self, bg='#7C889C', highlightbackground='black', highlightcolor='black', highlightthickness=2, width=565, height=300)
         self.segments_frame.grid(row=0, column=1, padx=10, pady=5)
 
         self.segments_frame.grid_propagate(False)
@@ -130,15 +133,16 @@ class SettingsFrame(tk.Frame):
         segments = [1, 25, 4, 40, 9, 60, 16, 84]
 
         for i, segment in enumerate(segments):
-            button = tk.Button(self.segments_frame, bg='#697283', fg='white', text=str(segment), font=font_used, width=27, height=3)
+            button = tk.Button(self.segments_frame, bg='#697283', fg='white', text=str(segment), font=font_used, width=26, height=3)
             button.grid(row=(i//2)+1, column=i%2, sticky='ew', padx=5, pady=5)  # Adjusted column index
             button.config(command=lambda b=button: self.set_button_active(b))
             self.segment_buttons[segment] = button
 
+
         #############################################################################################################
         #BUTTON FOR TOGGLING SEGMENTATION ON OR OFF
 
-        self.segmentation_toggle_frame = tk.Frame(self, bg='#7C889C', highlightbackground='black', highlightcolor='black', highlightthickness=2, width=590, height=100)  # Adjusted height for layout
+        self.segmentation_toggle_frame = tk.Frame(self, bg='#7C889C', highlightbackground='black', highlightcolor='black', highlightthickness=2, width=565, height=100)  # Adjusted height for layout
         self.segmentation_toggle_frame.grid(row=1, column=1, padx=10, pady=10)  # Placed in row=1, added more pady for spacing
 
         self.segmentation_toggle_frame.grid_propagate(False)
@@ -150,7 +154,7 @@ class SettingsFrame(tk.Frame):
         # toggle_segment_visibility(segmentation_switch_state['is_on'])
 
         segmentation_toggle_canvas = tk.Canvas(self.segmentation_toggle_frame, width=100, height=50, bg="#7C889C", highlightthickness=0)
-        segmentation_toggle_canvas.place(x=450, y=17)
+        segmentation_toggle_canvas.place(x=440, y=17)
 
         # Create the background and switch in the segmentation_toggle_canvas
         segmentation_switch_background = segmentation_toggle_canvas.create_rectangle(5, 10, 95, 40, outline="black", fill="#697283")
@@ -159,12 +163,6 @@ class SettingsFrame(tk.Frame):
             segmentation_toggle_canvas, segmentation_switch_background, segmentation_switch, self.segmentation_switch_state))
 
 
-
-
-        # segmentation_switch_state = {'is_on': False}
-
-        # self.toggle_segment_visibility(segmentation_switch_state['is_on'])
-
         #############################################################################################################
         #APPLY CHANGES BUTTON
 
@@ -172,8 +170,28 @@ class SettingsFrame(tk.Frame):
         self.apply_button_frame.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
         self.apply_button_frame.grid_propagate(False)
 
-        appyly_changes_button=tk.Button(self.apply_button_frame, text="APPLY CHANGES", bg='#24D215', fg='white', font=font_used, width=56, height=4)
-        appyly_changes_button.grid(row=0, column=0, padx=9, pady=9)
+        apply_changes_button=tk.Button(self.apply_button_frame, text="APPLY CHANGES", bg='#24D215', fg='white', font=font_used, width=53, height=4)
+        apply_changes_button.grid(row=0, column=0, padx=11, pady=9)
 
 
         #############################################################################################################
+        #CLOSE SETTINGS MENU BUTTON
+
+        self.close_menu_button_frame = tk.Frame(self, highlightbackground='black', highlightcolor='black', highlightthickness=2, width=51, height=51)
+        self.close_menu_button_frame.grid(row=0, column=3, padx=5, pady=5, sticky="ne")
+        self.close_menu_button_frame.grid_propagate(False)
+
+        x_button_font = tkFont.Font(family="Helvetica", size=20, weight="bold")
+        close_menu_button = tk.Button(
+            self.close_menu_button_frame,
+            text="X",
+            bg='red',
+            fg='white',
+            font=x_button_font,
+             command=self.on_close_menu_click
+        )
+        close_menu_button.pack(ipadx=5, ipady=5, expand=True)
+
+    def on_close_menu_click(self):
+        from camera_frame import MainFrame
+        self.master.switch_frame(MainFrame)
