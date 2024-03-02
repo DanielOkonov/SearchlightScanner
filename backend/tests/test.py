@@ -18,14 +18,22 @@ def main():
     output = videoOutput()
 
     iterations = 0
+    segment = True
 
     while True:
         iterations += 1
         frame = cam.fetch_frame()
-        detections = ai.detect_objects(frame)
+        detections = ai.detect_objects(frame, grid_size=(2, 2))
+        # print(detections)
+        # for detection in detections, print out detection.ClassID
+        for detection in detections:
+            print(detection.ClassID)
         output.Render(frame)
-        if iterations == 100:
-            cam.close()
+        # if iterations == 100:
+        # segment = False
+        # ai.set_confidence(0.99)
+        # print("Confidence level set to 0.99")
+        # cam.close()
 
 
 if __name__ == "__main__":
