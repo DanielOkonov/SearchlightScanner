@@ -1,12 +1,12 @@
 import sys
 
 sys.path.append("/jetson-inference/data/SearchlightScanner/backend")
-from gps_module import GPSModule
+from backend.gps_manager import GPSManager
 import time
 
 
 def main():
-    gps = GPSModule()
+    gps = GPSManager()
     while True:
         start_time = time.time()
         coords = gps.get_coords()

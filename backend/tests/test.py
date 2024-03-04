@@ -1,8 +1,8 @@
 import sys
 
 sys.path.append("/jetson-inference/data/SearchlightScanner/backend")
-from aiprocessor import AIProcessor
-from cameramanager import CameraManager
+from backend.ai_processor import AIProcessor
+from backend.camera_manager import CameraManager
 from jetson_utils import videoOutput
 
 """

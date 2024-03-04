@@ -1,7 +1,7 @@
 from pyembedded.gps_module.gps import GPS
 
 
-class GPSModule:
+class GPSManager:
     """
     Class for managing the GPS device.
     This class uses a gps driver and library that was installed onto the os.
