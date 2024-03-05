@@ -67,7 +67,7 @@ class AIProcessor:
                         start_j, end_j = j * grid_width, (j + 1) * grid_width
                         segment = image_np[start_i:end_i, start_j:end_j]
                         segment = cudaFromNumpy(segment)
-                        segment_detections = self.net.Detect(segment)
+                        segment_detections = self.net.Detect(segment, overlay="none")
                         for detection in segment_detections:
                             detection.Left += start_j
                             detection.Right += start_j  
