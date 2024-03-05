@@ -68,11 +68,16 @@ class AIProcessor:
                         segment = image_np[start_i:end_i, start_j:end_j]
                         segment = cudaFromNumpy(segment)
                         segment_detections = self.net.Detect(segment)
+                        for detection in segment_detections:
+                            detection.Left += start_j
+                            detection.Right += start_j  
+                            detection.Top += start_i
+                            detection.Bottom += start_i
                         detections.extend(segment_detections)
                 return detections
 
             else:
-                return self.net.Detect(image, overlay="lines,labels,conf")
+                return self.net.Detect(image, overlay="none")
         except:
             raise ValueError("Error detecting objects")
 
