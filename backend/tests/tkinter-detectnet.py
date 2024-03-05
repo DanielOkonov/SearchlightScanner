@@ -25,10 +25,23 @@ canvas.pack()
 conf_level = tk.IntVar()
 slider_frame = ttk.Frame(root)
 slider_frame.pack(pady=10)
-ttk.Label(slider_frame, text="Detection Threshold:").pack(side=tk.LEFT, padx=10)
+ttk.Label(slider_frame, text="Confidence level:").pack(side=tk.LEFT, padx=10)
 slider = ttk.Scale(slider_frame, from_=0, to=10, orient=tk.HORIZONTAL, variable=conf_level, length=300, 
-                    command=lambda value: (threshold_label.config(text="{:.1f}".format(float(value)/10)), 
+                    command=lambda value: (confidence_label.config(text="{:.1f}".format(float(value)/10)), 
                     ai_processor.set_confidence(float(value)/10)))
+slider.set(5)  # Initial value
+slider.pack(side=tk.LEFT)
+confidence_label = ttk.Label(slider_frame, text="0.5")
+confidence_label.pack(side=tk.LEFT)
+
+# Slider for threshold level
+threshold = tk.IntVar()
+slider_frame = ttk.Frame(root)
+slider_frame.pack(pady=10)
+ttk.Label(slider_frame, text="Threshold:").pack(side=tk.LEFT, padx=10)
+slider = ttk.Scale(slider_frame, from_=0, to=10, orient=tk.HORIZONTAL, variable=threshold, length=300, 
+                    command=lambda value: (threshold_label.config(text="{:.1f}".format(float(value)/10)), 
+                    ai_processor.set_threshold(float(value)/10)))
 slider.set(5)  # Initial value
 slider.pack(side=tk.LEFT)
 threshold_label = ttk.Label(slider_frame, text="0.5")
