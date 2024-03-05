@@ -1,15 +1,13 @@
 import tkinter as tk
 from tkinter import font as tkFont
-from settings2 import SettingsFrame
 
 class MainFrame(tk.Frame):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, show_settings_callback, **kwargs):
         super().__init__(parent, **kwargs)
         self.configure(bg='#7C889C')
 
-        # Ensure the main frame expands to fill the root window
-        self.grid_rowconfigure(0, weight=1)  # Make all other rows expandable except the last one
-        self.grid_columnconfigure(0, weight=1)  # Make the column expandable
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
         custom_font = tkFont.Font(family="Helvetica", size=12, weight="bold")
 
@@ -21,8 +19,6 @@ class MainFrame(tk.Frame):
                                          font=custom_font,
                                          width=25,
                                          height=3,
-                                         command=self.on_settings_click)
+                                         command=show_settings_callback)
         self.settings_button.grid(pady=5, padx=5)
 
-    def on_settings_click(self):
-        self.master.switch_frame(SettingsFrame)

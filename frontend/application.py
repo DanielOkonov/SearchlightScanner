@@ -10,16 +10,28 @@ class Application(tk.Tk):
         self.state('zoomed')
 
         self.frames = {}
-        for F in (MainFrame, SettingsFrame):
-            frame = F(self)
-            self.frames[F] = frame
-            frame.grid(row=0, column=0, sticky="nsew")
-
+        self.create_frames()
         self.switch_frame(MainFrame)
 
     def switch_frame(self, frame_class):
         frame = self.frames[frame_class]
         frame.tkraise()
+
+    def create_frames(self):
+        main_frame = MainFrame(self, self.show_settings_frame)
+        self.frames[MainFrame] = main_frame
+
+        settings_frame = SettingsFrame(self, self.show_main_frame)
+        self.frames[SettingsFrame] = settings_frame
+
+        for frame in self.frames.values():
+            frame.grid(row=0, column=0, sticky="nsew")
+
+    def show_main_frame(self):
+        self.switch_frame(MainFrame)
+
+    def show_settings_frame(self):
+        self.switch_frame(SettingsFrame)
 
 if __name__ == "__main__":
     app = Application()
