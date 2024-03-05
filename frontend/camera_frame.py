@@ -4,7 +4,7 @@ from settings1 import SettingsFrame1
 
 
 class MainFrame(tk.Frame):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, show_settings_callback, **kwargs):
         super().__init__(parent, **kwargs)
         self.configure(bg="#7C889C")
 
