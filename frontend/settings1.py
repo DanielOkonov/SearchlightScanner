@@ -105,6 +105,28 @@ class SettingsFrame1(tk.Frame):
         )
         settings2_button.grid(row=0, column=1)
 
+        self.close_menu_button_frame = tk.Frame(
+            self,
+            highlightbackground="black",
+            highlightcolor="black",
+            highlightthickness=2,
+            width=51,
+            height=51,
+        )
+        self.close_menu_button_frame.grid(row=0, column=3, padx=5, pady=5, sticky="ne")
+        self.close_menu_button_frame.grid_propagate(False)
+
+        x_button_font = tkFont.Font(family="Helvetica", size=20, weight="bold")
+        close_menu_button = tk.Button(
+            self.close_menu_button_frame,
+            text="X",
+            bg="red",
+            fg="white",
+            font=x_button_font,
+            command=self.master.switch_main_frame,
+        )
+        close_menu_button.pack(ipadx=5, ipady=5, expand=True)
+
 
 # def switch_focus():
 #     print("switch")
