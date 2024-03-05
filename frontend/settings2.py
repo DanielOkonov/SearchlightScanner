@@ -2,12 +2,13 @@ import tkinter as tk
 from tkinter import font as tkFont
 
 class SettingsFrame(tk.Frame):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, close_menu_callback, **kwargs):
         super().__init__(parent, **kwargs)
         self.configure(bg='#7C889C')
         self.segments_frame = None
         self.segment_buttons = {}
         self.segmentation_switch_state = {'is_on': False}
+        self.close_menu_callback = close_menu_callback 
         self.create_widgets()
         self.toggle_segment_visibility(self.segmentation_switch_state['is_on'])
 
@@ -180,10 +181,6 @@ class SettingsFrame(tk.Frame):
             bg='red',
             fg='white',
             font=x_button_font,
-             command=self.on_close_menu_click
+            command=self.close_menu_callback  # Use the passed-in callback
         )
         close_menu_button.pack(ipadx=5, ipady=5, expand=True)
-
-    def on_close_menu_click(self):
-        from camera_frame import MainFrame
-        self.master.switch_frame(MainFrame)
