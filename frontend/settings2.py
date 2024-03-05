@@ -2,14 +2,13 @@ import tkinter as tk
 from tkinter import font as tkFont
 
 
-class SettingsFrame(tk.Frame):
-    def __init__(self, parent, close_menu_callback, **kwargs):
+class SettingsFrame2(tk.Frame):
+    def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
         self.configure(bg="#7C889C")
         self.segments_frame = None
         self.segment_buttons = {}
         self.segmentation_switch_state = {"is_on": False}
-        self.close_menu_callback = close_menu_callback
         self.create_widgets()
         self.toggle_segment_visibility(self.segmentation_switch_state["is_on"])
 
@@ -176,6 +175,7 @@ class SettingsFrame(tk.Frame):
 
         settings1_button = tk.Button(
             self.settings_toggle_frame,
+            command=self.master.switch_settings1,
             text="SETTINGS 1",
             font=font_used,
             width=25,
@@ -185,6 +185,7 @@ class SettingsFrame(tk.Frame):
 
         settings2_button = tk.Button(
             self.settings_toggle_frame,
+            command=self.master.switch_settings2,
             text="SETTINGS 2",
             font=font_used,
             width=25,
@@ -325,6 +326,6 @@ class SettingsFrame(tk.Frame):
             bg="red",
             fg="white",
             font=x_button_font,
-            command=self.close_menu_callback,  # Use the passed-in callback
+            command=self.master.switch_main_frame,
         )
         close_menu_button.pack(ipadx=5, ipady=5, expand=True)
