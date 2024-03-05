@@ -326,11 +326,6 @@ class SettingsFrame2(tk.Frame):
             bg="red",
             fg="white",
             font=x_button_font,
-            command=self.on_close_menu_click,
+            command=self.master.switch_main_frame,
         )
         close_menu_button.pack(ipadx=5, ipady=5, expand=True)
-
-    def on_close_menu_click(self):
-        from camera_frame import MainFrame
-
-        self.master.switch_frame(MainFrame)

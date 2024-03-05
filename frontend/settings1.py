@@ -55,7 +55,7 @@ class SettingsFrame1(tk.Frame):
             troughcolor="#24D215",
             highlightthickness=0,
         )
-        confidence_slider.grid(row=1, column=0)
+        confidence_slider.grid(row=1, column=0, rowspan=2)
 
         distance_label = tk.Label(
             self.settings_frame,
@@ -64,7 +64,7 @@ class SettingsFrame1(tk.Frame):
             fg="black",
             font=font_used,
         )
-        distance_label.grid(row=2, column=0, columnspan=3, padx=10, pady=10)
+        distance_label.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
 
         confidence_slider = tk.Scale(
             master=self.settings_frame,
@@ -78,7 +78,7 @@ class SettingsFrame1(tk.Frame):
             troughcolor="#24D215",
             highlightthickness=0,
         )
-        confidence_slider.grid(row=3, column=0)
+        confidence_slider.grid(row=4, column=0, rowspan=2)
 
         self.settings_toggle_frame = tk.Frame(self, bg="#7C889C", width=200, height=108)
         self.settings_toggle_frame.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
