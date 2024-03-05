@@ -39,10 +39,39 @@ slider.set(5)  # Initial value
 slider.pack(side=tk.LEFT)
 
 
+# Create buttons for segmentation options
+segmentation_options = {
+    1: None,
+    4: (2, 2),
+    9: (3, 3),
+    16: (4, 4),
+    25: (5, 5),
+    32: (4, 8),
+    40: (5, 8),
+    50: (5, 10),
+    60: (6, 10),
+    84: (7, 12)
+}
+
+segmentation = None
+# Function to set segmentation
+def set_segmentation(value):
+    global segmentation
+    segmentation = segmentation_options[value]
+
+segmentation_buttons_frame = ttk.Frame(root)
+segmentation_buttons_frame.pack(pady=10)
+ttk.Label(segmentation_buttons_frame, text="Segmentation:").pack(side=tk.LEFT, padx=10)
+for option in segmentation_options:
+    button = ttk.Button(segmentation_buttons_frame, text=str(option), command=lambda value=option: set_segmentation(value))
+    button.pack(side=tk.LEFT, padx=5)
+
+
 def update():
+    global segmentation
     start_time = time.time()
     img = camera_manager.fetch_frame()
-    detections = ai_processor.detect_objects(img)
+    detections = ai_processor.detect_objects(img, segmentation)
     render_image(img, detections)
     fps = 1.0 / (time.time() - start_time)
     print("FPS: {:.2f}".format(fps))
