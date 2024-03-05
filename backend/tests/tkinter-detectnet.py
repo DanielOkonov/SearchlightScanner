@@ -83,14 +83,16 @@ def render_image(img, detections):
     canvas.img_tk = img_tk
     canvas.create_image(0, 0, anchor=tk.NW, image=img_tk)
     for detection in detections:
-        left = detection.Left
-        top = detection.Top
-        right = detection.Right
-        bottom = detection.Bottom
-        label = detection.ClassID
         confidence = detection.Confidence
         if confidence >= conf_thresh.get()/10:
+            left = detection.Left
+            top = detection.Top
+            right = detection.Right
+            bottom = detection.Bottom
+            classID = detection.ClassID
             canvas.create_rectangle(left, top, right, bottom, outline="red")
+            canvas.create_text(left, top, text=f"ClassID: {classID}", anchor=tk.NW, fill="white")
+            canvas.create_text(left, top + 30, text="Confidence: {:.1f}%".format(confidence * 100), anchor=tk.SW, fill="white")
 
 update()
 
