@@ -72,7 +72,7 @@ class AIProcessor:
                 return detections
 
             else:
-                return self.net.Detect(image)
+                return self.net.Detect(image, overlay="lines,labels,conf")
         except:
             raise ValueError("Error detecting objects")
 
