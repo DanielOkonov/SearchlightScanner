@@ -1,39 +1,39 @@
 import tkinter as tk
 from camera_frame import MainFrame
-from settings2 import SettingsFrame
+from settings1 import SettingsFrame1
+from settings2 import SettingsFrame2
+
 
 class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("SearchLightScanner")
+
         self.configure(bg='#7C889C')
 
-        # self.state('zoomed')
         self.maximize_window()
 
         self.frames = {}
-        self.create_frames()
+        for F in (MainFrame, SettingsFrame1, SettingsFrame2):
+            frame = F(self)
+            self.frames[F] = frame
+            frame.grid(row=0, column=0, sticky="nsew")
+
         self.switch_frame(MainFrame)
 
     def switch_frame(self, frame_class):
         frame = self.frames[frame_class]
         frame.tkraise()
 
-    def create_frames(self):
-        main_frame = MainFrame(self, self.show_settings_frame)
-        self.frames[MainFrame] = main_frame
+    def switch_settings1(self):
+        self.switch_frame(SettingsFrame1)
 
-        settings_frame = SettingsFrame(self, self.show_main_frame)
-        self.frames[SettingsFrame] = settings_frame
+    def switch_settings2(self):
+        self.switch_frame(SettingsFrame2)
 
-        for frame in self.frames.values():
-            frame.grid(row=0, column=0, sticky="nsew")
-
-    def show_main_frame(self):
+    def switch_main_frame(self):
         self.switch_frame(MainFrame)
 
-    def show_settings_frame(self):
-        self.switch_frame(SettingsFrame)
 
     def maximize_window(self):
         try:
