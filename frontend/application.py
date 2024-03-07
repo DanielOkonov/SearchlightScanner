@@ -43,8 +43,6 @@ class Application(tk.Tk):
             # For Windows, set the window state to 'normal' and then maximize
             self.state('normal')
             self.wm_state('zoomed')
-            # Alternatively, for older versions or other platforms, manually set size
-            # self.geometry("{0}x{1}+0+0".format(self.winfo_screenwidth(), self.winfo_screenheight()))
 
 if __name__ == "__main__":
     app = Application()
