@@ -7,7 +7,9 @@ class Application(tk.Tk):
         super().__init__()
         self.title("SearchLightScanner")
         self.configure(bg='#7C889C')
-        self.state('zoomed')
+
+        # self.state('zoomed')
+        self.maximize_window()
 
         self.frames = {}
         self.create_frames()
@@ -32,6 +34,17 @@ class Application(tk.Tk):
 
     def show_settings_frame(self):
         self.switch_frame(SettingsFrame)
+
+    def maximize_window(self):
+        try:
+            # For Linux, use the '-zoomed' attribute
+            self.attributes('-zoomed', True)
+        except Exception:
+            # For Windows, set the window state to 'normal' and then maximize
+            self.state('normal')
+            self.wm_state('zoomed')
+            # Alternatively, for older versions or other platforms, manually set size
+            # self.geometry("{0}x{1}+0+0".format(self.winfo_screenwidth(), self.winfo_screenheight()))
 
 if __name__ == "__main__":
     app = Application()

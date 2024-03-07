@@ -11,6 +11,9 @@ class MainFrame(tk.Frame):
 
         custom_font = tkFont.Font(family="Helvetica", size=12, weight="bold")
 
+        #############################################################################################################
+        #SETTINGS BUTTON FRAME
+
         self.settings_button_frame = tk.Frame(self, bg='#7C889C', width=275, height=80)
         self.settings_button_frame.grid(row=1, column=0, sticky='sw', pady=3, padx=3)
         self.settings_button_frame.grid_propagate(False)
