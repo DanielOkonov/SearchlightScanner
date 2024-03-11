@@ -1,24 +1,16 @@
-# import tkinter as tk
 from camera_frame import MainFrame
 from settings1 import SettingsFrame1
 from settings2 import SettingsFrame2
-
 import tkinter as tk
-# from tkinter import font as tkFont
-# from PIL import Image, ImageTk
 import cv2
-
-# Assuming camera_frame.py, settings1.py, and settings2.py exist and contain the appropriate classes
-from camera_frame import MainFrame
-from settings1 import SettingsFrame1
-from settings2 import SettingsFrame2
+import platform
 
 class CameraFeed:
     def __init__(self, video_source=0):
         self.video_source = video_source
         self.cap = cv2.VideoCapture(video_source)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         if not self.cap.isOpened():
             raise ValueError("Unable to open video source", video_source)
 
@@ -69,12 +61,22 @@ class Application(tk.Tk):
     def switch_main_frame(self):
         self.switch_frame(MainFrame)
 
+    # def maximize_window(self):
+    #     try:
+    #         self.attributes('-zoomed', True)
+    #     except Exception:
+    #         self.state('normal')
+    #         self.wm_state('zoomed')
+
     def maximize_window(self):
-        try:
-            self.attributes('-zoomed', True)
-        except Exception:
+        if platform.system() == "Linux":
+            self.attributes('-fullscreen', True)
+        elif platform.system() == "Windows":
             self.state('normal')
-            self.wm_state('zoomed')
+            self.state('zoomed')
+        else:
+            # Fallback that simply maximizes the window's dimensions
+            self.geometry("{0}x{1}+0+0".format(self.winfo_screenwidth(), self.winfo_screenheight()))
 
     def on_close(self):
         self.frames[MainFrame].stop_camera_feed()

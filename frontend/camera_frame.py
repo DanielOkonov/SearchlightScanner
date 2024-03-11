@@ -6,7 +6,7 @@ class MainFrame(tk.Frame):
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
         self.configure(bg="#7C889C")
-        self.parent = parent  # Keep a reference to the parent class
+        self.parent = parent
 
         # Camera feed label
         self.camera_label = tk.Label(self, bg='black')
@@ -15,18 +15,15 @@ class MainFrame(tk.Frame):
         # Flag to control camera updates
         self.update_camera = False
 
-        # Layout configuration
-        self.grid_rowconfigure(0, weight=1)  # Make the row expandable
-        self.grid_columnconfigure(0, weight=1)  # Make the column expandable
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
         custom_font = tkFont.Font(family="Helvetica", size=12, weight="bold")
 
-        # SETTINGS BUTTON FRAME
         self.settings_button_frame = tk.Frame(self, bg='#7C889C', width=275, height=80)
         self.settings_button_frame.grid(row=1, column=0, sticky='sw', pady=3, padx=3)
         self.settings_button_frame.grid_propagate(False)
 
-        # Settings button
         self.settings_button = tk.Button(
             self.settings_button_frame,
             bg="green",
@@ -55,5 +52,4 @@ class MainFrame(tk.Frame):
             self.after(10, self.update_frame)
 
     def on_settings_click(self):
-        # Call method on the parent class to switch frames
-        self.parent.switch_settings1()  # Assuming this method is correctly defined in the parent class
+        self.parent.switch_settings1()
