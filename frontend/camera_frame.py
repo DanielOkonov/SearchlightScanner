@@ -53,3 +53,4 @@ class MainFrame(tk.Frame):
 
     def on_settings_click(self):
         self.parent.switch_settings1()
+

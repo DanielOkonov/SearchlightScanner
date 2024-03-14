@@ -9,8 +9,12 @@ class CameraFeed:
     def __init__(self, video_source=0):
         self.video_source = video_source
         self.cap = cv2.VideoCapture(video_source)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
+
         if not self.cap.isOpened():
             raise ValueError("Unable to open video source", video_source)
 
