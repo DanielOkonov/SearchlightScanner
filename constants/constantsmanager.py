@@ -7,6 +7,12 @@ class ConstantsManager:
     Class to manage constants from a JSON file.
     """
 
+    BACKUP_JSON_STRING = """
+    {
+        "default_key": "default_value"
+    }
+    """
+
     def __init__(self, filename="values.json"):
         """
         Initializer for ConstantsManager.
@@ -15,11 +21,20 @@ class ConstantsManager:
             filename (str, optional): The filename of the JSON file. Defaults to "values.json".
 
         Raises:
-            FileNotFoundError: If the file does not exist
+            FileNotFoundError: If an error occurred while creating the file (if the file does not exist and trying to make a new one)
         """
         self.filename = filename
         if not os.path.isfile(self.filename):
-            raise FileNotFoundError(f"The file '{self.filename}' does not exist.")
+            try:
+                print(
+                    f"The file '{self.filename}' does not exist. Creating a new one..."
+                )
+                with open(self.filename, "w") as file:
+                    file.write(self.BACKUP_JSON_STRING)
+            except Exception as e:
+                raise FileNotFoundError(
+                    f"An error occurred while creating the file: {e}"
+                )
         self.constants = {}
         self.load_constants()
 
@@ -47,17 +62,10 @@ class ConstantsManager:
             key (str): The key of the constant
 
         Returns:
-            The value of the constant
+            The value of the constant (None if the constant does not exist)
 
-        Raises:
-            ValueError: If the key does not exist in the file
         """
-        if key in self.constants:
-            return self.constants[key]
-        else:
-            raise ValueError(
-                f"The key '{key}' does not exist in the file '{self.filename}'."
-            )
+        return self.constants.get(key, None)
 
     def set_constant(self, key, value):
         """
