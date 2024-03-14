@@ -9,9 +9,11 @@ class CameraFeed:
     def __init__(self, video_source=0):
         self.video_source = video_source
         self.cap = cv2.VideoCapture(video_source)
+        #These are the resolutions that should be used on the scanner
         # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720) 
 
+        #Resolutions used for testing on laptop webcam
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
 
@@ -64,13 +66,6 @@ class Application(tk.Tk):
 
     def switch_main_frame(self):
         self.switch_frame(MainFrame)
-
-    # def maximize_window(self):
-    #     try:
-    #         self.attributes('-zoomed', True)
-    #     except Exception:
-    #         self.state('normal')
-    #         self.wm_state('zoomed')
 
     def maximize_window(self):
         if platform.system() == "Linux":
