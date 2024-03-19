@@ -3,11 +3,10 @@ from tkinter import font as tkFont
 
 # Custom slider class
 class CustomSlider(tk.Canvas):
-    def __init__(self, parent, id, length=500, width=120, handle_size=60, min_val=0, max_val=100, bg='black', callback=None, **kwargs):
+    def __init__(self, parent, id, length=610, width=120, handle_size=60, min_val=0, max_val=100, bg='black', callback=None, **kwargs):
         kwargs.pop('command', None)
         super().__init__(parent, height=width, width=length, bg=bg, highlightthickness=0, **kwargs)
         self.callback = callback
-        # self.length = 300
         self.length=length
         self.width = width
         self.handle_size = handle_size
@@ -21,19 +20,30 @@ class CustomSlider(tk.Canvas):
 
     def draw_slider(self):
         self.delete("all")
-        bar_thickness = 60  # Adjust the bar thickness here if needed
-        # Ensure that the bar is drawn within the Canvas size
-        self.create_rectangle(10, self.width/2 - bar_thickness/2, self.length - 10, self.width/2 + bar_thickness/2, fill="#555", outline="#ccc", width=2)
+        bar_thickness = 60  # The thickness of the slider bar
+        padding = self.handle_size // 34
+
+        self.create_rectangle(padding, self.width/2 - bar_thickness/2, 
+                            self.length - padding, self.width/2 + bar_thickness/2, 
+                            fill="#697283", outline="black", width=4)
+        
         handle_position = self.value_to_position(self.value)
-        self.create_oval(handle_position - self.handle_size/2, self.width/2 - self.handle_size/2,
-                         handle_position + self.handle_size/2, self.width/2 + self.handle_size/2,
-                         fill="#24D215", outline="#eee")
+
+        self.create_oval(handle_position - self.handle_size/2, 
+                        self.width/2 - self.handle_size/2,
+                        handle_position + self.handle_size/2, 
+                        self.width/2 + self.handle_size/2,
+                        fill="#24D215", outline="white")
 
     def value_to_position(self, value):
-        return 10 + (value - self.min_val) / (self.max_val - self.min_val) * (self.length - 20)
+        # Adjust position calculation to account for padding
+        padding = self.handle_size // 2
+        return padding + (value - self.min_val) / (self.max_val - self.min_val) * (self.length - padding * 2)
 
     def position_to_value(self, position):
-        return (position - 10) / (self.length - 20) * (self.max_val - self.min_val) + self.min_val
+        # Adjust value calculation to account for padding
+        padding = self.handle_size // 2
+        return (position - padding) / (self.length - padding * 2) * (self.max_val - self.min_val) + self.min_val
 
     def set_value(self, value):
         self.value = max(self.min_val, min(self.max_val, value))
@@ -92,57 +102,83 @@ class SettingsFrame1(tk.Frame):
         self.sliders_frame.grid_propagate(False)
 
         # Create frames for each slider within the parent sliders_frame
-        self.confidence_frame = tk.Frame(self.sliders_frame, width=300, bg="#7C889C", highlightthickness=0)
-        self.confidence_frame.grid(row=0, column=0, sticky='nsew')
+        self.confidence_frame = tk.Frame(self.sliders_frame, width=615, height=180, bg="#7C889C", highlightbackground="black", highlightcolor="black", highlightthickness=2)
+        self.confidence_frame.grid(row=0, column=0, padx=280, pady=22)
+        self.confidence_frame.grid_propagate(False)
 
-        self.distance_frame = tk.Frame(self.sliders_frame, bg="#7C889C", highlightthickness=0)
-        self.distance_frame.grid(row=3, column=0, sticky='nsew')
+        self.distance_frame = tk.Frame(self.sliders_frame, width=615, height=180, bg="#7C889C", highlightbackground="black", highlightcolor="black", highlightthickness=2)
+        self.distance_frame.grid(row=3, column=0, padx=15, pady=22)
+        self.distance_frame.grid_propagate(False)
         self.distance_frame.grid_remove()
 
         # Confidence slider and label
         self.confidence_label = tk.Label(self.confidence_frame, text="CONFIDENCE: 0%", bg="#7C889C", fg="black", font=font_used)
         self.confidence_label.grid(row=0, column=0, sticky='nsew')
 
-        self.confidence_slider = CustomSlider(self.confidence_frame, id='confidence_slider', length=500, width=120, handle_size=60, bg="#7C889C", min_val=0, max_val=100, callback=self.update_confidence)
-        self.confidence_slider.grid(row=1, column=0, padx=300)
+        self.confidence_slider = CustomSlider(self.confidence_frame, id='confidence_slider', length=605, width=120, handle_size=60, bg="#7C889C", min_val=0, max_val=100, callback=self.update_confidence)
+        self.confidence_slider.grid(row=1, column=0, padx=2)
 
-        # Focus mode buttons
-        self.automatic_focus_button = tk.Button(self.sliders_frame, text="AUTOMATIC FOCUS", bg="grey", fg="white", font=font_used, command=self.set_focus_mode_auto)
-        self.automatic_focus_button.grid(row=2, column=0, sticky="ew")
+        # Focus mode frame and buttons
 
-        self.manual_focus_button = tk.Button(self.sliders_frame, text="MANUAL FOCUS", bg="grey", fg="white", font=font_used, command=self.set_focus_mode_manual)
-        self.manual_focus_button.grid(row=2, column=1, sticky="ew")
+        self.focus_buttons_frame = tk.Frame(self.sliders_frame, bg="#7C889C", width=200, height=108)
+        self.focus_buttons_frame.grid(row=2, column=0, padx=280, pady=5, sticky="ew")
+
+        self.automatic_focus_button = tk.Button(self.focus_buttons_frame, text="AUTOMATIC FOCUS", bg="grey", fg="white", font=font_used, width=30, height= 3, command=self.set_focus_mode_auto)
+        self.automatic_focus_button.grid(row=0, column=0)
+
+        self.manual_focus_button = tk.Button(self.focus_buttons_frame, text="MANUAL FOCUS", bg="grey", fg="white", font=font_used, width=30, height= 3, command=self.set_focus_mode_manual)
+        self.manual_focus_button.grid(row=0, column=1)
 
         # Distance slider and label
         self.distance_label = tk.Label(self.distance_frame, text="DISTANCE: 0 units", bg="#7C889C", fg="black", font=font_used)
         self.distance_label.grid(row=0, column=0, sticky='nsew')
 
-        self.distance_slider = CustomSlider(self.distance_frame, id='distance_slider', length=200, width=30, handle_size=30, bg="#7C889C", min_val=0, max_val=100, callback=self.update_distance)
-        self.distance_slider.grid(row=1, column=0, sticky='nsew')
+        self.distance_slider = CustomSlider(self.distance_frame, id='distance_slider', length=605, width=120, handle_size=60, bg="#7C889C", min_val=0, max_val=100, callback=self.update_distance)
+        self.distance_slider.grid(row=1, column=0, padx=2)
 
         # Settings frame and toggle
-        self.settings_toggle_frame = tk.Frame(self, bg="#7C889C", width=200, height=108)
-        self.settings_toggle_frame.grid(row=2, column=0, padx=10, pady=15, sticky="ew")
+        self.settings_toggle_frame = tk.Frame(self, bg="red", width=100, height=108)
+        self.settings_toggle_frame.grid(row=1, column=0, padx=10, pady=15, sticky="w")
 
         settings1_button = tk.Button(
             self.settings_toggle_frame,
             command=self.master.switch_settings1,
             text="SETTINGS 1",
+            bg="#24D215",
+            fg="white",
             font=font_used,
             width=25,
             height=5,
         )
-        settings1_button.grid(row=0, column=0)
+        settings1_button.grid(row=0, column=0, sticky="ew")
 
         settings2_button = tk.Button(
             self.settings_toggle_frame,
             command=self.master.switch_settings2,
             text="SETTINGS 2",
+            bg='#555',
+            fg="white",
             font=font_used,
             width=25,
             height=5,
         )
-        settings2_button.grid(row=0, column=1)
+        settings2_button.grid(row=0, column=1, sticky="ew")
+
+        # Apply changes button
+        self.apply_button_frame = tk.Frame(self, bg="red", width=565, height=108)
+        self.apply_button_frame.grid(row=1, column=0, padx=10, pady=10, sticky="e")
+        self.apply_button_frame.grid_propagate(False)
+
+        apply_changes_button = tk.Button(
+            self.apply_button_frame,
+            text="APPLY CHANGES",
+            bg="#24D215",
+            fg="white",
+            font=font_used,
+            width=53,
+            height=4,
+        )
+        apply_changes_button.grid(row=0, column=0, padx=11, pady=9)
 
         # Close frame and button
         self.close_menu_button_frame = tk.Frame(
@@ -153,7 +189,7 @@ class SettingsFrame1(tk.Frame):
             width=51,
             height=51,
         )
-        self.close_menu_button_frame.grid(row=0, column=3, padx=5, pady=5, sticky="ne")
+        self.close_menu_button_frame.grid(row=0, column=1, padx=5, pady=5, sticky="nw")
         self.close_menu_button_frame.grid_propagate(False)
 
         x_button_font = tkFont.Font(family="Helvetica", size=20, weight="bold")
