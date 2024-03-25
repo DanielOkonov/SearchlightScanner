@@ -3,13 +3,14 @@ from tkinter import font as tkFont
 
 # Custom slider class
 class CustomSlider(tk.Canvas):
-    def __init__(self, parent, id, length=610, width=120, handle_size=60, min_val=0, max_val=100, bg='black', callback=None, **kwargs):
+    def __init__(self, parent, id, length=610, width=120, handle_size=60, bar_thickness=60, min_val=0, max_val=100, bg='black', callback=None, **kwargs):
         kwargs.pop('command', None)
         super().__init__(parent, height=width, width=length, bg=bg, highlightthickness=0, **kwargs)
         self.callback = callback
         self.length=length
         self.width = width
         self.handle_size = handle_size
+        self.bar_thickness = bar_thickness
         self.min_val = min_val
         self.max_val = max_val
         self.id = id
@@ -20,11 +21,11 @@ class CustomSlider(tk.Canvas):
 
     def draw_slider(self):
         self.delete("all")
-        bar_thickness = 60  # The thickness of the slider bar
+        # bar_thickness = 60  # The thickness of the slider bar
         padding = self.handle_size // 34
 
-        self.create_rectangle(padding, self.width/2 - bar_thickness/2, 
-                            self.length - padding, self.width/2 + bar_thickness/2, 
+        self.create_rectangle(padding, self.width/2 - self.bar_thickness/2, 
+                            self.length - padding, self.width/2 + self.bar_thickness/2, 
                             fill="#697283", outline="black", width=4)
         
         handle_position = self.value_to_position(self.value)
