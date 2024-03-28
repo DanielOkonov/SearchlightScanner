@@ -1,10 +1,9 @@
 import threading
 import queue
 import time
-from PIL import Image
 import os
 from datetime import datetime
-from .scanner_image import ScannerImage
+from scanner_image import ScannerImage
 
 
 class ImageSaver:
@@ -34,7 +33,8 @@ class ImageSaver:
         self.running = False
         self.thread.join()
 
-    def add_image(self, scanner_image):
+    def add_image(self, image, detections, gps_coords):
+        scanner_image = ScannerImage(image, detections, gps_coords)
         self.queue.put(scanner_image)
 
     def run(self):
