@@ -2,25 +2,27 @@ import threading
 import queue
 import time
 import os
-from datetime import datetime
 from scanner_image import ScannerImage
 
 
 class ImageSaver:
-    def __init__(self, save_rate, save_dir, images_per_rate):
+
+    priority_mapping = {
+        1: 1.00,
+        2: 0.95,
+        3: 0.90,
+        4: 0.80,
+        5: 0.70,
+        6: 0.60,
+    }
+
+    def __init__(self, save_rate, save_dir, images_per_rate, images_per_dir, labels):
         self.save_rate = save_rate
         self.save_dir = save_dir
         self.images_per_rate = images_per_rate
+        self.images_per_dir = images_per_dir
+        self.labels = labels
         self.queue = queue.Queue()
-        self.priority_mapping = {
-            "Highest": 1.00,
-            "Very High": 0.95,
-            "High": 0.90,
-            "Fairly High": 0.80,
-            "Moderate": 0.70,
-            "Fairly Low": 0.60,
-            "Low": 0.50,
-        }
         self.thread = threading.Thread(target=self.run, args=())
         self.thread.daemon = True
         self.running = False
@@ -33,9 +35,11 @@ class ImageSaver:
         self.running = False
         self.thread.join()
 
+    def update_labels(self, labels):
+        self.labels = labels
+
     def add_image(self, image, detections, gps_coords):
-        scanner_image = ScannerImage(image, detections, gps_coords)
-        self.queue.put(scanner_image)
+        self.queue.put(ScannerImage(image, detections, gps_coords))
 
     def run(self):
         while self.running:
@@ -46,36 +50,44 @@ class ImageSaver:
                 continue
 
     def process_queue(self):
-        current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        save_path = os.path.join(self.save_dir, current_time)
-        os.makedirs(save_path, exist_ok=True)
-
-        images_to_save = self.collect_and_sort_images()
-
-        for i, scanner_image in enumerate(
-            images_to_save[: self.images_per_rate], start=1
-        ):
-            image_path = os.path.join(save_path, f"{i}.png")
-            scanner_image.pil_image.save(image_path)
+        images = self.collect_and_sort_images()
+        self.save_images(images)
 
     def collect_and_sort_images(self):
-        images_to_process = []
+        images = []
         while not self.queue.empty():
             scanner_image = self.queue.get()
-            self.assign_priority_scores(scanner_image)
-            images_to_process.append(scanner_image)
-
-        images_to_process.sort(
-            key=lambda img: max(d["priority_score"] for d in img.detections),
-            reverse=True,
-        )
-        return images_to_process
+            score = self.calculate_priority_score(scanner_image)
+            score = self.assign_priority_scores(scanner_image)
+            images.append((score, scanner_image))
+        images.sort(key=lambda x: x[0], reverse=True)
+        return [image[1] for image in images][: self.images_per_rate]
 
     def assign_priority_scores(self, scanner_image):
+        score = 0
         for detection in scanner_image.detections:
-            label, classID, priority_label = detection
-            priority_score = (
-                self.priority_mapping.get(priority_label, 1.00)
-                * detection["confidence"]
-            )
-            detection["priority_score"] = priority_score
+            # detection has a label, look up the priority of that label
+            priority = self.labels.get(detection.label, 1)
+            multiplier = self.priority_mapping.get(priority, 1)
+            score += detection.conf * multiplier
+        return score
+
+
+def save_images(self, images):
+    current_dir = 0
+    current_dir_path = os.path.join(self.save_dir, str(current_dir))
+    if not os.path.exists(current_dir_path):
+        os.makedirs(current_dir_path, exist_ok=True)
+    else:
+        while os.path.exists(current_dir_path):
+            current_dir_files = len(os.listdir(current_dir_path))
+            if current_dir_files + len(images) > self.images_per_dir:
+                current_dir += 1
+                current_dir_path = os.path.join(self.save_dir, str(current_dir))
+            else:
+                break
+        os.makedirs(current_dir_path, exist_ok=True)
+
+    for i, scanner_image in enumerate(images, start=1):
+        image_path = os.path.join(current_dir_path, f"{i}.jpg")
+        scanner_image.image.save(image_path)
