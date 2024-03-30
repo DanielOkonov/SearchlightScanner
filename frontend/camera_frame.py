@@ -24,14 +24,20 @@ class MainFrame(tk.Frame):
 
     def update_gps_coordinates(self, coords):
         # This updates the label with new coordinates
-        self.gps_coordinates.config(text=f"CURRENT COORDINATES: {coords}")
+        self.gps_coordinates.config(text=f"CURRENT COORDINATES:\n {coords}")
 
-    def get_coords(self, port="/dev/ttyACM0", baud_rate=9600):
+    #For the GPS to work on the scanner, use this port number
+    # def get_coords(self, port="/dev/ttyACM0", baud_rate=115200):
+        
+    #For the GPS to work on a Windows computer, use this port number
+    def get_coords(self, port="/COM3", baud_rate=115200):
         gps = GPS(port=port, baud_rate=baud_rate)
         while True:
             coords = gps.get_lat_long()
             self.after(1000, lambda c=coords: self.update_gps_coordinates(c))
             time.sleep(1)  # Add a delay to avoid overwhelming the GPS module and the UI
+            print(type(coords))
+            print("hello" + coords)
 
     def create_widgets(self):
         # Camera feed label
