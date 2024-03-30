@@ -36,6 +36,7 @@ class Application(tk.Tk):
         super().__init__()
         self.title("SearchLightScanner")
         self.configure(bg='#7C889C')
+        self.bind("<Escape>", self.minimize_window)
         self.maximize_window()
 
         self.camera_feed = CameraFeed()  # Initialize CameraFeed
@@ -71,11 +72,12 @@ class Application(tk.Tk):
         if platform.system() == "Linux":
             self.attributes('-fullscreen', True)
         elif platform.system() == "Windows":
-            self.state('normal')
             self.state('zoomed')
         else:
-            # Fallback that simply maximizes the window's dimensions
             self.geometry("{0}x{1}+0+0".format(self.winfo_screenwidth(), self.winfo_screenheight()))
+
+    def minimize_window(self, event=None):
+        self.iconify()
 
     def on_close(self):
         self.frames[MainFrame].stop_camera_feed()
