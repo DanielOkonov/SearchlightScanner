@@ -1,5 +1,4 @@
 class ScannerDetection:
-    def __init__(self, label, conf, priority_label):
+    def __init__(self, label, conf):
         self.label = label
         self.conf = conf
-        self.priority_label = priority_label

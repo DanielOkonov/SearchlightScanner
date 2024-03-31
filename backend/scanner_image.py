@@ -7,8 +7,8 @@ class ScannerImage:
         self.image = image
         self.detections = detections
         self.gps_coords = gps_coords
-        self.date_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self._annotate()
+        self.date_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
+        # self._annotate()
 
     def _annotate(self):
         draw = ImageDraw.Draw(self.image)
