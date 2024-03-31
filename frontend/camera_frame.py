@@ -1,43 +1,19 @@
 import tkinter as tk
-from pyembedded.gps_module.gps import GPS
-import threading
-import time
 from PIL import Image, ImageTk
 from tkinter import font as tkFont
 from settings1 import CustomSlider
 
 class MainFrame(tk.Frame):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, gps_manager, **kwargs):
         super().__init__(parent, **kwargs)
         self.configure(bg="#7C889C")
         self.parent = parent
+        self.gps_manager = gps_manager
         self.create_widgets()
 
     def update_confidence(self, value):
         value = int(round(value))
         self.confidence_label.config(text=f"CONFIDENCE: {value}%")
-
-    def start_gps_thread(self):
-        # Start the GPS reading in a separate thread
-        gps_thread = threading.Thread(target=self.get_coords, daemon=True)
-        gps_thread.start()
-
-    def update_gps_coordinates(self, coords):
-        # This updates the label with new coordinates
-        self.gps_coordinates.config(text=f"CURRENT COORDINATES:\n {coords}")
-
-    #For the GPS to work on the scanner, use this port number
-    # def get_coords(self, port="/dev/ttyACM0", baud_rate=115200):
-        
-    #For the GPS to work on a Windows computer, use this port number
-    def get_coords(self, port="/COM3", baud_rate=115200):
-        gps = GPS(port=port, baud_rate=baud_rate)
-        while True:
-            coords = gps.get_lat_long()
-            self.after(1000, lambda c=coords: self.update_gps_coordinates(c))
-            time.sleep(1)  # Add a delay to avoid overwhelming the GPS module and the UI
-            print(type(coords))
-            print("hello" + coords)
 
     def create_widgets(self):
         # Camera feed label
@@ -86,13 +62,13 @@ class MainFrame(tk.Frame):
         self.confidence_slider.grid(row=0, column=0, padx=195, sticky='nse', pady=10)
 
         # GPS frame and output
-        self.start_gps_thread()
-        self.gps_frame = tk.Frame(self.menu_options_frame, bg='#7C889C', width= 400, height= 68, highlightbackground="black", highlightcolor="black", highlightthickness=2)
-        self.gps_frame.grid(row=0, column=2, sticky= 'nsew', padx=10, pady=4)
+        self.gps_frame = tk.Frame(self.menu_options_frame, bg='#7C889C', width=400, height=68, highlightbackground="black", highlightcolor="black", highlightthickness=2)
+        self.gps_frame.grid(row=0, column=2, sticky='nsew', padx=10, pady=4)
         self.gps_frame.grid_propagate(False)
 
-        self.gps_coordinates = tk.Label(self.gps_frame, text= "CURRENT COORDINATES: ", bg="#7C889C", fg="black", font=custom_font)
+        self.gps_coordinates = tk.Label(self.gps_frame, text="CURRENT COORDINATES: ", bg="#7C889C", fg="black", font=custom_font)
         self.gps_coordinates.grid(row=0, column=0, sticky='nsw', pady=10)
+        self.start_gps_thread()
 
     # Camera methods
     def start_camera_feed(self):
@@ -110,6 +86,22 @@ class MainFrame(tk.Frame):
                 self.camera_label.config(image=self.photo)
                 self.camera_label.image = self.photo  # Keep a reference to the image
             self.after(10, self.update_frame)
+
+    def start_gps_thread(self):
+        self.gps_manager.start()
+        self.update_gps_coordinates()
+
+    def update_gps_coordinates(self):
+        # Check if GPS has valid coordinates and update label
+        try:
+            coords = self.gps_manager.get_coords()  # Attempt to get the latest valid coordinates
+            if coords:
+                self.gps_coordinates.config(text=f"CURRENT COORDINATES: \n {coords}")
+        except ValueError:
+            pass  # If no valid coordinates, do nothing
+        
+        # Schedule the next coordinates update
+        self.after(1000, self.update_gps_coordinates)  # Update every second
 
     def on_settings_click(self):
         self.parent.switch_settings1()

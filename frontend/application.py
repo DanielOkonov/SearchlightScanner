@@ -3,7 +3,15 @@ from settings1 import SettingsFrame1
 from settings2 import SettingsFrame2
 import tkinter as tk
 import cv2
+import os
+import sys
 import platform
+
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_dir not in sys.path:
+    sys.path.insert(0, project_dir)
+
+from backend.gps_manager import GPSManager 
 
 class CameraFeed:
     def __init__(self, video_source=0):
@@ -41,9 +49,12 @@ class Application(tk.Tk):
 
         self.camera_feed = CameraFeed()  # Initialize CameraFeed
 
+        self.gps_manager = GPSManager() # Initialize GPS device
+
         self.frames = {}
         for F in (MainFrame, SettingsFrame1, SettingsFrame2):
-            frame = F(self)
+            # frame = F(self)
+            frame = F(self, self.gps_manager) if F == MainFrame else F(self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
@@ -80,6 +91,8 @@ class Application(tk.Tk):
         self.iconify()
 
     def on_close(self):
+        if hasattr(self, 'gps_manager'):
+            self.gps_manager.stop()  # Stop the GPS manager
         self.frames[MainFrame].stop_camera_feed()
         self.camera_feed.release()  # Release the camera resource
         self.destroy()
