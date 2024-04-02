@@ -60,10 +60,12 @@ class CustomSlider(tk.Canvas):
 
 # Settings frame with custom sliders
 class SettingsFrame1(tk.Frame):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, camera_feed, **kwargs):
         super().__init__(parent, **kwargs)
         self.configure(bg="#7C889C")
         self.focus_mode = tk.StringVar(value="Automatic")
+        self.camera_feed = camera_feed  # Reference to the CameraFeed object
+        self.current_cam = tk.IntVar(value=0)  # 0 for cam1, 1 for cam2
         self.create_widgets()
         self.set_focus_mode_auto()
 
@@ -105,6 +107,21 @@ class SettingsFrame1(tk.Frame):
             switch_canvas.itemconfig(switch_background, fill="#697283")
             switch_canvas.coords(switch_indicator, 10, 10, 40, 40)
 
+    def select_camera(self, cam_index):
+        # Update camera source in CameraFeed
+        self.camera_feed.set_video_source(cam_index)
+        self.current_cam.set(cam_index)
+        self.update_camera_selection()
+
+    def update_camera_selection(self):
+        # Update button colors based on the selected camera
+        if self.current_cam.get() == 0:
+            self.camera_one_button.configure(bg="#24D215")  # Green for selected
+            self.camera_two_button.configure(bg="grey")      # Grey for not selected
+        else:
+            self.camera_one_button.configure(bg="grey")      # Grey for not selected
+            self.camera_two_button.configure(bg="#24D215")  # Green for selected
+
 
     def create_widgets(self):
         font_used = tkFont.Font(family="Helvetica", size=12, weight="bold")
@@ -116,12 +133,12 @@ class SettingsFrame1(tk.Frame):
 
         # Create frames for each slider within the parent sliders_frame
         self.confidence_frame = tk.Frame(self.sliders_frame, width=615, height=180, bg="#7C889C", highlightbackground="black", highlightcolor="black", highlightthickness=2)
-        self.confidence_frame.grid(row=0, column=0, padx=100, pady=22)
-        self.confidence_frame.grid_propagate(False)
+        self.confidence_frame.grid(row=0, column=0, padx=20, pady=22)
+        # self.confidence_frame.grid_propagate(False)
 
-        self.distance_frame = tk.Frame(self.sliders_frame, width=615, height=180, bg="#7C889C", highlightbackground="black", highlightcolor="black", highlightthickness=2)
-        self.distance_frame.grid(row=3, column=0, padx=15, pady=22)
-        self.distance_frame.grid_propagate(False)
+        self.distance_frame = tk.Frame(self.sliders_frame, width=615, height=200, bg="#7C889C", highlightbackground="black", highlightcolor="black", highlightthickness=2)
+        self.distance_frame.grid(row=3, column=0, padx=20, pady=22)
+        # self.distance_frame.grid_propagate(False)
         self.distance_frame.grid_remove()
 
         # Confidence slider and label
@@ -133,16 +150,14 @@ class SettingsFrame1(tk.Frame):
 
         # Focus mode label and buttons
         self.focus_buttons_frame = tk.Frame(self.sliders_frame, bg="#7C889C", width=100, height=108)
-        self.focus_buttons_frame.grid(row=2, column=0, padx=100, pady=2, sticky="ew")
-        # self.focus_buttons_frame.grid_propagate(False)
+        # self.focus_buttons_frame.grid(row=2, column=0, padx=100, pady=2, sticky="ew")
+        self.focus_buttons_frame.grid(row=2, column=0, padx=20, pady=30, sticky="ew")
 
         self.automatic_focus_button = tk.Button(self.focus_buttons_frame, text="AUTOMATIC FOCUS", bg="grey", fg="white", font=font_used, width=30, height= 3, command=self.set_focus_mode_auto)
         self.automatic_focus_button.grid(row=1, column=0)
-        # self.automatic_focus_button.grid_propagate(False)
 
         self.manual_focus_button = tk.Button(self.focus_buttons_frame, text="MANUAL FOCUS", bg="grey", fg="white", font=font_used, width=30, height= 3, command=self.set_focus_mode_manual)
         self.manual_focus_button.grid(row=1, column=1)
-        # self.manual_focus_button.grid_propagate(False)
 
         # Distance slider and label
         self.distance_label = tk.Label(self.distance_frame, text="DISTANCE: 0 units", bg="#7C889C", fg="black", font=font_used)
@@ -150,6 +165,16 @@ class SettingsFrame1(tk.Frame):
 
         self.distance_slider = CustomSlider(self.distance_frame, id='distance_slider', length=605, width=120, handle_size=60, bg="#7C889C", min_val=0, max_val=100, callback=self.update_distance)
         self.distance_slider.grid(row=1, column=0, padx=2)
+
+        # Camera selection frame and buttons
+        self.cam_select_buttons_frame = tk.Frame(self.sliders_frame, bg="#7C889C", width=70, height=108)
+        self.cam_select_buttons_frame.grid(row=0, column=1, padx=50, pady=2, sticky="ew")
+
+        self.camera_one_button = tk.Button(self.cam_select_buttons_frame, text="CAMERA 1", bg="#24D215", fg="white", font=font_used, width=20, height=3, command=lambda: self.select_camera(0))
+        self.camera_one_button.grid(row=1, column=0)
+
+        self.camera_two_button = tk.Button(self.cam_select_buttons_frame, text="CAMERA 2", bg="grey", fg="white", font=font_used, width=20, height=3, command=lambda: self.select_camera(1))
+        self.camera_two_button.grid(row=1, column=1)
 
         # Toggle dark mode button and label
         self.darkmode_toggle_frame = tk.Frame(

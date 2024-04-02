@@ -4,11 +4,12 @@ from tkinter import font as tkFont
 from settings1 import CustomSlider
 
 class MainFrame(tk.Frame):
-    def __init__(self, parent, gps_manager, **kwargs):
+    def __init__(self, parent, gps_manager, camera_feed, **kwargs):
         super().__init__(parent, **kwargs)
         self.configure(bg="#7C889C")
         self.parent = parent
         self.gps_manager = gps_manager
+        self.camera_feed = camera_feed
         self.create_widgets()
 
     def update_confidence(self, value):
