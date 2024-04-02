@@ -93,17 +93,17 @@ class SettingsFrame1(tk.Frame):
         value = int(round(value))
         self.distance_label.config(text=f"DISTANCE: {value} units")
 
-    # def toggle_darkmode_switch(
-    #     self, switch_canvas, switch_background, switch_indicator, switch_state
-    # ):
-    #     switch_state["is_on"] = not switch_state["is_on"]
+    def toggle_darkmode_switch(
+        self, switch_canvas, switch_background, switch_indicator, switch_state
+    ):
+        switch_state["is_on"] = not switch_state["is_on"]
 
-    #     if switch_state["is_on"]:
-    #         switch_canvas.itemconfig(switch_background, fill="#24D215")
-    #         switch_canvas.coords(switch_indicator, 60, 10, 90, 40)
-    #     else:
-    #         switch_canvas.itemconfig(switch_background, fill="#697283")
-    #         switch_canvas.coords(switch_indicator, 10, 10, 40, 40)
+        if switch_state["is_on"]:
+            switch_canvas.itemconfig(switch_background, fill="#24D215")
+            switch_canvas.coords(switch_indicator, 60, 10, 90, 40)
+        else:
+            switch_canvas.itemconfig(switch_background, fill="#697283")
+            switch_canvas.coords(switch_indicator, 10, 10, 40, 40)
 
 
     def create_widgets(self):
@@ -176,6 +176,7 @@ class SettingsFrame1(tk.Frame):
         darkmode_toggle_label.place(x=60, y=30)
         # darkmode_toggle_label.grid(row=0, column=0)
 
+        darkmode_switch_state = {"is_on": False}
 
         darkmode_toggle_canvas = tk.Canvas(
             self.darkmode_toggle_frame,
@@ -200,7 +201,7 @@ class SettingsFrame1(tk.Frame):
                 darkmode_toggle_canvas,
                 darkmodeation_switch_background,
                 darkmodeation_switch,
-                self.darkmode_switch_state,
+                darkmode_switch_state,
             ),
         )
 
