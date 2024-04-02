@@ -66,8 +66,17 @@ class MainFrame(tk.Frame):
         self.gps_frame.grid(row=0, column=2, sticky='nsew', padx=10, pady=4)
         self.gps_frame.grid_propagate(False)
 
-        self.gps_coordinates = tk.Label(self.gps_frame, text="CURRENT COORDINATES: ", bg="#7C889C", fg="black", font=custom_font)
-        self.gps_coordinates.grid(row=0, column=0, sticky='nsw', pady=10)
+        self.gps_lat_long = tk.Label(self.gps_frame, text="LAT/LONG: ", bg="#7C889C", fg="black", font=custom_font)
+        self.gps_lat_long.place(x=2, y=2)
+
+        self.gps_bearing = tk.Label(self.gps_frame, text="BEARING: ", bg="#7C889C", fg="black", font=custom_font)
+        self.gps_bearing.place(x=255, y=2)
+
+        self.gps_speed = tk.Label(self.gps_frame, text="SPEED: ", bg="#7C889C", fg="black", font=custom_font)
+        self.gps_speed.place(x=2, y=40)
+
+        self.gps_altitude = tk.Label(self.gps_frame, text="ALTITUDE: ", bg="#7C889C", fg="black", font=custom_font)
+        self.gps_altitude.place(x=235, y=40)
         self.start_gps_thread()
 
     # Camera methods
@@ -89,19 +98,39 @@ class MainFrame(tk.Frame):
 
     def start_gps_thread(self):
         self.gps_manager.start()
-        self.update_gps_coordinates()
+        self.update_gps_data()
 
-    def update_gps_coordinates(self):
-        # Check if GPS has valid coordinates and update label
+    def update_gps_data(self):
+        # Update GPS coordinates
         try:
-            coords = self.gps_manager.get_coords()  # Attempt to get the latest valid coordinates
-            if coords:
-                self.gps_coordinates.config(text=f"CURRENT COORDINATES: \n {coords}")
+            coords = self.gps_manager.get_coords()  # Get the latest valid coordinates
+            self.gps_lat_long.config(text=f"LAT/LONG: {coords}")
         except ValueError:
-            pass  # If no valid coordinates, do nothing
+            pass  # Handle if no valid coordinates yet
         
-        # Schedule the next coordinates update
-        self.after(1000, self.update_gps_coordinates)  # Update every second
+        # Update Altitude
+        try:
+            altitude = self.gps_manager.get_latest_altitude()
+            self.gps_altitude.config(text=f"ALTITUDE: {altitude} FT")
+        except ValueError:
+            pass  # Handle if no valid altitude yet
+
+        # Update Speed
+        try:
+            speed = self.gps_manager.get_latest_speed()
+            self.gps_speed.config(text=f"SPEED: {speed} M/S")
+        except ValueError:
+            pass  # Handle if no valid speed yet
+
+        # Update Bearing
+        try:
+            bearing = self.gps_manager.get_latest_bearing()
+            self.gps_bearing.config(text=f"BEARING: {bearing}°")
+        except ValueError:
+            pass  # Handle if no valid bearing yet
+
+        # Schedule the next update
+        self.after(1000, self.update_gps_data)  # Update every second
 
     def on_settings_click(self):
         self.parent.switch_settings1()

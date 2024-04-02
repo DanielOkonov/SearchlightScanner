@@ -30,7 +30,9 @@ class GPSManager:
         self.thread = None
         self.latest_coords = None
         self.previous_coords = None
+        self.latest_bearing = None
         self.latest_altitude = None
+        self.latest_speed = None
 
     def start(self):
         """
@@ -88,20 +90,6 @@ class GPSManager:
             except Exception as e:
                 print(f"Unable to get coordinates from GPS: {e}")
             time.sleep(self.interval)
-
-    def get_coords(self):
-        """
-        Returns the latest valid coordinates obtained by the GPS.
-        
-        Returns:
-            tuple: The latest valid latitude and longitude of the GPS.
-            
-        Raises:
-            ValueError: If the GPS has not obtained any valid coordinates yet.
-        """
-        if self.latest_coords is None:
-            raise ValueError("GPS has not obtained any valid coordinates yet.")
-        return self.latest_coords
     
     def calculate_bearing(self, lat1, lon1, lat2, lon2):
         lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
@@ -111,7 +99,9 @@ class GPSManager:
         bearing = math.atan2(x, y)
         bearing = math.degrees(bearing)
         bearing = (bearing + 360) % 360  # Normalize to 0-360
-        return round(bearing, 2)
+        self.latest_bearing = round(bearing, 2)
+        # return round(bearing, 2)
+        return self.latest_bearing
     
     def _update_altitude(self):
         """
@@ -148,5 +138,50 @@ class GPSManager:
         Calculate the speed given a distance and time interval.
         """
         if time_interval > 0:
-            return round(distance / time_interval, 2)  # Speed in meters per second
+            self.latest_speed = round(distance / time_interval, 2)
+            return self.latest_speed
         return 0
+    
+    def get_coords(self):
+        """
+        Getter for the latest valid coordinates obtained by the GPS.
+        
+        Returns:
+            tuple: The latest valid latitude and longitude of the GPS.
+            
+        Raises:
+            ValueError: If the GPS has not obtained any valid coordinates yet.
+        """
+        if self.latest_coords is None:
+            raise ValueError("GPS has not obtained any valid coordinates yet.")
+        return self.latest_coords
+    
+    def get_latest_speed(self):
+        """
+        Getter for the latest speed calculated.
+        
+        Returns:
+            float: The latest speed in meters per second.
+        """
+        return self.latest_speed
+
+    def get_latest_altitude(self):
+        """
+        Getter for the latest altitude updated.
+        
+        Returns:
+            float: The latest altitude in feet.
+
+        Raises:
+            ValueError: If the altitude could not be parsed.
+        """
+        return self.latest_altitude
+
+    def get_latest_bearing(self):
+        """
+        Getter for the latest bearing calculated.
+        
+        Returns:
+            float: The latest bearing in degrees from true north.
+        """
+        return self.latest_bearing
