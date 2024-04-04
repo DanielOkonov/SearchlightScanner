@@ -168,7 +168,12 @@ class SettingsFrame1(tk.Frame):
 
         # Camera selection frame and buttons
         self.cam_select_buttons_frame = tk.Frame(self.sliders_frame, bg="#7C889C", width=70, height=108)
-        self.cam_select_buttons_frame.grid(row=0, column=1, padx=50, pady=2, sticky="ew")
+        # self.cam_select_buttons_frame.grid(row=0, column=1, padx=50, pady=(150, 0), sticky="ew")
+        self.cam_select_buttons_frame.place(x=750, y=176)
+        # self.cam_select_buttons_frame.grid_propagate(False)
+
+        self.cam_select_label = tk.Label(self.cam_select_buttons_frame, text="SELECT CAMERA INPUT", bg="#7C889C", fg="black", font=font_used)
+        self.cam_select_label.grid(row=0, column=0, columnspan=2, pady=(0, 22))
 
         self.camera_one_button = tk.Button(self.cam_select_buttons_frame, text="CAMERA 1", bg="#24D215", fg="white", font=font_used, width=20, height=3, command=lambda: self.select_camera(0))
         self.camera_one_button.grid(row=1, column=0)
@@ -184,7 +189,7 @@ class SettingsFrame1(tk.Frame):
             highlightcolor="black",
             highlightthickness=2,
             width=225,
-            height=180,
+            height=130,
         )  # Adjusted height for layout
         self.darkmode_toggle_frame.place(
             x=850, y=320
@@ -211,7 +216,7 @@ class SettingsFrame1(tk.Frame):
             highlightthickness=0,
         )
         # darkmode_toggle_canvas.grid(row=1, column=0)
-        darkmode_toggle_canvas.place(x=60, y=80)
+        darkmode_toggle_canvas.place(x=60, y=70)
 
         darkmodeation_switch_background = darkmode_toggle_canvas.create_rectangle(
             5, 10, 95, 40, outline="black", fill="#697283"

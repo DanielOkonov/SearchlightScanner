@@ -13,6 +13,7 @@ class GPSManager:
         Initializer for the GPSManager.
         """
         self.interval = interval
+        self.gps_connected = False
         self.gps = None
         for port in ports:
             try:
@@ -23,8 +24,11 @@ class GPSManager:
                 print(f"Failed to connect to GPS on {port}: {e}")
                 continue
 
-        if self.gps is None:
-            raise ValueError("Unable to connect to GPS on any provided port")
+        # if self.gps is None:
+        #     raise ValueError("Unable to connect to GPS on any provided port")
+            
+        if not self.gps_connected:
+            print("No GPS device connected. The program will run without GPS functionality.")
 
         self.running = False
         self.thread = None
@@ -60,6 +64,9 @@ class GPSManager:
         last_update_time = None  # Track the time of the last update for speed calculation
 
         while self.running:
+            if not self.gps_connected:
+                time.sleep(self.interval)
+                continue
             try:
                 current_time = time.time()
                 new_coords = self.gps.get_lat_long()
