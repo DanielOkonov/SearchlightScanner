@@ -8,16 +8,20 @@ class SettingsFrame2(tk.Frame):
         self.configure(bg="#7C889C")
         self.segments_frame = None
         self.segment_buttons = {}
+        self.targets_selected_count = 0
         self.segmentation_switch_state = {"is_on": False}
+        self.target_order = {}  # Maps target names to their order numbers
         self.create_widgets()
         self.toggle_segment_visibility(self.segmentation_switch_state["is_on"])
 
     def targets_button_color(self, button):
         current_color = button.cget("bg")
-        if current_color == "#697283":
+        if current_color == "#697283" and self.targets_selected_count < 6:
             button.config(bg="#24D215")
-        else:
+            self.targets_selected_count += 1
+        elif current_color == "#24D215":
             button.config(bg="#697283")
+            self.targets_selected_count -= 1
 
     def toggle_operator_switch(
         self, switch_canvas, switch_background, switch_indicator, switch_state
