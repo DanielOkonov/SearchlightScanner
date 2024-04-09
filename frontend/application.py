@@ -1,17 +1,18 @@
-from camera_frame import MainFrame
-from settings1 import SettingsFrame1
-from settings2 import SettingsFrame2
+from .camera_frame import MainFrame
+from .settings1 import SettingsFrame1
+from .settings2 import SettingsFrame2
 import tkinter as tk
 import cv2
 import os
 import sys
 import platform
 
-project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if project_dir not in sys.path:
-    sys.path.insert(0, project_dir)
+# project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# if project_dir not in sys.path:
+#     sys.path.insert(0, project_dir)
 
-from backend.gps_manager import GPSManager 
+from backend.gps_manager import GPSManager
+
 
 class CameraFeed:
     def __init__(self, video_source=0):
@@ -20,7 +21,7 @@ class CameraFeed:
 
     def set_video_source(self, video_source):
         # Release the current capture if it's open
-        if hasattr(self, 'cap') and self.cap.isOpened():
+        if hasattr(self, "cap") and self.cap.isOpened():
             self.cap.release()
 
         # Update the video source and create a new capture object
@@ -28,12 +29,12 @@ class CameraFeed:
         self.cap = cv2.VideoCapture(video_source)
 
         # These are the resolutions that should be used on the scanner
-        # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720) 
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
         # Resolutions used for testing on laptop webcam
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
+        # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
+        # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
 
         if not self.cap.isOpened():
             raise ValueError("Unable to open video source", video_source)
@@ -47,29 +48,33 @@ class CameraFeed:
         return None
 
     def release(self):
-        if hasattr(self, 'cap') and self.cap.isOpened():
+        if hasattr(self, "cap") and self.cap.isOpened():
             self.cap.release()
+
 
 class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("SearchLightScanner")
-        self.configure(bg='#7C889C')
+        self.configure(bg="#7C889C")
         self.bind("<Escape>", self.minimize_window)
-        self.maximize_window()
+        self.geometry("1200x800")
+        # self.maximize_window()
 
         # self.camera_feed = CameraFeed()  # Initialize CameraFeed
         # Set default camera to /dev/video0
-        self.camera_feed = CameraFeed(video_source=0)
+        self.camera_feed = CameraFeed(video_source="/dev/video0")
 
-        self.gps_manager = GPSManager() # Initialize GPS device
+        self.gps_manager = GPSManager()  # Initialize GPS device
 
         self.frames = {}
         for F in (MainFrame, SettingsFrame1, SettingsFrame2):
             if F == MainFrame:
                 frame = F(self, self.gps_manager, self.camera_feed)
             elif F == SettingsFrame1:
-                frame = F(self, self.camera_feed)  # Assuming SettingsFrame1 also modified to accept camera_feed
+                frame = F(
+                    self, self.camera_feed
+                )  # Assuming SettingsFrame1 also modified to accept camera_feed
             else:
                 frame = F(self)
             self.frames[F] = frame
@@ -99,21 +104,26 @@ class Application(tk.Tk):
 
     def maximize_window(self):
         if platform.system() == "Linux":
-            self.attributes('-fullscreen', True)
+            self.attributes("-fullscreen", True)
         elif platform.system() == "Windows":
-            self.state('zoomed')
+            self.state("zoomed")
         else:
-            self.geometry("{0}x{1}+0+0".format(self.winfo_screenwidth(), self.winfo_screenheight()))
+            self.geometry(
+                "{0}x{1}+0+0".format(
+                    self.winfo_screenwidth(), self.winfo_screenheight()
+                )
+            )
 
     def minimize_window(self, event=None):
         self.iconify()
 
     def on_close(self):
-        if hasattr(self, 'gps_manager'):
+        if hasattr(self, "gps_manager"):
             self.gps_manager.stop()  # Stop the GPS manager
         self.frames[MainFrame].stop_camera_feed()
         self.camera_feed.release()  # Release the camera resource
         self.destroy()
+
 
 if __name__ == "__main__":
     app = Application()
