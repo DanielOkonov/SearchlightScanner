@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import font as tkFont
-from reorderable_listbox import ReorderableListbox
+from .reorderable_listbox import ReorderableListbox
 
 
 class SettingsFrame2(tk.Frame):
@@ -96,7 +96,7 @@ class SettingsFrame2(tk.Frame):
             self,
             font=font_used,
             update_order_callback=self.update_order_from_listbox,
-            update_display_callback=self.update_listbox_display
+            update_display_callback=self.update_listbox_display,
         )
         # self.targets_listbox.grid(row=1, column=0, columnspan=3, sticky="ew", padx=5, pady=5)
         self.targets_listbox.place_forget()  # Initially hidden
@@ -125,7 +125,12 @@ class SettingsFrame2(tk.Frame):
                 # command=lambda t=target: self.toggle_target_selection(t)
             )
             button.grid(row=(i // 3) + 1, column=i % 3, padx=5, pady=5)
-            button.config(command=lambda b=button, t=target: (self.targets_button_color(b), self.toggle_target_selection(t)))
+            button.config(
+                command=lambda b=button, t=target: (
+                    self.targets_button_color(b),
+                    self.toggle_target_selection(t),
+                )
+            )
             target_buttons[target] = button
 
         # Initially, the Listbox is hidden as no target is selected
@@ -198,7 +203,7 @@ class SettingsFrame2(tk.Frame):
             self.settings_toggle_frame,
             command=self.master.switch_settings1,
             text="SETTINGS 1",
-            bg='#555',
+            bg="#555",
             fg="white",
             font=font_used,
             width=25,
@@ -355,7 +360,6 @@ class SettingsFrame2(tk.Frame):
         )
         close_menu_button.pack(ipadx=5, ipady=5, expand=True)
 
-
     def toggle_target_selection(self, target):
         if target in self.selected_targets_dict:
             # Target is being deselected
@@ -363,7 +367,7 @@ class SettingsFrame2(tk.Frame):
             items = list(self.targets_listbox.get(0, "end"))
             # Find and delete the target with its number from the listbox
             for i, listbox_entry in enumerate(items):
-                if target == listbox_entry.split('. ')[-1]:
+                if target == listbox_entry.split(". ")[-1]:
                     self.targets_listbox.delete(i)
                     break
             # Adjust the numbers after removal
@@ -372,30 +376,33 @@ class SettingsFrame2(tk.Frame):
             # Target is being selected
             if len(self.selected_targets_dict) < 6:
                 self.selected_targets_dict[target] = len(self.selected_targets_dict) + 1
-                self.targets_listbox.insert("end", f"{self.selected_targets_dict[target]}. {target}")
-        
+                self.targets_listbox.insert(
+                    "end", f"{self.selected_targets_dict[target]}. {target}"
+                )
+
         # Print the current state of selected_targets_dict to the console
         print("Selected Targets Dict:", self.selected_targets_dict)
-        
+
         # Update visibility of the Listbox based on selected targets count
         if self.selected_targets_dict:
             self.targets_listbox.place(x=5, y=300, width=580, height=100)
         else:
             self.targets_listbox.place_forget()
 
-
     def populate_listbox_with_targets(self):
         # Clear the Listbox
-        self.targets_listbox.delete(0, 'end')
+        self.targets_listbox.delete(0, "end")
         # Insert items with their order numbers
-        for index, target in enumerate(sorted(self.selected_targets_dict, key=self.selected_targets_dict.get), start=1):
-            self.targets_listbox.insert('end', f"{index}. {target}")
-
+        for index, target in enumerate(
+            sorted(self.selected_targets_dict, key=self.selected_targets_dict.get),
+            start=1,
+        ):
+            self.targets_listbox.insert("end", f"{index}. {target}")
 
     def update_order_from_listbox(self):
         # Get the current list of items from the Listbox
         items = list(self.targets_listbox.get(0, tk.END))
-        
+
         # Clear the existing dictionary
         self.selected_targets_dict.clear()
 
@@ -404,14 +411,15 @@ class SettingsFrame2(tk.Frame):
 
         # Assign new order numbers based on current Listbox order
         for order, item in enumerate(items, start=1):
-            target = item.split('. ')[-1]  # Split and get the last part, the target name
+            target = item.split(". ")[
+                -1
+            ]  # Split and get the last part, the target name
             self.selected_targets_dict[target] = order
             # Insert updated items back into the Listbox
             self.targets_listbox.insert(tk.END, f"{order}. {target}")
-        
+
         # Log to console for debugging
         print("Updated Selected Targets Dict:", self.selected_targets_dict)
-
 
     def update_listbox_display(self):
         # Clear the Listbox
