@@ -5,14 +5,25 @@ from settings1 import CustomSlider
 from shared_confidence_controller import shared_confidence
 
 class MainFrame(tk.Frame):
-    def __init__(self, parent, gps_manager, camera_feed, **kwargs):
+    def __init__(self, parent, gps_manager, camera_feed, color_scheme, **kwargs):
         super().__init__(parent, **kwargs)
-        self.configure(bg="#7C889C")
+        self.color_scheme = color_scheme
+        self.configure(bg="blue")
         self.parent = parent
         self.gps_manager = gps_manager
         self.camera_feed = camera_feed
         shared_confidence.register_observer(self.update_confidence)
         self.create_widgets()
+        # self.update_colors()
+
+
+
+    # def update_colors(self):
+    #     mode = "dark" if self.color_scheme["dark_mode"] else "light"
+    #     color_scheme = self.color_scheme["colors"][mode]
+    #     self.configure(bg=color_scheme["application/window_and_frame_color"])
+    #     self.gps_frame.configure(bg=color_scheme["application/window_and_frame_color"])
+
 
     def update_confidence(self, value):
         # This method updates the slider's position and the label's text

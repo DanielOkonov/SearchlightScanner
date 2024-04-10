@@ -3,10 +3,13 @@ from tkinter import font as tkFont
 from reorderable_listbox import ReorderableListbox
 
 
+
 class SettingsFrame2(tk.Frame):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, color_scheme, **kwargs):
         super().__init__(parent, **kwargs)
-        self.configure(bg="#7C889C")
+        self.color_scheme = color_scheme
+        # self.configure(bg="#7C889C")
+        self.update_colors()
         self.segments_frame = None
         self.segment_buttons = {}
         self.targets_selected_count = 0
@@ -14,6 +17,12 @@ class SettingsFrame2(tk.Frame):
         self.selected_targets_dict = {}
         self.create_widgets()
         self.toggle_segment_visibility(self.segmentation_switch_state["is_on"])
+
+    def update_colors(self):
+        mode = "dark" if self.color_scheme["dark_mode"] else "light"
+        color_scheme = self.color_scheme["colors"][mode]
+        self.configure(bg=color_scheme["application/window_and_frame_color"])
+
 
     def targets_button_color(self, button):
         current_color = button.cget("bg")
@@ -188,10 +197,11 @@ class SettingsFrame2(tk.Frame):
         #############################################################################################################
         # BUTTONS FOR SELECTING WHICH SETTINGS MENU TO GO TO
 
-        self.settings_toggle_frame = tk.Frame(self, bg="#7C889C", width=200, height=108)
-        self.settings_toggle_frame.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
+        # self.settings_toggle_frame = tk.Frame(self, bg="#7C889C", width=200, height=108)
+        self.settings_toggle_frame = tk.Frame(self, width=100, height=108)
+        self.settings_toggle_frame.grid(row=2, column=0, padx=10, pady=10, sticky="w")
 
-        self.settings_toggle_frame.grid_propagate(False)
+        # self.settings_toggle_frame.grid_propagate(False)
 
         settings1_button = tk.Button(
             self.settings_toggle_frame,

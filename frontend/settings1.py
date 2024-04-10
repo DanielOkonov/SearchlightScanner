@@ -63,15 +63,24 @@ class CustomSlider(tk.Canvas):
 
 # Settings frame with custom sliders
 class SettingsFrame1(tk.Frame):
-    def __init__(self, parent, camera_feed, **kwargs):
+    def __init__(self, parent, camera_feed, application, color_scheme, **kwargs):
         super().__init__(parent, **kwargs)
-        self.configure(bg="#7C889C")
+        self.application = application
+        self.color_scheme = color_scheme
+        # self.configure(bg="#7C889C")
+        self.update_colors()
         self.focus_mode = tk.StringVar(value="Automatic")
         shared_confidence.register_observer(self.update_confidence)
         self.camera_feed = camera_feed  # Reference to the CameraFeed object
         self.current_cam = tk.IntVar(value=0)  # 0 for cam1, 1 for cam2
         self.create_widgets()
         self.set_focus_mode_auto()
+
+    def update_colors(self):
+        mode = "dark" if self.color_scheme["dark_mode"] else "light"
+        color_scheme = self.color_scheme["colors"][mode]
+        self.configure(bg=color_scheme["application/window_and_frame_color"])
+
 
     def set_focus_mode_auto(self):
         self.focus_mode.set("Automatic")
@@ -111,6 +120,9 @@ class SettingsFrame1(tk.Frame):
         else:
             switch_canvas.itemconfig(switch_background, fill="#697283")
             switch_canvas.coords(switch_indicator, 10, 10, 40, 40)
+
+        # Call the method on the Application class to update all frames
+        self.application.toggle_dark_mode()
 
     def select_camera(self, cam_index):
         # Update camera source in CameraFeed
@@ -246,7 +258,7 @@ class SettingsFrame1(tk.Frame):
         )
 
         # Settings frame and toggle
-        self.settings_toggle_frame = tk.Frame(self, bg="red", width=100, height=108)
+        self.settings_toggle_frame = tk.Frame(self, width=100, height=108)
         self.settings_toggle_frame.grid(row=1, column=0, padx=10, pady=15, sticky="w")
 
         settings1_button = tk.Button(
@@ -298,7 +310,8 @@ class SettingsFrame1(tk.Frame):
             width=51,
             height=51,
         )
-        self.close_menu_button_frame.grid(row=0, column=1, padx=5, pady=5, sticky="nw")
+        self.close_menu_button_frame.grid(row=0, column=1, padx=(5,10), pady=5, sticky="nw")
+        # self.close_menu_button_frame.grid(row=0, column=1, padx=5, pady=5, sticky="nw")
         self.close_menu_button_frame.grid_propagate(False)
 
         x_button_font = tkFont.Font(family="Helvetica", size=20, weight="bold")

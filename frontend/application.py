@@ -55,28 +55,35 @@ class Application(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("SearchLightScanner")
-        self.configure(bg='#7C889C')
+        self.configure(bg='red')
+        # self.configure(bg=color_scheme['colors']['light']['application/window_and_frame_color'])
         self.bind("<Escape>", self.minimize_window)
         self.maximize_window()
 
-        # self.camera_feed = CameraFeed()  # Initialize CameraFeed
         # Set default camera to /dev/video0
         self.camera_feed = CameraFeed(video_source=0)
-
         self.gps_manager = GPSManager() # Initialize GPS device
+        self.color_scheme = color_scheme
 
         self.frames = {}
         for F in (MainFrame, SettingsFrame1, SettingsFrame2):
             if F == MainFrame:
-                frame = F(self, self.gps_manager, self.camera_feed)
+                frame = F(self, self.gps_manager, self.camera_feed, self.color_scheme)
             elif F == SettingsFrame1:
-                frame = F(self, self.camera_feed)  # Assuming SettingsFrame1 also modified to accept camera_feed
+                frame = F(self, self.camera_feed, self, self.color_scheme)
             else:
-                frame = F(self)
+                frame = F(self, self.color_scheme)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.switch_frame(MainFrame)
+    
+    def toggle_dark_mode(self):
+        # This method would be bound to a button click to toggle dark mode
+        self.color_scheme["dark_mode"] = not self.color_scheme["dark_mode"]
+        # Here we would call update on all frames to change their colors
+        for frame in self.frames.values():
+            frame.update_colors()  # This requires all frames have an update_colors method
 
     def switch_frame(self, frame_class):
         frame = self.frames[frame_class]
