@@ -25,56 +25,56 @@ class ImageProcessor:
         if labels_path:
             os.remove(labels_path)
 
-    def detect(self, img_cuda, new_width, new_height, grid_size=None):
-        if grid_size is None:
-            # Process the whole image
-            detections = self.net.Detect(img_cuda, overlay="lines,labels,conf")
-        else:
-            img_width = img_cuda.width
-            img_height = img_cuda.height
-            segment_width = img_width // grid_size[0]
-            segment_height = img_height // grid_size[1]
+    def detect(self, img_cuda):
+        # if grid_size is None:
+        # Process the whole image
+        return self.net.Detect(img_cuda, overlay="lines,labels,conf")
+        # else:
+        #     img_width = img_cuda.width
+        #     img_height = img_cuda.height
+        #     segment_width = img_width // grid_size[0]
+        #     segment_height = img_height // grid_size[1]
 
-            detections = []
+        #     detections = []
 
-            for row in range(grid_size[1]):
-                for col in range(grid_size[0]):
-                    x1, y1 = col * segment_width, row * segment_height
-                    x2, y2 = x1 + segment_width, y1 + segment_height
+        #     for row in range(grid_size[1]):
+        #         for col in range(grid_size[0]):
+        #             x1, y1 = col * segment_width, row * segment_height
+        #             x2, y2 = x1 + segment_width, y1 + segment_height
 
-                    # Crop segment while keeping it in CUDA memory
-                    img_segment = cudaAllocMapped(
-                        width=segment_width,
-                        height=segment_height,
-                        format=img_cuda.format,
-                    )
-                    cudaCrop(img_cuda, img_segment, (x1, y1, x2, y2))
+        #             # Crop segment while keeping it in CUDA memory
+        #             img_segment = cudaAllocMapped(
+        #                 width=segment_width,
+        #                 height=segment_height,
+        #                 format=img_cuda.format,
+        #             )
+        #             cudaCrop(img_cuda, img_segment, (x1, y1, x2, y2))
 
-                    # Detect objects in the segment
-                    segment_detections = self.net.Detect(
-                        img_segment, overlay="lines,labels,conf"
-                    )
+        #             # Detect objects in the segment
+        #             segment_detections = self.net.Detect(
+        #                 img_segment, overlay="lines,labels,conf"
+        #             )
 
-                    # Adjust detections to full image coordinates
-                    for d in segment_detections:
-                        d.Left += x1
-                        d.Top += y1
-                        d.Right += x1
-                        d.Bottom += y1
-                        detections.append(d)
+        #             # Adjust detections to full image coordinates
+        #             for d in segment_detections:
+        #                 d.Left += x1
+        #                 d.Top += y1
+        #                 d.Right += x1
+        #                 d.Bottom += y1
+        #                 detections.append(d)
 
         # Resize the original image to new dimensions
+        # return detections
         # img_resized = cudaAllocMapped(
         #     width=new_width, height=new_height, format=img_cuda.format
         # )
         # cudaResize(img_cuda, img_resized)
 
-        # Convert to numpy array and then to PIL format
-        # img_array = cudaToNumpy(img_resized)
-        # img_pil = Image.fromarray(img_array)
+        # # Convert to numpy array and then to PIL format
+        # image = Image.fromarray(cudaToNumpy(img_resized))
 
-        # return img_resized, detections
-        return detections
+        # # return img_resized, detections
+        # return image, detections
 
     def set_confidence(self, conf_level):
         """

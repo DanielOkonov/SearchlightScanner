@@ -148,13 +148,12 @@ class MainFrame(tk.Frame):
         if self.update_camera:
             frame = self.parent.camera_feed.capture()
             if frame is not None:
-                # convert the image to cuda
-                detections = self.ai.detect(frame, 1280, 720)
+                detections = self.ai.detect(frame)
                 img_rgb = Image.frombytes("RGB", (frame.width, frame.height), frame)
                 self.photo = ImageTk.PhotoImage(image=img_rgb)
                 self.camera_label.config(image=self.photo)
                 self.camera_label.image = self.photo  # Keep a reference to the image
-            self.after(10, self.update_frame)
+            self.after(1, self.update_frame)
 
     def start_gps_thread(self):
         self.gps_manager.start()
