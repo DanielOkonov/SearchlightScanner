@@ -2,6 +2,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import font as tkFont
 from settings1 import CustomSlider
+from shared_confidence_controller import shared_confidence
 
 class MainFrame(tk.Frame):
     def __init__(self, parent, gps_manager, camera_feed, **kwargs):
@@ -10,11 +11,17 @@ class MainFrame(tk.Frame):
         self.parent = parent
         self.gps_manager = gps_manager
         self.camera_feed = camera_feed
+        shared_confidence.register_observer(self.update_confidence)
         self.create_widgets()
 
     def update_confidence(self, value):
-        value = int(round(value))
-        self.confidence_label.config(text=f"CONFIDENCE: {value}%")
+        # This method updates the slider's position and the label's text
+        self.confidence_slider.set_value(value, update=False)  # Update the slider
+        self.confidence_label.config(text=f"CONFIDENCE: {int(round(value))}%")  # Update the label
+
+    def on_slider_change(self, value):
+        from shared_confidence_controller import shared_confidence
+        shared_confidence.set_value(value)
 
     def create_widgets(self):
         # Camera feed label
@@ -59,7 +66,7 @@ class MainFrame(tk.Frame):
         self.confidence_label = tk.Label(self.confidence_slider_frame, text="CONFIDENCE: 0%", bg="#7C889C", fg="black", font=custom_font)
         self.confidence_label.grid(row=0, column=0, sticky='nsw', pady=10)
 
-        self.confidence_slider = CustomSlider(self.confidence_slider_frame, id='confidence_slider', length=180, width=50, handle_size=30, bar_thickness=30, bg="#7C889C", min_val=0, max_val=100, callback=self.update_confidence)
+        self.confidence_slider = CustomSlider(self.confidence_slider_frame, id='confidence_slider', length=180, width=50, handle_size=30, bar_thickness=30, bg="#7C889C", min_val=0, max_val=100, callback=self.on_slider_change)
         self.confidence_slider.grid(row=0, column=0, padx=195, sticky='nse', pady=10)
 
         # GPS frame and output

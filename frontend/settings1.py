@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import font as tkFont
+from shared_confidence_controller import shared_confidence
 
 # Custom slider class
 class CustomSlider(tk.Canvas):
@@ -46,10 +47,12 @@ class CustomSlider(tk.Canvas):
         padding = self.handle_size // 2
         return (position - padding) / (self.length - padding * 2) * (self.max_val - self.min_val) + self.min_val
 
-    def set_value(self, value):
+    def set_value(self, value, update=True):
         self.value = max(self.min_val, min(self.max_val, value))
         self.draw_slider()
-        if self.callback:
+        # Only call the callback if update is True, which should be the case
+        # only when the slider is moved by the user, not when synchronizing sliders.
+        if update and self.callback:
             self.callback(self.value)
 
     def on_click(self, event):
@@ -64,6 +67,7 @@ class SettingsFrame1(tk.Frame):
         super().__init__(parent, **kwargs)
         self.configure(bg="#7C889C")
         self.focus_mode = tk.StringVar(value="Automatic")
+        shared_confidence.register_observer(self.update_confidence)
         self.camera_feed = camera_feed  # Reference to the CameraFeed object
         self.current_cam = tk.IntVar(value=0)  # 0 for cam1, 1 for cam2
         self.create_widgets()
@@ -88,8 +92,9 @@ class SettingsFrame1(tk.Frame):
             self.distance_frame.grid()
 
     def update_confidence(self, value):
-        value = int(round(value))
-        self.confidence_label.config(text=f"CONFIDENCE: {value}%")
+        # This method updates the slider's position and the label's text
+        self.confidence_slider.set_value(value, update=False)  # Update the slider
+        self.confidence_label.config(text=f"CONFIDENCE: {int(round(value))}%")  # Update the label
 
     def update_distance(self, value):
         value = int(round(value))
@@ -122,6 +127,10 @@ class SettingsFrame1(tk.Frame):
             self.camera_one_button.configure(bg="grey")      # Grey for not selected
             self.camera_two_button.configure(bg="#24D215")  # Green for selected
 
+    def on_slider_change(self, value):
+        from shared_confidence_controller import shared_confidence
+        shared_confidence.set_value(value)
+
 
     def create_widgets(self):
         font_used = tkFont.Font(family="Helvetica", size=12, weight="bold")
@@ -145,7 +154,7 @@ class SettingsFrame1(tk.Frame):
         self.confidence_label = tk.Label(self.confidence_frame, text="CONFIDENCE: 0%", bg="#7C889C", fg="black", font=font_used)
         self.confidence_label.grid(row=0, column=0, sticky='nsew')
 
-        self.confidence_slider = CustomSlider(self.confidence_frame, id='confidence_slider', length=605, width=120, handle_size=60, bg="#7C889C", min_val=0, max_val=100, callback=self.update_confidence)
+        self.confidence_slider = CustomSlider(self.confidence_frame, id='confidence_slider', length=605, width=120, handle_size=60, bg="#7C889C", min_val=0, max_val=100, callback=self.on_slider_change)
         self.confidence_slider.grid(row=1, column=0, padx=2)
 
         # Focus mode label and buttons
@@ -188,11 +197,12 @@ class SettingsFrame1(tk.Frame):
             highlightbackground="black",
             highlightcolor="black",
             highlightthickness=2,
-            width=225,
-            height=130,
+            # width=225,
+            width=420,
+            height=149,
         )  # Adjusted height for layout
         self.darkmode_toggle_frame.place(
-            x=850, y=320
+            x=750, y=346
         )  # Placed in row=1, added more pady for spacing
 
 
@@ -203,7 +213,7 @@ class SettingsFrame1(tk.Frame):
             fg="black",
             font=font_used,
         )  # Corrected to add to operator_alerts_toggle_frame
-        darkmode_toggle_label.place(x=60, y=30)
+        darkmode_toggle_label.place(x=30, y=57)
         # darkmode_toggle_label.grid(row=0, column=0)
 
         darkmode_switch_state = {"is_on": False}
@@ -216,21 +226,21 @@ class SettingsFrame1(tk.Frame):
             highlightthickness=0,
         )
         # darkmode_toggle_canvas.grid(row=1, column=0)
-        darkmode_toggle_canvas.place(x=60, y=70)
+        darkmode_toggle_canvas.place(x=260, y=45)
 
-        darkmodeation_switch_background = darkmode_toggle_canvas.create_rectangle(
+        darkmode_switch_background = darkmode_toggle_canvas.create_rectangle(
             5, 10, 95, 40, outline="black", fill="#697283"
         )
-        darkmodeation_switch = darkmode_toggle_canvas.create_oval(
+        darkmode_switch = darkmode_toggle_canvas.create_oval(
             10, 10, 40, 40, outline="black", fill="white"
         )
         darkmode_toggle_canvas.tag_bind(
-            darkmodeation_switch,
+            darkmode_switch,
             "<Button-1>",
             lambda event: self.toggle_darkmode_switch(
                 darkmode_toggle_canvas,
-                darkmodeation_switch_background,
-                darkmodeation_switch,
+                darkmode_switch_background,
+                darkmode_switch,
                 darkmode_switch_state,
             ),
         )

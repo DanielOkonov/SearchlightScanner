@@ -11,7 +11,6 @@ class SettingsFrame2(tk.Frame):
         self.segment_buttons = {}
         self.targets_selected_count = 0
         self.segmentation_switch_state = {"is_on": False}
-        # self.target_order = {}  # Maps target names to their order numbers
         self.selected_targets_dict = {}
         self.create_widgets()
         self.toggle_segment_visibility(self.segmentation_switch_state["is_on"])
