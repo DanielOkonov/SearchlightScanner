@@ -146,11 +146,12 @@ class MainFrame(tk.Frame):
 
     def update_frame(self):
         if self.update_camera:
-            frame = self.parent.camera_feed.get_frame()
+            frame = self.parent.camera_feed.capture()
             if frame is not None:
                 # convert the image to cuda
-
-                self.photo = ImageTk.PhotoImage(image=Image.fromarray(frame))
+                detections = self.ai.detect(frame, 1280, 720)
+                img_rgb = Image.frombytes("RGB", (frame.width, frame.height), frame)
+                self.photo = ImageTk.PhotoImage(image=img_rgb)
                 self.camera_label.config(image=self.photo)
                 self.camera_label.image = self.photo  # Keep a reference to the image
             self.after(10, self.update_frame)

@@ -28,7 +28,7 @@ class ImageProcessor:
     def detect(self, img_cuda, new_width, new_height, grid_size=None):
         if grid_size is None:
             # Process the whole image
-            detections = self.net.Detect(img_cuda, overlay="box,labels,conf")
+            detections = self.net.Detect(img_cuda, overlay="lines,labels,conf")
         else:
             img_width = img_cuda.width
             img_height = img_cuda.height
@@ -52,7 +52,7 @@ class ImageProcessor:
 
                     # Detect objects in the segment
                     segment_detections = self.net.Detect(
-                        img_segment, overlay="box,labels,conf"
+                        img_segment, overlay="lines,labels,conf"
                     )
 
                     # Adjust detections to full image coordinates
@@ -64,16 +64,17 @@ class ImageProcessor:
                         detections.append(d)
 
         # Resize the original image to new dimensions
-        img_resized = cudaAllocMapped(
-            width=new_width, height=new_height, format=img_cuda.format
-        )
-        cudaResize(img_cuda, img_resized)
+        # img_resized = cudaAllocMapped(
+        #     width=new_width, height=new_height, format=img_cuda.format
+        # )
+        # cudaResize(img_cuda, img_resized)
 
         # Convert to numpy array and then to PIL format
-        img_array = cudaToNumpy(img_resized)
-        img_pil = Image.fromarray(img_array)
+        # img_array = cudaToNumpy(img_resized)
+        # img_pil = Image.fromarray(img_array)
 
-        return img_pil, detections
+        # return img_resized, detections
+        return detections
 
     def set_confidence(self, conf_level):
         """

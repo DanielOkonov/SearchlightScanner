@@ -3,8 +3,7 @@ from .settings1 import SettingsFrame1
 from .settings2 import SettingsFrame2
 import tkinter as tk
 import cv2
-import os
-import sys
+from backend.video_source import CameraManager
 import platform
 
 # project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -63,7 +62,7 @@ class Application(tk.Tk):
 
         # self.camera_feed = CameraFeed()  # Initialize CameraFeed
         # Set default camera to /dev/video0
-        self.camera_feed = CameraFeed(video_source="/dev/video0")
+        self.camera_feed = CameraManager(source="/dev/video0", width=1280, height=720)
 
         self.gps_manager = GPSManager()  # Initialize GPS device
 
