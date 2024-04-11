@@ -16,7 +16,8 @@ color_scheme = {
             "slider_knob_color": "#24D215",
             "frame_outline_color": "black",
             "focus_button_bg_light_inactive":"grey",
-            "focus_button_bg_light_active":"#24D215"
+            "focus_button_bg_light_active":"#24D215",
+            "apply_changes_background": "red"
         },
         "dark": {
             "application/window_and_frame_color": "#1A1A1A",
@@ -28,12 +29,13 @@ color_scheme = {
             "button_font_color/fg": "white",
             "focus_button_fg_dark": "white",
             "unselected_cam_focus_and_select_buttons": "grey",
-            "unselected_settings_button": "#555",
+            "unselected_settings_button": "#697283",
             "selected_color": "#006400",
             "slider_knob_color": "#006400",
             "frame_outline_color": "white",
             "focus_button_bg_dark_inactive": "#697283",
-            "focus_button_bg_dark_active": "#006400"
+            "focus_button_bg_dark_active": "#006400",
+            "apply_changes_background": "#8B0000"
         }
     }
 }

@@ -87,7 +87,7 @@ class CustomSlider(tk.Canvas):
 
 # Settings frame with custom sliders
 class SettingsFrame1(tk.Frame):
-    def __init__(self, parent, camera_feed, application, color_scheme, is_video_source_available, **kwargs):
+    def __init__(self, parent, camera_feed, application, color_scheme, **kwargs):
         super().__init__(parent, **kwargs)
         self.application = application
         self.color_scheme = color_scheme
@@ -95,7 +95,6 @@ class SettingsFrame1(tk.Frame):
         shared_confidence.register_observer(self.update_confidence)
         self.camera_feed = camera_feed  # Reference to the CameraFeed object
         self.current_cam = tk.IntVar(value=0)  # 0 for cam1, 1 for cam2
-        self.is_video_source_available = is_video_source_available
         self.create_widgets()
         self.update_colors()
         self.set_focus_mode_auto()
@@ -141,6 +140,9 @@ class SettingsFrame1(tk.Frame):
         self.distance_slider.set_handle_fill(color_scheme["slider_knob_color"])
         self.distance_slider.set_bar_outline(color_scheme["frame_outline_color"])
 
+        self.cam_select_buttons_frame.configure(bg=color_scheme["application/window_and_frame_color"])
+        self.cam_select_label.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        fg=color_scheme["label_font_color/fg"])
 
         if self.current_cam.get() == 0:
             self.camera_one_button.configure(bg=color_scheme["focus_button_bg_dark_active"] if mode == "dark" else color_scheme["focus_button_bg_light_active"])
@@ -149,6 +151,22 @@ class SettingsFrame1(tk.Frame):
             self.camera_one_button.configure(bg=color_scheme["focus_button_bg_dark_inactive"] if mode == "dark" else color_scheme["focus_button_bg_light_inactive"])
             self.camera_two_button.configure(bg=color_scheme["focus_button_bg_dark_active"] if mode == "dark" else color_scheme["focus_button_bg_light_active"]) 
 
+        self.darkmode_toggle_frame.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        highlightbackground=color_scheme["frame_outline_color"],
+                                        highlightcolor=color_scheme["frame_outline_color"])
+        
+        self.darkmode_toggle_label.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        fg=color_scheme["label_font_color/fg"])
+        
+        self.darkmode_toggle_canvas.configure(bg=color_scheme["application/window_and_frame_color"],
+                                              highlightbackground=color_scheme["frame_outline_color"],
+                                              highlightcolor=color_scheme["frame_outline_color"])
+
+        self.settings1_button.configure(bg=color_scheme["selected_color"])
+        self.settings2_button.configure(bg=color_scheme["unselected_settings_button"])
+
+        self.apply_button_frame.configure(bg=color_scheme["apply_changes_background"])
+        self.apply_changes_button.configure(bg=color_scheme["selected_color"])
 
     def set_focus_mode_auto(self):
         self.focus_mode.set("Automatic")
@@ -184,8 +202,9 @@ class SettingsFrame1(tk.Frame):
         switch_state["is_on"] = not switch_state["is_on"]
 
         if switch_state["is_on"]:
-            switch_canvas.itemconfig(switch_background, fill="#24D215")
+            switch_canvas.itemconfig(switch_background, fill="#006400")
             switch_canvas.coords(switch_indicator, 60, 10, 90, 40)
+            self.update_colors()
         else:
             switch_canvas.itemconfig(switch_background, fill="#697283")
             switch_canvas.coords(switch_indicator, 10, 10, 40, 40)
@@ -200,30 +219,11 @@ class SettingsFrame1(tk.Frame):
         self.update_camera_selection()
 
     def update_camera_selection(self):
-        # Update button colors based on the selected camera
-        # if self.current_cam.get() == 0:
-        #     self.camera_one_button.configure(bg="#24D215")  # Green for selected
-        #     self.camera_two_button.configure(bg="grey")      # Grey for not selected
-        # else:
-        #     self.camera_one_button.configure(bg="grey")      # Grey for not selected
-        #     self.camera_two_button.configure(bg="#24D215")  # Green for selected
         self.update_colors()
 
     def on_slider_change(self, value):
         from shared_confidence_controller import shared_confidence
         shared_confidence.set_value(value)
-
-    def check_camera_availability(self):
-        # Disable/enable camera buttons based on their availability
-        if self.is_video_source_available(0):
-            self.camera_one_button.configure(state='normal')
-        else:
-            self.camera_one_button.configure(state='disabled')
-
-        if self.is_video_source_available(1):
-            self.camera_two_button.configure(state='normal')
-        else:
-            self.camera_two_button.configure(state='disabled')
 
 
     def create_widgets(self):
@@ -284,9 +284,6 @@ class SettingsFrame1(tk.Frame):
         self.camera_two_button = tk.Button(self.cam_select_buttons_frame, text="CAMERA 2", bg="grey", fg="white", font=font_used, width=20, height=3, command=lambda: self.select_camera(1))
         self.camera_two_button.grid(row=1, column=1)
 
-        # Disable the camera buttons based on availability
-        self.check_camera_availability()
-
         # Toggle dark mode button and label
         self.darkmode_toggle_frame = tk.Frame(
             self.sliders_frame,
@@ -303,40 +300,43 @@ class SettingsFrame1(tk.Frame):
         )  # Placed in row=1, added more pady for spacing
 
 
-        darkmode_toggle_label = tk.Label(
+        self.darkmode_toggle_label = tk.Label(
             self.darkmode_toggle_frame,
             text="DARK MODE",
             bg="#7C889C",
             fg="black",
             font=font_used,
         )  # Corrected to add to operator_alerts_toggle_frame
-        darkmode_toggle_label.place(x=30, y=57)
+        self.darkmode_toggle_label.place(x=30, y=57)
         # darkmode_toggle_label.grid(row=0, column=0)
 
         darkmode_switch_state = {"is_on": False}
 
-        darkmode_toggle_canvas = tk.Canvas(
+        self.darkmode_toggle_canvas = tk.Canvas(
             self.darkmode_toggle_frame,
             width=100,
             height=50,
             bg="#7C889C",
             highlightthickness=0,
+            highlightbackground="black",
+            highlightcolor="black",
         )
         # darkmode_toggle_canvas.grid(row=1, column=0)
-        darkmode_toggle_canvas.place(x=260, y=45)
+        self.darkmode_toggle_canvas.place(x=260, y=45)
 
-        darkmode_switch_background = darkmode_toggle_canvas.create_rectangle(
-            5, 10, 95, 40, outline="black", fill="#697283"
+        self.darkmode_switch_background = self.darkmode_toggle_canvas.create_rectangle(
+            # 5, 10, 95, 40, outline="black", fill="#697283"
+            5, 10, 95, 40, fill="#697283"
         )
-        darkmode_switch = darkmode_toggle_canvas.create_oval(
+        darkmode_switch = self.darkmode_toggle_canvas.create_oval(
             10, 10, 40, 40, outline="black", fill="white"
         )
-        darkmode_toggle_canvas.tag_bind(
+        self.darkmode_toggle_canvas.tag_bind(
             darkmode_switch,
             "<Button-1>",
             lambda event: self.toggle_darkmode_switch(
-                darkmode_toggle_canvas,
-                darkmode_switch_background,
+                self.darkmode_toggle_canvas,
+                self.darkmode_switch_background,
                 darkmode_switch,
                 darkmode_switch_state,
             ),
@@ -346,7 +346,7 @@ class SettingsFrame1(tk.Frame):
         self.settings_toggle_frame = tk.Frame(self, width=100, height=108)
         self.settings_toggle_frame.grid(row=1, column=0, padx=10, pady=15, sticky="w")
 
-        settings1_button = tk.Button(
+        self.settings1_button = tk.Button(
             self.settings_toggle_frame,
             command=self.master.switch_settings1,
             text="SETTINGS 1",
@@ -356,9 +356,9 @@ class SettingsFrame1(tk.Frame):
             width=25,
             height=5,
         )
-        settings1_button.grid(row=0, column=0, sticky="ew")
+        self.settings1_button.grid(row=0, column=0, sticky="ew")
 
-        settings2_button = tk.Button(
+        self.settings2_button = tk.Button(
             self.settings_toggle_frame,
             command=self.master.switch_settings2,
             text="SETTINGS 2",
@@ -368,14 +368,14 @@ class SettingsFrame1(tk.Frame):
             width=25,
             height=5,
         )
-        settings2_button.grid(row=0, column=1, sticky="ew")
+        self.settings2_button.grid(row=0, column=1, sticky="ew")
 
         # Apply changes button
         self.apply_button_frame = tk.Frame(self, bg="red", width=565, height=108)
         self.apply_button_frame.grid(row=1, column=0, padx=10, pady=10, sticky="e")
         self.apply_button_frame.grid_propagate(False)
 
-        apply_changes_button = tk.Button(
+        self.apply_changes_button = tk.Button(
             self.apply_button_frame,
             text="APPLY CHANGES",
             bg="#24D215",
@@ -384,7 +384,7 @@ class SettingsFrame1(tk.Frame):
             width=53,
             height=4,
         )
-        apply_changes_button.grid(row=0, column=0, padx=11, pady=9)
+        self.apply_changes_button.grid(row=0, column=0, padx=11, pady=9)
 
         # Close frame and button
         self.close_menu_button_frame = tk.Frame(

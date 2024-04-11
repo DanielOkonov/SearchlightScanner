@@ -17,37 +17,31 @@ from backend.gps_manager import GPSManager
 class CameraFeed:
     def __init__(self, video_source=0):
         # Initialize the video capture with the default source
-        self.video_source = video_source
-        self.cap = None
-        self.initialize_capture(video_source)
 
-    def initialize_capture(self, video_source):
-        # Attempt to initialize video capture with the provided source
-        if self.is_video_source_available(video_source):
-            self.cap = cv2.VideoCapture(video_source)
-            # Configure resolutions
-            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
-            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
-        else:
-            print(f"Warning: Unable to open video source {video_source}")
-            self.cap = None
-
-    def is_video_source_available(self, video_source):
-        # Attempt to open the video source
-        cap = cv2.VideoCapture(video_source)
-        is_opened = cap.isOpened()
-        cap.release()  # Immediately release the capture object
-        return is_opened
+        self.set_video_source(video_source)
 
     def set_video_source(self, video_source):
         # Release the current capture if it's open
-        if self.cap and self.cap.isOpened():
+        if hasattr(self, 'cap') and self.cap.isOpened():
             self.cap.release()
-        # Update the video source and attempt to create a new capture object
-        self.initialize_capture(video_source)
+
+        # Update the video source and create a new capture object
+        self.video_source = video_source
+        self.cap = cv2.VideoCapture(video_source)
+
+        # These are the resolutions that should be used on the scanner
+        # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720) 
+
+        # Resolutions used for testing on laptop webcam
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
+
+        if not self.cap.isOpened():
+            raise ValueError("Unable to open video source", video_source)
 
     def get_frame(self):
-        if self.cap and self.cap.isOpened():
+        if self.cap.isOpened():
             ret, frame = self.cap.read()
             if ret:
                 # Convert the color space from BGR to RGB
@@ -55,7 +49,7 @@ class CameraFeed:
         return None
 
     def release(self):
-        if self.cap and self.cap.isOpened():
+        if hasattr(self, 'cap') and self.cap.isOpened():
             self.cap.release()
 class Application(tk.Tk):
     def __init__(self):
@@ -75,7 +69,7 @@ class Application(tk.Tk):
             if F == MainFrame:
                 frame = F(self, self.gps_manager, self.camera_feed, self.color_scheme)
             elif F == SettingsFrame1:
-                frame = F(self, self.camera_feed, self, self.color_scheme, self.camera_feed.is_video_source_available)
+                frame = F(self, self.camera_feed, self, self.color_scheme)
             else:
                 frame = F(self, self.color_scheme)
             self.frames[F] = frame
