@@ -4,11 +4,11 @@ from shared_confidence_controller import shared_confidence
 
 # Custom slider class
 class CustomSlider(tk.Canvas):
-    def __init__(self, parent, id, length=610, width=120, handle_size=60, bar_thickness=60, min_val=0, max_val=100, bg='black', callback=None, **kwargs):
+    def __init__(self, parent, id, length=610, width=120, handle_size=60, bar_thickness=60, min_val=0, max_val=100, bg='black', callback=None, bar_fill="#697283", bar_outline="black", handle_fill="#24D215", **kwargs):
         kwargs.pop('command', None)
         super().__init__(parent, height=width, width=length, bg=bg, highlightthickness=0, **kwargs)
         self.callback = callback
-        self.length=length
+        self.length = length
         self.width = width
         self.handle_size = handle_size
         self.bar_thickness = bar_thickness
@@ -16,27 +16,32 @@ class CustomSlider(tk.Canvas):
         self.max_val = max_val
         self.id = id
         self.value = min_val
+        self.bg = bg
+        self.bar_fill = bar_fill
+        self.bar_outline = bar_outline
+        self.handle_fill = handle_fill
         self.bind('<ButtonPress-1>', self.on_click)
         self.bind('<B1-Motion>', self.on_drag)
         self.draw_slider()
 
     def draw_slider(self):
         self.delete("all")
-        # bar_thickness = 60  # The thickness of the slider bar
         padding = self.handle_size // 34
 
+        # Draw the slider bar with custom fill and outline colors
         self.create_rectangle(padding, self.width/2 - self.bar_thickness/2, 
-                            self.length - padding, self.width/2 + self.bar_thickness/2, 
-                            fill="#697283", outline="black", width=4)
+                              self.length - padding, self.width/2 + self.bar_thickness/2, 
+                              fill=self.bar_fill, outline=self.bar_outline, width=4)
         
+        # Calculate the handle position based on the current value
         handle_position = self.value_to_position(self.value)
 
+        # Draw the handle with a custom fill color
         self.create_oval(handle_position - self.handle_size/2, 
-                        self.width/2 - self.handle_size/2,
-                        handle_position + self.handle_size/2, 
-                        self.width/2 + self.handle_size/2,
-                        fill="#24D215", outline="white")
-
+                         self.width/2 - self.handle_size/2,
+                         handle_position + self.handle_size/2, 
+                         self.width/2 + self.handle_size/2,
+                         fill=self.handle_fill, outline="white")
     def value_to_position(self, value):
         # Adjust position calculation to account for padding
         padding = self.handle_size // 2
@@ -61,25 +66,88 @@ class CustomSlider(tk.Canvas):
     def on_drag(self, event):
         self.set_value(self.position_to_value(event.x))
 
+        # Method to set bar fill color
+    def set_bar_fill(self, color):
+        self.bar_fill = color
+        self.draw_slider()
+
+    # Method to set bar outline color
+    def set_bar_outline(self, color):
+        self.bar_outline = color
+        self.draw_slider()
+
+    # Method to set handle fill color
+    def set_handle_fill(self, color):
+        self.handle_fill = color
+        self.draw_slider()
+
+    def set_background_fill(self, color):
+        self.configure(bg=color)  # Update the canvas background color
+        self.draw_slider()  # Redraw the slider to refresh the look
+
 # Settings frame with custom sliders
 class SettingsFrame1(tk.Frame):
-    def __init__(self, parent, camera_feed, application, color_scheme, **kwargs):
+    def __init__(self, parent, camera_feed, application, color_scheme, is_video_source_available, **kwargs):
         super().__init__(parent, **kwargs)
         self.application = application
         self.color_scheme = color_scheme
-        # self.configure(bg="#7C889C")
-        self.update_colors()
         self.focus_mode = tk.StringVar(value="Automatic")
         shared_confidence.register_observer(self.update_confidence)
         self.camera_feed = camera_feed  # Reference to the CameraFeed object
         self.current_cam = tk.IntVar(value=0)  # 0 for cam1, 1 for cam2
+        self.is_video_source_available = is_video_source_available
         self.create_widgets()
+        self.update_colors()
         self.set_focus_mode_auto()
 
     def update_colors(self):
         mode = "dark" if self.color_scheme["dark_mode"] else "light"
         color_scheme = self.color_scheme["colors"][mode]
+
         self.configure(bg=color_scheme["application/window_and_frame_color"])
+        self.sliders_frame.configure(bg=color_scheme["application/window_and_frame_color"],
+                                     highlightbackground=color_scheme["frame_outline_color"],
+                                     highlightcolor=color_scheme["frame_outline_color"])
+        
+        self.confidence_frame.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        highlightbackground=color_scheme["frame_outline_color"],
+                                        highlightcolor=color_scheme["frame_outline_color"])
+        
+        self.confidence_label.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        fg=color_scheme["label_font_color/fg"])
+        
+        self.confidence_slider.set_background_fill(color_scheme["slider_background_color"])
+        self.confidence_slider.set_bar_fill(color_scheme["slider_bar_fill"])
+        self.confidence_slider.set_handle_fill(color_scheme["slider_knob_color"])
+        self.confidence_slider.set_bar_outline(color_scheme["frame_outline_color"])
+
+        if self.focus_mode.get() == "Automatic":
+            self.automatic_focus_button.configure(bg=color_scheme["focus_button_bg_dark_active"] if mode == "dark" else color_scheme["focus_button_bg_light_active"])
+            self.manual_focus_button.configure(bg=color_scheme["focus_button_bg_dark_inactive"] if mode == "dark" else color_scheme["focus_button_bg_light_inactive"]) 
+        else:
+            self.automatic_focus_button.configure(bg=color_scheme["focus_button_bg_dark_inactive"] if mode == "dark" else color_scheme["focus_button_bg_light_inactive"])
+            self.manual_focus_button.configure(bg=color_scheme["focus_button_bg_dark_active"] if mode == "dark" else color_scheme["focus_button_bg_light_active"]) 
+
+
+        self.distance_frame.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        highlightbackground=color_scheme["frame_outline_color"],
+                                        highlightcolor=color_scheme["frame_outline_color"])
+        
+        self.distance_label.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        fg=color_scheme["label_font_color/fg"])
+        
+        self.distance_slider.set_background_fill(color_scheme["slider_background_color"])
+        self.distance_slider.set_bar_fill(color_scheme["slider_bar_fill"])
+        self.distance_slider.set_handle_fill(color_scheme["slider_knob_color"])
+        self.distance_slider.set_bar_outline(color_scheme["frame_outline_color"])
+
+
+        if self.current_cam.get() == 0:
+            self.camera_one_button.configure(bg=color_scheme["focus_button_bg_dark_active"] if mode == "dark" else color_scheme["focus_button_bg_light_active"])
+            self.camera_two_button.configure(bg=color_scheme["focus_button_bg_dark_inactive"] if mode == "dark" else color_scheme["focus_button_bg_light_inactive"]) 
+        else:
+            self.camera_one_button.configure(bg=color_scheme["focus_button_bg_dark_inactive"] if mode == "dark" else color_scheme["focus_button_bg_light_inactive"])
+            self.camera_two_button.configure(bg=color_scheme["focus_button_bg_dark_active"] if mode == "dark" else color_scheme["focus_button_bg_light_active"]) 
 
 
     def set_focus_mode_auto(self):
@@ -95,6 +163,7 @@ class SettingsFrame1(tk.Frame):
         self.update_focus_mode_display()
 
     def update_focus_mode_display(self):
+        self.update_colors()
         if self.focus_mode.get() == "Automatic":
             self.distance_frame.grid_remove()
         else:
@@ -132,16 +201,29 @@ class SettingsFrame1(tk.Frame):
 
     def update_camera_selection(self):
         # Update button colors based on the selected camera
-        if self.current_cam.get() == 0:
-            self.camera_one_button.configure(bg="#24D215")  # Green for selected
-            self.camera_two_button.configure(bg="grey")      # Grey for not selected
-        else:
-            self.camera_one_button.configure(bg="grey")      # Grey for not selected
-            self.camera_two_button.configure(bg="#24D215")  # Green for selected
+        # if self.current_cam.get() == 0:
+        #     self.camera_one_button.configure(bg="#24D215")  # Green for selected
+        #     self.camera_two_button.configure(bg="grey")      # Grey for not selected
+        # else:
+        #     self.camera_one_button.configure(bg="grey")      # Grey for not selected
+        #     self.camera_two_button.configure(bg="#24D215")  # Green for selected
+        self.update_colors()
 
     def on_slider_change(self, value):
         from shared_confidence_controller import shared_confidence
         shared_confidence.set_value(value)
+
+    def check_camera_availability(self):
+        # Disable/enable camera buttons based on their availability
+        if self.is_video_source_available(0):
+            self.camera_one_button.configure(state='normal')
+        else:
+            self.camera_one_button.configure(state='disabled')
+
+        if self.is_video_source_available(1):
+            self.camera_two_button.configure(state='normal')
+        else:
+            self.camera_two_button.configure(state='disabled')
 
 
     def create_widgets(self):
@@ -166,7 +248,7 @@ class SettingsFrame1(tk.Frame):
         self.confidence_label = tk.Label(self.confidence_frame, text="CONFIDENCE: 0%", bg="#7C889C", fg="black", font=font_used)
         self.confidence_label.grid(row=0, column=0, sticky='nsew')
 
-        self.confidence_slider = CustomSlider(self.confidence_frame, id='confidence_slider', length=605, width=120, handle_size=60, bg="#7C889C", min_val=0, max_val=100, callback=self.on_slider_change)
+        self.confidence_slider = CustomSlider(self.confidence_frame, id='confidence_slider', length=605, width=120, handle_size=60, bar_fill="blue", bar_outline="yellow", handle_fill="green", bg="#7C889C", min_val=0, max_val=100, callback=self.on_slider_change)
         self.confidence_slider.grid(row=1, column=0, padx=2)
 
         # Focus mode label and buttons
@@ -184,7 +266,7 @@ class SettingsFrame1(tk.Frame):
         self.distance_label = tk.Label(self.distance_frame, text="DISTANCE: 0 units", bg="#7C889C", fg="black", font=font_used)
         self.distance_label.grid(row=0, column=0, sticky='nsew')
 
-        self.distance_slider = CustomSlider(self.distance_frame, id='distance_slider', length=605, width=120, handle_size=60, bg="#7C889C", min_val=0, max_val=100, callback=self.update_distance)
+        self.distance_slider = CustomSlider(self.distance_frame, id='distance_slider', length=605, width=120, handle_size=60, bar_fill="blue", bar_outline="yellow", handle_fill="green", bg="#7C889C", min_val=0, max_val=100, callback=self.update_distance)
         self.distance_slider.grid(row=1, column=0, padx=2)
 
         # Camera selection frame and buttons
@@ -201,6 +283,9 @@ class SettingsFrame1(tk.Frame):
 
         self.camera_two_button = tk.Button(self.cam_select_buttons_frame, text="CAMERA 2", bg="grey", fg="white", font=font_used, width=20, height=3, command=lambda: self.select_camera(1))
         self.camera_two_button.grid(row=1, column=1)
+
+        # Disable the camera buttons based on availability
+        self.check_camera_availability()
 
         # Toggle dark mode button and label
         self.darkmode_toggle_frame = tk.Frame(

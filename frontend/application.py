@@ -17,30 +17,37 @@ from backend.gps_manager import GPSManager
 class CameraFeed:
     def __init__(self, video_source=0):
         # Initialize the video capture with the default source
-        self.set_video_source(video_source)
+        self.video_source = video_source
+        self.cap = None
+        self.initialize_capture(video_source)
+
+    def initialize_capture(self, video_source):
+        # Attempt to initialize video capture with the provided source
+        if self.is_video_source_available(video_source):
+            self.cap = cv2.VideoCapture(video_source)
+            # Configure resolutions
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
+        else:
+            print(f"Warning: Unable to open video source {video_source}")
+            self.cap = None
+
+    def is_video_source_available(self, video_source):
+        # Attempt to open the video source
+        cap = cv2.VideoCapture(video_source)
+        is_opened = cap.isOpened()
+        cap.release()  # Immediately release the capture object
+        return is_opened
 
     def set_video_source(self, video_source):
         # Release the current capture if it's open
-        if hasattr(self, 'cap') and self.cap.isOpened():
+        if self.cap and self.cap.isOpened():
             self.cap.release()
-
-        # Update the video source and create a new capture object
-        self.video_source = video_source
-        self.cap = cv2.VideoCapture(video_source)
-
-        # These are the resolutions that should be used on the scanner
-        # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720) 
-
-        # Resolutions used for testing on laptop webcam
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 600)
-
-        if not self.cap.isOpened():
-            raise ValueError("Unable to open video source", video_source)
+        # Update the video source and attempt to create a new capture object
+        self.initialize_capture(video_source)
 
     def get_frame(self):
-        if self.cap.isOpened():
+        if self.cap and self.cap.isOpened():
             ret, frame = self.cap.read()
             if ret:
                 # Convert the color space from BGR to RGB
@@ -48,42 +55,50 @@ class CameraFeed:
         return None
 
     def release(self):
-        if hasattr(self, 'cap') and self.cap.isOpened():
+        if self.cap and self.cap.isOpened():
             self.cap.release()
-
 class Application(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.color_scheme = color_scheme
         self.title("SearchLightScanner")
-        self.configure(bg='red')
-        # self.configure(bg=color_scheme['colors']['light']['application/window_and_frame_color'])
+        self.update_colors()
         self.bind("<Escape>", self.minimize_window)
         self.maximize_window()
 
         # Set default camera to /dev/video0
         self.camera_feed = CameraFeed(video_source=0)
         self.gps_manager = GPSManager() # Initialize GPS device
-        self.color_scheme = color_scheme
 
         self.frames = {}
         for F in (MainFrame, SettingsFrame1, SettingsFrame2):
             if F == MainFrame:
                 frame = F(self, self.gps_manager, self.camera_feed, self.color_scheme)
             elif F == SettingsFrame1:
-                frame = F(self, self.camera_feed, self, self.color_scheme)
+                frame = F(self, self.camera_feed, self, self.color_scheme, self.camera_feed.is_video_source_available)
             else:
                 frame = F(self, self.color_scheme)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.switch_frame(MainFrame)
-    
+
+    def update_colors(self):
+        mode = "dark" if self.color_scheme["dark_mode"] else "light"
+        color_scheme = self.color_scheme["colors"][mode]
+        self.configure(bg=color_scheme["application/window_and_frame_color"])
+
+
     def toggle_dark_mode(self):
         # This method would be bound to a button click to toggle dark mode
         self.color_scheme["dark_mode"] = not self.color_scheme["dark_mode"]
+
+        # Update the Application class's color
+        self.update_colors()
+
         # Here we would call update on all frames to change their colors
         for frame in self.frames.values():
-            frame.update_colors()  # This requires all frames have an update_colors method
+            frame.update_colors()  # Pass the color_scheme dictionary
 
     def switch_frame(self, frame_class):
         frame = self.frames[frame_class]

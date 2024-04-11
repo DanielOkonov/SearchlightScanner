@@ -14,15 +14,38 @@ class MainFrame(tk.Frame):
         self.camera_feed = camera_feed
         shared_confidence.register_observer(self.update_confidence)
         self.create_widgets()
-        # self.update_colors()
+        self.update_colors()
 
+    def update_colors(self):
+        mode = "dark" if self.color_scheme["dark_mode"] else "light"
+        color_scheme = self.color_scheme["colors"][mode]
 
+        self.configure(bg=color_scheme["application/window_and_frame_color"])
+        self.menu_options_frame.configure(bg=color_scheme["application/window_and_frame_color"])
+        self.settings_button_frame.configure(bg=color_scheme["application/window_and_frame_color"])
+        self.settings_button.configure(bg=color_scheme["selected_color"])
+        self.confidence_slider_frame.configure(bg=color_scheme["application/window_and_frame_color"],
+                                               highlightbackground=color_scheme["frame_outline_color"],
+                                               highlightcolor=color_scheme["frame_outline_color"])
 
-    # def update_colors(self):
-    #     mode = "dark" if self.color_scheme["dark_mode"] else "light"
-    #     color_scheme = self.color_scheme["colors"][mode]
-    #     self.configure(bg=color_scheme["application/window_and_frame_color"])
-    #     self.gps_frame.configure(bg=color_scheme["application/window_and_frame_color"])
+        self.confidence_label.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        fg=color_scheme["label_font_color/fg"])
+        self.confidence_slider.set_background_fill(color_scheme["slider_background_color"])
+        self.confidence_slider.set_bar_fill(color_scheme["slider_bar_fill"])
+        self.confidence_slider.set_handle_fill(color_scheme["slider_knob_color"])
+        self.confidence_slider.set_bar_outline(color_scheme["frame_outline_color"])
+
+        self.gps_frame.configure(bg=color_scheme["application/window_and_frame_color"],
+                                 highlightbackground=color_scheme["frame_outline_color"],
+                                 highlightcolor=color_scheme["frame_outline_color"])
+        self.gps_lat_long.configure(bg=color_scheme["application/window_and_frame_color"],
+                                    fg=color_scheme["label_font_color/fg"])
+        self.gps_bearing.configure(bg=color_scheme["application/window_and_frame_color"],
+                                    fg=color_scheme["label_font_color/fg"])
+        self.gps_speed.configure(bg=color_scheme["application/window_and_frame_color"],
+                                    fg=color_scheme["label_font_color/fg"])
+        self.gps_altitude.configure(bg=color_scheme["application/window_and_frame_color"],
+                                    fg=color_scheme["label_font_color/fg"])
 
 
     def update_confidence(self, value):
@@ -35,6 +58,8 @@ class MainFrame(tk.Frame):
         shared_confidence.set_value(value)
 
     def create_widgets(self):
+        mode = "dark" if self.color_scheme["dark_mode"] else "light"
+        color_scheme = self.color_scheme["colors"][mode]
         # Camera feed label
         self.camera_label = tk.Label(self, bg='black')
         self.camera_label.grid(row=0, column=0, sticky='nws')
@@ -70,14 +95,16 @@ class MainFrame(tk.Frame):
         self.settings_button.grid(pady=5, padx=5)
 
         # Confidence frame and slider
-        self.confidence_slider_frame = tk.Frame(self.menu_options_frame, bg='#7C889C', width= 400, height= 68, highlightbackground="black", highlightcolor="black", highlightthickness=2)
+        # self.confidence_slider_frame = tk.Frame(self.menu_options_frame, bg='red', width= 400, height= 68, highlightbackground="black", highlightcolor="black", highlightthickness=2)
+        self.confidence_slider_frame = tk.Frame(self.menu_options_frame, width= 400, height= 68, highlightbackground="black", highlightcolor="black", highlightthickness=2)
+
         self.confidence_slider_frame.grid(row=0, column=1, sticky= 'nsew', padx=3, pady=4)
         self.confidence_slider_frame.grid_propagate(False)
 
         self.confidence_label = tk.Label(self.confidence_slider_frame, text="CONFIDENCE: 0%", bg="#7C889C", fg="black", font=custom_font)
         self.confidence_label.grid(row=0, column=0, sticky='nsw', pady=10)
 
-        self.confidence_slider = CustomSlider(self.confidence_slider_frame, id='confidence_slider', length=180, width=50, handle_size=30, bar_thickness=30, bg="#7C889C", min_val=0, max_val=100, callback=self.on_slider_change)
+        self.confidence_slider = CustomSlider(self.confidence_slider_frame, id='confidence_slider', length=180, width=50, handle_size=30, bar_fill=color_scheme["slider_background_color"], bar_outline=color_scheme["frame_outline_color"], handle_fill=color_scheme["slider_knob_color"], bar_thickness=30, bg=color_scheme["slider_background_color"], min_val=0, max_val=100, callback=self.on_slider_change)
         self.confidence_slider.grid(row=0, column=0, padx=195, sticky='nse', pady=10)
 
         # GPS frame and output
