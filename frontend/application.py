@@ -1,4 +1,4 @@
-from application_color_scheme import color_scheme
+from .application_color_scheme import color_scheme
 from .camera_frame import MainFrame
 from .settings1 import SettingsFrame1
 from .settings2 import SettingsFrame2

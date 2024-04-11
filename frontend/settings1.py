@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import font as tkFont
-from shared_confidence_controller import shared_confidence
+from .shared_confidence_controller import shared_confidence
 
 # Custom slider class
 class CustomSlider(tk.Canvas):

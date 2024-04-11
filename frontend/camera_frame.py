@@ -2,7 +2,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import font as tkFont
 
-from shared_confidence_controller import shared_confidence
+from .shared_confidence_controller import shared_confidence
 from .settings1 import CustomSlider
 from backend.image_processor import ImageProcessor
 
