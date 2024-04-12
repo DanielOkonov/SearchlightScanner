@@ -9,7 +9,12 @@ class ConstantsManager:
 
     BACKUP_JSON_STRING = """
     {
-        "default_key": "default_value"
+        "default_confidence_level": 50,
+        "default_distance": 1,
+        "default_targets": [],
+        "default_segmentation": 1,
+        "path_to_model": "",
+        "path_to_labels": ""
     }
     """
 

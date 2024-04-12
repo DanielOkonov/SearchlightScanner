@@ -1,3 +1,4 @@
 **/__pycache__/
 /jetson-inference
 /backend/images/*
+values.json

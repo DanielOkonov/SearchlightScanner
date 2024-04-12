@@ -1,6 +1,57 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
+from constantsmanager import ConstantsManager
+
+segmentation_options = [
+    {
+        "text": "1x1",
+        "value": 1,
+    },
+    {
+        "text": "2x2",
+        "value": 4,
+    },
+    {
+        "text": "3x3",
+        "value": 9,
+    },
+    {
+        "text": "4x4",
+        "value": 16,
+    },
+    {
+        "text": "5x5",
+        "value": 25,
+    },
+    {
+        "text": "4x8",
+        "value": 32,
+    },
+    {
+        "text": "5x8",
+        "value": 40,
+    },
+    {
+        "text": "5x10",
+        "value": 50,
+    },
+    {
+        "text": "6x10",
+        "value": 60,
+    },
+    {
+        "text": "7x12",
+        "value": 84,
+    },
+]
+
+
+def get_segmentation_value(text):
+    for option in segmentation_options:
+        if option["text"] == text:
+            return option["value"]
+    return None  # Return None if text is not found
 
 
 class Application(tk.Tk):
@@ -8,13 +59,13 @@ class Application(tk.Tk):
         super().__init__()
         self.title("Constants")
         self.configure(bg="#7C889C")
-        self.geometry("400x300")
+        self.geometry("600x400")
 
         # Instance variables to store values
-        self.default_confidence_level = tk.StringVar(value="90")
-        self.default_distance = tk.StringVar(value="1")
+        self.default_confidence_level = tk.IntVar(value=90)
+        self.default_distance = tk.IntVar(value=1)
         self.default_targets = []
-        self.default_segmentation = tk.StringVar(value="Segmentation 1")
+        self.default_segmentation = tk.StringVar(value="1x1")
         self.default_model_path = tk.StringVar(value="")
         self.default_labels_path = tk.StringVar(value="")
 
@@ -37,12 +88,6 @@ class Application(tk.Tk):
         if labels_path:
             self.default_labels_path.set(labels_path)
 
-    def update_confidence_level(self, event):
-        self.default_confidence_level.set(self.confidence_level_entry.get())
-
-    def update_distance(self, event):
-        self.default_distance.set(self.distance_entry.get())
-
     def toggle_target(self, target):
         if target in self.default_targets:
             self.default_targets.remove(target)
@@ -50,11 +95,42 @@ class Application(tk.Tk):
             self.default_targets.append(target)
         self.update_selected_targets_display()
 
-    def update_selected_targets_display(self):
-        self.selected_targets_display.config(text=", ".join(self.default_targets))
+    def validate_numeric_input(self, P):
+        if str.isdigit(P) or P == "":
+            return True
+        else:
+            return False
+
+    def update_confidence_level(self, event):
+        value = self.confidence_level_entry.get()
+        if self.validate_numeric_input(value):
+            self.default_confidence_level.set(int(value))
+        else:
+            self.confidence_level_entry.delete(0, tk.END)
+
+    def update_distance(self, event):
+        value = self.distance_entry.get()
+        if self.validate_numeric_input(value):
+            self.default_distance.set(int(value))
+        else:
+            self.distance_entry.delete(0, tk.END)
 
     def update_segmentation(self, event):
         self.default_segmentation.set(self.segmentation_entry.get())
+
+    def save_constants(self):
+        constants_manager = ConstantsManager()
+        constants_manager.set_constant(
+            "default_confidence_level", self.default_confidence_level.get()
+        )
+        constants_manager.set_constant("default_distance", self.default_distance.get())
+        constants_manager.set_constant(
+            "default_segmemtation",
+            get_segmentation_value(self.default_segmentation.get()),
+        )
+        constants_manager.set_constant("path_to_model", self.default_model_path.get())
+        constants_manager.set_constant("path_to_labels", self.default_labels_path.get())
+        print("Constants saved successfully!")
 
     def create_form(self):
         root_label = tk.Label(
@@ -79,6 +155,11 @@ class Application(tk.Tk):
         )
         self.confidence_level_entry.grid(row=0, column=1, padx=10, pady=5)
         self.confidence_level_entry.bind("<KeyRelease>", self.update_confidence_level)
+        self.confidence_level_entry.config(validate="key")
+        self.confidence_level_entry["validatecommand"] = (
+            self.confidence_level_entry.register(self.validate_numeric_input),
+            "%P",
+        )
 
         # Default Distance
         distance_label = tk.Label(
@@ -88,6 +169,11 @@ class Application(tk.Tk):
         self.distance_entry = tk.Entry(form_frame, textvariable=self.default_distance)
         self.distance_entry.grid(row=1, column=1, padx=10, pady=5)
         self.distance_entry.bind("<KeyRelease>", self.update_distance)
+        self.distance_entry.config(validate="key")
+        self.distance_entry["validatecommand"] = (
+            self.distance_entry.register(self.validate_numeric_input),
+            "%P",
+        )
 
         # Default Targets (Multi-select)
         targets_label = tk.Label(
@@ -117,7 +203,7 @@ class Application(tk.Tk):
         segmentation_label.grid(row=4, column=0, padx=10, pady=5, sticky="w")
         self.segmentation_entry = ttk.Combobox(
             form_frame,
-            values=["Segmentation 1", "Segmentation 2", "Segmentation 3"],
+            values=[option["text"] for option in segmentation_options],
             textvariable=self.default_segmentation,
         )
         self.segmentation_entry.grid(row=4, column=1, padx=10, pady=5)
@@ -156,6 +242,20 @@ class Application(tk.Tk):
             labels_frame, text="Browse", command=self.browse_labels
         )
         browse_labels_button.grid(row=0, column=2, padx=5, pady=5)
+
+        # Save Button
+        save_button = tk.Button(
+            self,
+            text="Save",
+            bg="#4CAF50",  # Green color for highlighting
+            fg="white",
+            font=("Arial", 12),
+            command=self.save_constants,
+            width=10,  # Adjust the width as needed
+            height=2,  # Adjust the height as needed
+            relief=tk.RAISED,  # Add a raised border
+        )
+        save_button.pack(pady=(10, 20))
 
 
 if __name__ == "__main__":
