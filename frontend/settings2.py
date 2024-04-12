@@ -8,14 +8,14 @@ class SettingsFrame2(tk.Frame):
     def __init__(self, parent, color_scheme, **kwargs):
         super().__init__(parent, **kwargs)
         self.color_scheme = color_scheme
-        # self.configure(bg="#7C889C")
-        self.update_colors()
         self.segments_frame = None
         self.segment_buttons = {}
         self.targets_selected_count = 0
         self.segmentation_switch_state = {"is_on": False}
         self.selected_targets_dict = {}
+        self.selected_buttons = set()
         self.create_widgets()
+        self.update_colors()
         self.toggle_segment_visibility(self.segmentation_switch_state["is_on"])
 
     def update_colors(self):
@@ -23,48 +23,105 @@ class SettingsFrame2(tk.Frame):
         color_scheme = self.color_scheme["colors"][mode]
         self.configure(bg=color_scheme["application/window_and_frame_color"])
 
+        self.targets_frame.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        highlightbackground=color_scheme["frame_outline_color"])
+
+        self.targets_label.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        fg=color_scheme["label_font_color/fg"])
+
+        selected_color = self.color_scheme["colors"][mode]["selected_color"]
+        unselected_color = self.color_scheme["colors"][mode]["button_bg"]
+
+        for button in self.target_buttons.values():
+            if button in self.selected_buttons:
+                button.config(bg=selected_color)
+            else:
+                button.config(bg=unselected_color)
+
+        self.operator_alerts_toggle_frame.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        highlightbackground=color_scheme["frame_outline_color"])
+
+        self.operator_toggle_label.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        fg=color_scheme["label_font_color/fg"])
+        
+        self.settings1_button.configure(bg=color_scheme["unselected_settings_button"])
+        self.settings2_button.configure(bg=color_scheme["selected_color"])
+        
+        # self.operator_alerts_switch_state["is_on"] = not self.operator_alerts_switch_state["is_on"]
+        self.operator_toggle_canvas.configure(bg=color_scheme["application/window_and_frame_color"])
+        if self.operator_alerts_switch_state["is_on"]:
+            self.operator_toggle_canvas.itemconfig(self.operator_switch_background, fill=color_scheme["selected_color"])
+            self.operator_toggle_canvas.coords(self.operator_switch, 60, 10, 90, 40)  # Move to the right
+        else:
+            self.operator_toggle_canvas.itemconfig(self.operator_switch_background, fill=color_scheme["button_bg"])
+            self.operator_toggle_canvas.coords(self.operator_switch, 10, 10, 40, 40)  # Move to the left
+
+        self.segments_frame.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        highlightbackground=color_scheme["frame_outline_color"],
+                                        highlightcolor=color_scheme["frame_outline_color"])
+        
+        self.segments_label.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        fg=color_scheme["label_font_color/fg"])
+        
+        self.segmentation_toggle_frame.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        highlightbackground=color_scheme["frame_outline_color"],
+                                        highlightcolor=color_scheme["frame_outline_color"])
+        
+        self.segmentation_toggle_label.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        fg=color_scheme["label_font_color/fg"])
+
+        self.segmentation_toggle_canvas.configure(bg=color_scheme["application/window_and_frame_color"])
+        if self.segmentation_switch_state["is_on"]:
+            self.segmentation_toggle_canvas.itemconfig(self.segmentation_switch_background, fill=color_scheme["selected_color"])
+            self.segmentation_toggle_canvas.coords(self.segmentation_switch, 60, 10, 90, 40)
+            self.toggle_segment_visibility(True)
+        else:
+            self.segmentation_toggle_canvas.itemconfig(self.segmentation_switch_background, fill=color_scheme["button_bg"])
+            self.segmentation_toggle_canvas.coords(self.segmentation_switch, 10, 10, 40, 40)
+            self.toggle_segment_visibility(False)
+
+        self.apply_button_frame.configure(bg=color_scheme["apply_changes_background"])
+        self.apply_changes_button.configure(bg=color_scheme["selected_color"])
+
 
     def targets_button_color(self, button):
-        current_color = button.cget("bg")
-        if current_color == "#697283" and self.targets_selected_count < 6:
-            button.config(bg="#24D215")
-            self.targets_selected_count += 1
-        elif current_color == "#24D215":
-            button.config(bg="#697283")
-            self.targets_selected_count -= 1
+        mode = "dark" if self.color_scheme["dark_mode"] else "light"
+        selected_color = self.color_scheme["colors"][mode]["selected_color"]
+        unselected_color = self.color_scheme["colors"][mode]["button_bg"]
+
+        if button in self.selected_buttons:
+            # Button is currently selected; need to deselect it
+            button.config(bg=unselected_color)
+            self.selected_buttons.remove(button)
+        else:
+            # Button is not selected; need to select it
+            if len(self.selected_buttons) < 6:
+                button.config(bg=selected_color)
+                self.selected_buttons.add(button)
 
     def toggle_operator_switch(
         self, switch_canvas, switch_background, switch_indicator, switch_state
     ):
         switch_state["is_on"] = not switch_state["is_on"]
+        self.update_colors()
 
-        if switch_state["is_on"]:
-            switch_canvas.itemconfig(switch_background, fill="#24D215")
-            switch_canvas.coords(switch_indicator, 60, 10, 90, 40)  # Move to the right
-        else:
-            switch_canvas.itemconfig(switch_background, fill="#697283")
-            switch_canvas.coords(switch_indicator, 10, 10, 40, 40)  # Move to the left
 
     def toggle_segmentation_switch(
         self, switch_canvas, switch_background, switch_indicator, switch_state
     ):
         switch_state["is_on"] = not switch_state["is_on"]
+        self.update_colors()
 
-        if switch_state["is_on"]:
-            switch_canvas.itemconfig(switch_background, fill="#24D215")
-            switch_canvas.coords(switch_indicator, 60, 10, 90, 40)
-            self.toggle_segment_visibility(True)
-        else:
-            switch_canvas.itemconfig(switch_background, fill="#697283")
-            switch_canvas.coords(switch_indicator, 10, 10, 40, 40)
-            self.toggle_segment_visibility(False)
 
     def set_button_active(self, selected_button):
+        mode = "dark" if self.color_scheme["dark_mode"] else "light"
+        selected_color = self.color_scheme["colors"][mode]["selected_color"]
+        unselected_color = self.color_scheme["colors"][mode]["button_bg"]
         # Reset all buttons to grey
         for button in self.segment_buttons.values():
-            button.config(bg="#697283")
+            button.config(bg=unselected_color)
         # Set the clicked button to green
-        selected_button.config(bg="#24D215")
+        selected_button.config(bg=selected_color)
 
     def toggle_segment_visibility(self, show):
         #############################################################################################################
@@ -89,14 +146,14 @@ class SettingsFrame2(tk.Frame):
         self.targets_frame.grid(row=0, column=0, padx=10, pady=5)
         self.targets_frame.grid_propagate(False)
 
-        targets_label = tk.Label(
+        self.targets_label = tk.Label(
             self.targets_frame,
             text="SELECT TARGETS TO DETECT",
             bg="#7C889C",
             fg="black",
             font=font_used,
         )
-        targets_label.grid(row=0, column=0, columnspan=3, padx=10, pady=10)
+        self.targets_label.grid(row=0, column=0, columnspan=3, padx=10, pady=10)
 
         # self.targets_listbox = ReorderableListbox(self, font=font_used)
         # self.targets_listbox = ReorderableListbox(self, font=font_used, application_callback=self.update_order_from_listbox)
@@ -120,7 +177,7 @@ class SettingsFrame2(tk.Frame):
             "AIRPLANE",
             "BOAT",
         ]
-        target_buttons = {}
+        self.target_buttons = {}
         for i, target in enumerate(targets):
             button = tk.Button(
                 self.targets_frame,
@@ -139,7 +196,7 @@ class SettingsFrame2(tk.Frame):
                     self.toggle_target_selection(t),
                 )
             )
-            target_buttons[target] = button
+            self.target_buttons[target] = button
 
         # Initially, the Listbox is hidden as no target is selected
         self.targets_listbox.place_forget()
@@ -162,40 +219,40 @@ class SettingsFrame2(tk.Frame):
 
         self.operator_alerts_toggle_frame.grid_propagate(False)
 
-        operator_toggle_label = tk.Label(
+        self.operator_toggle_label = tk.Label(
             self.operator_alerts_toggle_frame,
             text="OPERATOR ALERTS",
             bg="#7C889C",
             fg="black",
             font=font_used,
         )
-        operator_toggle_label.place(x=20, y=30)
+        self.operator_toggle_label.place(x=20, y=30)
 
-        operator_alerts_switch_state = {"is_on": False}
+        self.operator_alerts_switch_state = {"is_on": False}
 
-        operator_toggle_canvas = tk.Canvas(
+        self.operator_toggle_canvas = tk.Canvas(
             self.operator_alerts_toggle_frame,
             width=100,
             height=50,
             bg="#7C889C",
             highlightthickness=0,
         )
-        operator_toggle_canvas.place(x=485, y=17)
+        self.operator_toggle_canvas.place(x=485, y=17)
 
-        operator_switch_background = operator_toggle_canvas.create_rectangle(
+        self.operator_switch_background = self.operator_toggle_canvas.create_rectangle(
             5, 10, 95, 40, outline="black", fill="#697283"
         )
-        operator_switch = operator_toggle_canvas.create_oval(
+        self.operator_switch = self.operator_toggle_canvas.create_oval(
             10, 10, 40, 40, outline="black", fill="white"
         )
-        operator_toggle_canvas.tag_bind(
-            operator_switch,
+        self.operator_toggle_canvas.tag_bind(
+            self.operator_switch,
             "<Button-1>",
             lambda event: self.toggle_operator_switch(
-                operator_toggle_canvas,
-                operator_switch_background,
-                operator_switch,
-                operator_alerts_switch_state,
+                self.operator_toggle_canvas,
+                self.operator_switch_background,
+                self.operator_switch,
+                self.operator_alerts_switch_state,
             ),
         )
 
@@ -208,7 +265,7 @@ class SettingsFrame2(tk.Frame):
 
         # self.settings_toggle_frame.grid_propagate(False)
 
-        settings1_button = tk.Button(
+        self.settings1_button = tk.Button(
             self.settings_toggle_frame,
             command=self.master.switch_settings1,
             text="SETTINGS 1",
@@ -218,9 +275,9 @@ class SettingsFrame2(tk.Frame):
             width=25,
             height=5,
         )
-        settings1_button.grid(row=0, column=0)
+        self.settings1_button.grid(row=0, column=0)
 
-        settings2_button = tk.Button(
+        self.settings2_button = tk.Button(
             self.settings_toggle_frame,
             command=self.master.switch_settings2,
             text="SETTINGS 2",
@@ -230,7 +287,7 @@ class SettingsFrame2(tk.Frame):
             width=25,
             height=5,
         )
-        settings2_button.grid(row=0, column=1)
+        self.settings2_button.grid(row=0, column=1)
 
         #############################################################################################################
         # SEGMENTATION FRAME
@@ -248,14 +305,14 @@ class SettingsFrame2(tk.Frame):
 
         self.segments_frame.grid_propagate(False)
 
-        segments_label = tk.Label(
+        self.segments_label = tk.Label(
             self.segments_frame,
             text="CHOOSE AN AMOUNT OF SEGMENTS",
             bg="#7C889C",
             fg="black",
             font=font_used,
         )
-        segments_label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+        self.segments_label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
 
         segments = [1, 25, 4, 40, 9, 60, 16, 84]
 
@@ -291,37 +348,37 @@ class SettingsFrame2(tk.Frame):
 
         self.segmentation_toggle_frame.grid_propagate(False)
 
-        segmentation_toggle_label = tk.Label(
+        self.segmentation_toggle_label = tk.Label(
             self.segmentation_toggle_frame,
             text="SEGMENTATION",
             bg="#7C889C",
             fg="black",
             font=font_used,
         )  # Corrected to add to operator_alerts_toggle_frame
-        segmentation_toggle_label.place(x=20, y=30)
+        self.segmentation_toggle_label.place(x=20, y=30)
 
-        segmentation_toggle_canvas = tk.Canvas(
+        self.segmentation_toggle_canvas = tk.Canvas(
             self.segmentation_toggle_frame,
             width=100,
             height=50,
             bg="#7C889C",
             highlightthickness=0,
         )
-        segmentation_toggle_canvas.place(x=440, y=17)
+        self.segmentation_toggle_canvas.place(x=440, y=17)
 
-        segmentation_switch_background = segmentation_toggle_canvas.create_rectangle(
+        self.segmentation_switch_background = self.segmentation_toggle_canvas.create_rectangle(
             5, 10, 95, 40, outline="black", fill="#697283"
         )
-        segmentation_switch = segmentation_toggle_canvas.create_oval(
+        self.segmentation_switch = self.segmentation_toggle_canvas.create_oval(
             10, 10, 40, 40, outline="black", fill="white"
         )
-        segmentation_toggle_canvas.tag_bind(
-            segmentation_switch,
+        self.segmentation_toggle_canvas.tag_bind(
+            self.segmentation_switch,
             "<Button-1>",
             lambda event: self.toggle_segmentation_switch(
-                segmentation_toggle_canvas,
-                segmentation_switch_background,
-                segmentation_switch,
+                self.segmentation_toggle_canvas,
+                self.segmentation_switch_background,
+                self.segmentation_switch,
                 self.segmentation_switch_state,
             ),
         )
@@ -333,7 +390,7 @@ class SettingsFrame2(tk.Frame):
         self.apply_button_frame.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
         self.apply_button_frame.grid_propagate(False)
 
-        apply_changes_button = tk.Button(
+        self.apply_changes_button = tk.Button(
             self.apply_button_frame,
             text="APPLY CHANGES",
             bg="#24D215",
@@ -342,7 +399,7 @@ class SettingsFrame2(tk.Frame):
             width=53,
             height=4,
         )
-        apply_changes_button.grid(row=0, column=0, padx=11, pady=9)
+        self.apply_changes_button.grid(row=0, column=0, padx=11, pady=9)
 
         #############################################################################################################
         # CLOSE SETTINGS MENU BUTTON

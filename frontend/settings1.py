@@ -222,7 +222,7 @@ class SettingsFrame1(tk.Frame):
         self.update_colors()
 
     def on_slider_change(self, value):
-        from shared_confidence_controller import shared_confidence
+        from .shared_confidence_controller import shared_confidence
         shared_confidence.set_value(value)
 
 
