@@ -61,8 +61,8 @@ class Application(tk.Tk):
         self.update_colors()
 
         self.bind("<Escape>", self.minimize_window)
-        self.geometry("1200x800")
-        # self.maximize_window()
+        # self.geometry("1200x800")
+        self.maximize_window()
 
         # Set default camera to /dev/video0
 
@@ -77,7 +77,7 @@ class Application(tk.Tk):
                 frame = F(self, self.gps_manager, self.camera_feed, self.color_scheme)
             elif F == SettingsFrame1:
                 frame = F(
-                    self, self.camera_feed
+                    self, self.camera_feed, self, self.color_scheme
                 )  # Assuming SettingsFrame1 also modified to accept camera_feed
             else:
                 frame = F(self, self.color_scheme)
