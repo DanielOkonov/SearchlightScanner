@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import font as tkFont
+from tkinter import ttk
 from .shared_confidence_controller import shared_confidence
 
 # Custom slider class
@@ -95,9 +96,9 @@ class SettingsFrame1(tk.Frame):
         shared_confidence.register_observer(self.update_confidence)
         self.camera_feed = camera_feed  # Reference to the CameraFeed object
         self.current_cam = tk.IntVar(value=0)  # 0 for cam1, 1 for cam2
+        self.style = ttk.Style()
         self.create_widgets()
         self.update_colors()
-        self.set_focus_mode_auto()
 
     def update_colors(self):
         mode = "dark" if self.color_scheme["dark_mode"] else "light"
@@ -119,26 +120,6 @@ class SettingsFrame1(tk.Frame):
         self.confidence_slider.set_bar_fill(color_scheme["slider_bar_fill"])
         self.confidence_slider.set_handle_fill(color_scheme["slider_knob_color"])
         self.confidence_slider.set_bar_outline(color_scheme["frame_outline_color"])
-
-        if self.focus_mode.get() == "Automatic":
-            self.automatic_focus_button.configure(bg=color_scheme["focus_button_bg_dark_active"] if mode == "dark" else color_scheme["focus_button_bg_light_active"])
-            self.manual_focus_button.configure(bg=color_scheme["focus_button_bg_dark_inactive"] if mode == "dark" else color_scheme["focus_button_bg_light_inactive"]) 
-        else:
-            self.automatic_focus_button.configure(bg=color_scheme["focus_button_bg_dark_inactive"] if mode == "dark" else color_scheme["focus_button_bg_light_inactive"])
-            self.manual_focus_button.configure(bg=color_scheme["focus_button_bg_dark_active"] if mode == "dark" else color_scheme["focus_button_bg_light_active"]) 
-
-
-        self.distance_frame.configure(bg=color_scheme["application/window_and_frame_color"],
-                                        highlightbackground=color_scheme["frame_outline_color"],
-                                        highlightcolor=color_scheme["frame_outline_color"])
-        
-        self.distance_label.configure(bg=color_scheme["application/window_and_frame_color"],
-                                        fg=color_scheme["label_font_color/fg"])
-        
-        self.distance_slider.set_background_fill(color_scheme["slider_background_color"])
-        self.distance_slider.set_bar_fill(color_scheme["slider_bar_fill"])
-        self.distance_slider.set_handle_fill(color_scheme["slider_knob_color"])
-        self.distance_slider.set_bar_outline(color_scheme["frame_outline_color"])
 
         self.cam_select_buttons_frame.configure(bg=color_scheme["application/window_and_frame_color"])
         self.cam_select_label.configure(bg=color_scheme["application/window_and_frame_color"],
@@ -168,33 +149,28 @@ class SettingsFrame1(tk.Frame):
         self.apply_button_frame.configure(bg=color_scheme["apply_changes_background"])
         self.apply_changes_button.configure(bg=color_scheme["selected_color"])
 
-    def set_focus_mode_auto(self):
-        self.focus_mode.set("Automatic")
-        self.automatic_focus_button.configure(bg="#24D215")
-        self.manual_focus_button.configure(bg="grey")
-        self.update_focus_mode_display()
+        self.resolution_frame_and_label.configure(bg=color_scheme["application/window_and_frame_color"],
+                                              highlightbackground=color_scheme["frame_outline_color"],
+                                              highlightcolor=color_scheme["frame_outline_color"])
+        
+        self.resolution_label.configure(bg=color_scheme["application/window_and_frame_color"],
+                                        fg=color_scheme["label_font_color/fg"])
 
-    def set_focus_mode_manual(self):
-        self.focus_mode.set("Manual")
-        self.manual_focus_button.configure(bg="#24D215")
-        self.automatic_focus_button.configure(bg="grey")
-        self.update_focus_mode_display()
+        self.resolutions_frame.configure(bg=color_scheme["button_bg"],
+                                         highlightbackground=color_scheme["frame_outline_color"],
+                                         highlightcolor=color_scheme["frame_outline_color"])
 
-    def update_focus_mode_display(self):
-        self.update_colors()
-        if self.focus_mode.get() == "Automatic":
-            self.distance_frame.grid_remove()
-        else:
-            self.distance_frame.grid()
+        # Update the styles for TMenubutton and TMenu
+        self.style.map('TMenubutton', background=[('active', color_scheme["selected_color"]), ('!active', color_scheme["button_bg"])],
+                       foreground=[('active', color_scheme["button_font_color/fg"]), ('!active', color_scheme["button_font_color/fg"])])
+        self.style.configure('TMenubutton', background=color_scheme["button_bg"], foreground=color_scheme["button_font_color/fg"])
+        self.style.configure('TMenu', background=color_scheme["button_bg"], foreground=color_scheme["button_font_color/fg"], borderwidth=0)
+        self.style.map('TMenu', background=[('active', color_scheme["selected_color"])])
 
     def update_confidence(self, value):
         # This method updates the slider's position and the label's text
         self.confidence_slider.set_value(value, update=False)  # Update the slider
         self.confidence_label.config(text=f"CONFIDENCE: {int(round(value))}%")  # Update the label
-
-    def update_distance(self, value):
-        value = int(round(value))
-        self.distance_label.config(text=f"DISTANCE: {value} units")
 
     def toggle_darkmode_switch(
         self, switch_canvas, switch_background, switch_indicator, switch_state
@@ -225,6 +201,8 @@ class SettingsFrame1(tk.Frame):
         from .shared_confidence_controller import shared_confidence
         shared_confidence.set_value(value)
 
+    def selection_changed(self, value):
+        print("Selected:", value)
 
     def create_widgets(self):
         font_used = tkFont.Font(family="Helvetica", size=12, weight="bold")
@@ -236,13 +214,9 @@ class SettingsFrame1(tk.Frame):
 
         # Create frames for each slider within the parent sliders_frame
         self.confidence_frame = tk.Frame(self.sliders_frame, width=615, height=180, bg="#7C889C", highlightbackground="black", highlightcolor="black", highlightthickness=2)
-        self.confidence_frame.grid(row=0, column=0, padx=20, pady=22)
-        # self.confidence_frame.grid_propagate(False)
+        self.confidence_frame.grid(row=0, column=0, padx=10, pady=22)
+        self.confidence_frame.grid_propagate(False)
 
-        self.distance_frame = tk.Frame(self.sliders_frame, width=615, height=200, bg="#7C889C", highlightbackground="black", highlightcolor="black", highlightthickness=2)
-        self.distance_frame.grid(row=3, column=0, padx=20, pady=22)
-        # self.distance_frame.grid_propagate(False)
-        self.distance_frame.grid_remove()
 
         # Confidence slider and label
         self.confidence_label = tk.Label(self.confidence_frame, text="CONFIDENCE: 0%", bg="#7C889C", fg="black", font=font_used)
@@ -251,29 +225,46 @@ class SettingsFrame1(tk.Frame):
         self.confidence_slider = CustomSlider(self.confidence_frame, id='confidence_slider', length=605, width=120, handle_size=60, bar_fill="blue", bar_outline="yellow", handle_fill="green", bg="#7C889C", min_val=0, max_val=100, callback=self.on_slider_change)
         self.confidence_slider.grid(row=1, column=0, padx=2)
 
-        # Focus mode label and buttons
-        self.focus_buttons_frame = tk.Frame(self.sliders_frame, bg="#7C889C", width=100, height=108)
-        # self.focus_buttons_frame.grid(row=2, column=0, padx=100, pady=2, sticky="ew")
-        self.focus_buttons_frame.grid(row=2, column=0, padx=20, pady=30, sticky="ew")
+        # Create a frame to hold the OptionMenu
+        self.resolution_frame_and_label = tk.Frame(self.sliders_frame, bg="#7C889C", highlightbackground="black", highlightcolor="black", highlightthickness=2, width=10, height=180)
+        self.resolution_frame_and_label.grid(row=2, column=0, padx=(10, 0), pady=(17,0), sticky="ew")
+        self.resolution_frame_and_label.grid_propagate(False)
 
-        self.automatic_focus_button = tk.Button(self.focus_buttons_frame, text="AUTOMATIC FOCUS", bg="grey", fg="white", font=font_used, width=30, height= 3, command=self.set_focus_mode_auto)
-        self.automatic_focus_button.grid(row=1, column=0)
+        self.resolution_label = tk.Label(self.resolution_frame_and_label, text="SELECT RESOLUTION", bg="#7C889C", fg="black", font=font_used)
+        self.resolution_label.grid(row=0, column=0, sticky="ew")
 
-        self.manual_focus_button = tk.Button(self.focus_buttons_frame, text="MANUAL FOCUS", bg="grey", fg="white", font=font_used, width=30, height= 3, command=self.set_focus_mode_manual)
-        self.manual_focus_button.grid(row=1, column=1)
+        self.resolutions_frame = tk.Frame(self.resolution_frame_and_label, bg="#7C889C", highlightbackground="black", highlightcolor="black", highlightthickness=2, width=10, height=108)
+        self.resolutions_frame.grid(row=1, column=0, sticky="ew")
 
-        # Distance slider and label
-        self.distance_label = tk.Label(self.distance_frame, text="DISTANCE: 0 units", bg="#7C889C", fg="black", font=font_used)
-        self.distance_label.grid(row=0, column=0, sticky='nsew')
+        # Create a frame to hold the OptionMenu
+        menu_font = tkFont.Font(family="Helvetica", size=14, weight="bold")
+        frame = tk.Frame(self.resolutions_frame, bg='darkgrey')
+        frame.pack(padx=10, pady=10)
 
-        self.distance_slider = CustomSlider(self.distance_frame, id='distance_slider', length=605, width=120, handle_size=60, bar_fill="blue", bar_outline="yellow", handle_fill="green", bg="#7C889C", min_val=0, max_val=100, callback=self.update_distance)
-        self.distance_slider.grid(row=1, column=0, padx=2)
+        # Create a Tkinter variable
+        selected_option = tk.StringVar(value="280x720 pixels")
+
+        # Set the list of choices
+        options = [
+            "280x720 pixels",
+            "1920x1080 pixels",
+            "2560x1440 pixels",
+            "3840x2160 pixels"
+        ]
+
+        # Create the dropdown menu and add it to the frame
+        self.option_menu = ttk.OptionMenu(frame, selected_option, selected_option.get(), *options, command=self.selection_changed)
+        self.option_menu.pack(expand=True, fill='both')
+
+        # Apply custom styles
+        self.style.configure('TMenubutton', font=menu_font, width=50, height=30)
+
+        menu = self.option_menu['menu']
+        menu.config(font=menu_font)  # Set the font for menu items
 
         # Camera selection frame and buttons
         self.cam_select_buttons_frame = tk.Frame(self.sliders_frame, bg="#7C889C", width=70, height=108)
-        # self.cam_select_buttons_frame.grid(row=0, column=1, padx=50, pady=(150, 0), sticky="ew")
         self.cam_select_buttons_frame.place(x=750, y=176)
-        # self.cam_select_buttons_frame.grid_propagate(False)
 
         self.cam_select_label = tk.Label(self.cam_select_buttons_frame, text="SELECT CAMERA INPUT", bg="#7C889C", fg="black", font=font_used)
         self.cam_select_label.grid(row=0, column=0, columnspan=2, pady=(0, 22))
@@ -308,7 +299,6 @@ class SettingsFrame1(tk.Frame):
             font=font_used,
         )  # Corrected to add to operator_alerts_toggle_frame
         self.darkmode_toggle_label.place(x=30, y=57)
-        # darkmode_toggle_label.grid(row=0, column=0)
 
         darkmode_switch_state = {"is_on": False}
 
@@ -321,11 +311,9 @@ class SettingsFrame1(tk.Frame):
             highlightbackground="black",
             highlightcolor="black",
         )
-        # darkmode_toggle_canvas.grid(row=1, column=0)
         self.darkmode_toggle_canvas.place(x=260, y=45)
 
         self.darkmode_switch_background = self.darkmode_toggle_canvas.create_rectangle(
-            # 5, 10, 95, 40, outline="black", fill="#697283"
             5, 10, 95, 40, fill="#697283"
         )
         darkmode_switch = self.darkmode_toggle_canvas.create_oval(
@@ -396,7 +384,6 @@ class SettingsFrame1(tk.Frame):
             height=51,
         )
         self.close_menu_button_frame.grid(row=0, column=1, padx=(5,10), pady=5, sticky="nw")
-        # self.close_menu_button_frame.grid(row=0, column=1, padx=5, pady=5, sticky="nw")
         self.close_menu_button_frame.grid_propagate(False)
 
         x_button_font = tkFont.Font(family="Helvetica", size=20, weight="bold")

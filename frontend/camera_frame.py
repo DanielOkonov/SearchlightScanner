@@ -83,10 +83,8 @@ class MainFrame(tk.Frame):
         self.menu_options_frame.grid(row=1, column=0, sticky="sw", padx=3)
 
         # Settings frame and button
-        self.settings_button_frame = tk.Frame(
-            self.menu_options_frame, bg="#7C889C", width=275, height=80
-        )
-        self.settings_button_frame.grid(row=0, column=0, sticky="sw", padx=3)
+        self.settings_button_frame = tk.Frame(self.menu_options_frame, bg='#7C889C', width=275, height=60)
+        self.settings_button_frame.grid(row=0, column=0, sticky='nw', padx=3)
         self.settings_button_frame.grid_propagate(False)
 
         self.settings_button = tk.Button(
@@ -96,21 +94,14 @@ class MainFrame(tk.Frame):
             text="SETTINGS",
             font=custom_font,
             width=25,
-            height=3,
+            height=2,
             command=self.on_settings_click,
         )
-        self.settings_button.grid(pady=5, padx=5)
+        self.settings_button.grid(pady=3, padx=5)
 
         # Confidence frame and slider
-        self.confidence_slider_frame = tk.Frame(
-            self.menu_options_frame,
-            bg="#7C889C",
-            width=400,
-            height=68,
-            highlightbackground="black",
-            highlightcolor="black",
-            highlightthickness=2,
-        )
+        self.confidence_slider_frame = tk.Frame(self.menu_options_frame, width= 400, height= 30, highlightbackground="black", highlightcolor="black", highlightthickness=2)
+
         self.confidence_slider_frame.grid(
             row=0, column=1, sticky="nsew", padx=3, pady=4
         )
@@ -123,7 +114,8 @@ class MainFrame(tk.Frame):
             fg="black",
             font=custom_font,
         )
-        self.confidence_label.grid(row=0, column=0, sticky="nsw", pady=10)
+        self.confidence_label.grid(row=0, column=0, sticky='nsw', pady=0)
+
 
         self.confidence_slider = CustomSlider(
             self.confidence_slider_frame,
@@ -137,18 +129,11 @@ class MainFrame(tk.Frame):
             max_val=100,
             callback=self.update_confidence,
         )
-        self.confidence_slider.grid(row=0, column=0, padx=195, sticky="nse", pady=10)
+        self.confidence_slider.grid(row=0, column=0, padx=195, sticky='nse', pady=0)
 
         # GPS frame and output
-        self.gps_frame = tk.Frame(
-            self.menu_options_frame,
-            bg="#7C889C",
-            width=400,
-            height=68,
-            highlightbackground="black",
-            highlightcolor="black",
-            highlightthickness=2,
-        )
+        self.gps_frame = tk.Frame(self.menu_options_frame, bg='#7C889C', width=400, height=53, highlightbackground="black", highlightcolor="black", highlightthickness=2)
+
         self.gps_frame.grid(row=0, column=2, sticky="nsew", padx=10, pady=4)
         self.gps_frame.grid_propagate(False)
 
@@ -169,7 +154,7 @@ class MainFrame(tk.Frame):
         self.gps_speed = tk.Label(
             self.gps_frame, text="SPEED: ", bg="#7C889C", fg="black", font=custom_font
         )
-        self.gps_speed.place(x=2, y=40)
+        self.gps_speed.place(x=2, y=20)
 
         self.gps_altitude = tk.Label(
             self.gps_frame,
@@ -178,7 +163,7 @@ class MainFrame(tk.Frame):
             fg="black",
             font=custom_font,
         )
-        self.gps_altitude.place(x=235, y=40)
+        self.gps_altitude.place(x=235, y=20)
         self.start_gps_thread()
 
     # Camera methods
