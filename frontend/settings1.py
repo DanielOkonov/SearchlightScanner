@@ -159,6 +159,8 @@ class SettingsFrame1(tk.Frame):
         self.resolutions_frame.configure(bg=color_scheme["button_bg"],
                                          highlightbackground=color_scheme["frame_outline_color"],
                                          highlightcolor=color_scheme["frame_outline_color"])
+        
+        self.close_menu_button.configure(bg=color_scheme["apply_changes_background"])
 
         # Update the styles for TMenubutton and TMenu
         self.style.map('TMenubutton', background=[('active', color_scheme["selected_color"]), ('!active', color_scheme["button_bg"])],
@@ -387,7 +389,7 @@ class SettingsFrame1(tk.Frame):
         self.close_menu_button_frame.grid_propagate(False)
 
         x_button_font = tkFont.Font(family="Helvetica", size=20, weight="bold")
-        close_menu_button = tk.Button(
+        self.close_menu_button = tk.Button(
             self.close_menu_button_frame,
             text="X",
             bg="red",
@@ -395,4 +397,4 @@ class SettingsFrame1(tk.Frame):
             font=x_button_font,
             command=self.master.switch_main_frame,
         )
-        close_menu_button.pack(ipadx=5, ipady=5, expand=True)
+        self.close_menu_button.pack(ipadx=5, ipady=5, expand=True)

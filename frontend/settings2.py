@@ -87,6 +87,8 @@ class SettingsFrame2(tk.Frame):
         self.priority_button_frame.configure(bg=color_scheme["apply_changes_background"])
         self.priority_button_frame.configure(bg=color_scheme["selected_color"])
 
+        self.close_menu_button.configure(bg=color_scheme["apply_changes_background"])
+
 
     def targets_button_color(self, button):
         mode = "dark" if self.color_scheme["dark_mode"] else "light"
@@ -424,7 +426,7 @@ class SettingsFrame2(tk.Frame):
         self.close_menu_button_frame.grid_propagate(False)
 
         x_button_font = tkFont.Font(family="Helvetica", size=20, weight="bold")
-        close_menu_button = tk.Button(
+        self.close_menu_button = tk.Button(
             self.close_menu_button_frame,
             text="X",
             bg="red",
@@ -432,7 +434,7 @@ class SettingsFrame2(tk.Frame):
             font=x_button_font,
             command=self.master.switch_main_frame,
         )
-        close_menu_button.pack(ipadx=5, ipady=5, expand=True)
+        self.close_menu_button.pack(ipadx=5, ipady=5, expand=True)
 
     def toggle_priority_list_visibility(self):
         if self.is_toggled:
