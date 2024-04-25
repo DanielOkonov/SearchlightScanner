@@ -97,6 +97,7 @@ class SettingsFrame1(tk.Frame):
         self.camera_feed = camera_feed  # Reference to the CameraFeed object
         self.current_cam = tk.IntVar(value=0)  # 0 for cam1, 1 for cam2
         self.style = ttk.Style()
+        self.default_settings_pushed = True
         self.create_widgets()
         self.update_colors()
 
@@ -159,6 +160,8 @@ class SettingsFrame1(tk.Frame):
         self.resolutions_frame.configure(bg=color_scheme["button_bg"],
                                          highlightbackground=color_scheme["frame_outline_color"],
                                          highlightcolor=color_scheme["frame_outline_color"])
+        
+        self.close_menu_button.configure(bg=color_scheme["apply_changes_background"])
 
         # Update the styles for TMenubutton and TMenu
         self.style.map('TMenubutton', background=[('active', color_scheme["selected_color"]), ('!active', color_scheme["button_bg"])],
@@ -166,6 +169,13 @@ class SettingsFrame1(tk.Frame):
         self.style.configure('TMenubutton', background=color_scheme["button_bg"], foreground=color_scheme["button_font_color/fg"])
         self.style.configure('TMenu', background=color_scheme["button_bg"], foreground=color_scheme["button_font_color/fg"], borderwidth=0)
         self.style.map('TMenu', background=[('active', color_scheme["selected_color"])])
+
+        if self.default_settings_pushed == True:
+            self.default_settings_button.configure(bg=color_scheme["selected_color"])
+            self.custom_settings_button.configure(bg=color_scheme["settings_select_buttons_inactive"])
+        else:
+            self.default_settings_button.configure(bg=color_scheme["settings_select_buttons_inactive"])
+            self.custom_settings_button.configure(bg=color_scheme["selected_color"])
 
     def update_confidence(self, value):
         # This method updates the slider's position and the label's text
@@ -261,6 +271,33 @@ class SettingsFrame1(tk.Frame):
 
         menu = self.option_menu['menu']
         menu.config(font=menu_font)  # Set the font for menu items
+
+        # Settings selection frame and buttons
+        self.settings_select_buttons_frame = tk.Frame(self.sliders_frame, bg="#7C889C", width=70, height=108)
+        self.settings_select_buttons_frame.place(x=120, y=435)
+
+        self.default_settings_button = tk.Button(
+            self.settings_select_buttons_frame,
+            text="DEFAULT SETTINGS",
+            bg="#24D215",
+            fg="white",
+            font=font_used,
+            width=20,
+            height=3,
+            command=self.default_setings_selection)
+        
+        self.default_settings_button.grid(row=0, column=0)
+
+        self.custom_settings_button = tk.Button(self.settings_select_buttons_frame,
+                                                text= "CUSTOM SETTINGS",
+                                                bg="grey",
+                                                fg="white",
+                                                font=font_used,
+                                                width=20,
+                                                height=3,
+                                                command=self.custom_settings_selection)
+        
+        self.custom_settings_button.grid(row=0, column=1)
 
         # Camera selection frame and buttons
         self.cam_select_buttons_frame = tk.Frame(self.sliders_frame, bg="#7C889C", width=70, height=108)
@@ -387,7 +424,7 @@ class SettingsFrame1(tk.Frame):
         self.close_menu_button_frame.grid_propagate(False)
 
         x_button_font = tkFont.Font(family="Helvetica", size=20, weight="bold")
-        close_menu_button = tk.Button(
+        self.close_menu_button = tk.Button(
             self.close_menu_button_frame,
             text="X",
             bg="red",
@@ -395,4 +432,18 @@ class SettingsFrame1(tk.Frame):
             font=x_button_font,
             command=self.master.switch_main_frame,
         )
-        close_menu_button.pack(ipadx=5, ipady=5, expand=True)
+        self.close_menu_button.pack(ipadx=5, ipady=5, expand=True)
+
+    def default_setings_selection(self):
+        mode = "dark" if self.color_scheme["dark_mode"] else "light"
+        color_scheme = self.color_scheme["colors"][mode]
+        self.default_settings_button.configure(bg=color_scheme["selected_color"])
+        self.custom_settings_button.configure(bg=color_scheme["settings_select_buttons_inactive"])
+        self.default_settings_pushed = True
+
+    def custom_settings_selection(self):
+        mode = "dark" if self.color_scheme["dark_mode"] else "light"
+        color_scheme = self.color_scheme["colors"][mode]
+        self.default_settings_button.configure(bg=color_scheme["settings_select_buttons_inactive"])
+        self.custom_settings_button.configure(bg=color_scheme["selected_color"])
+        self.default_settings_pushed = False

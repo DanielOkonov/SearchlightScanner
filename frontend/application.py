@@ -91,6 +91,9 @@ class Application(tk.Tk):
         color_scheme = self.color_scheme["colors"][mode]
         self.configure(bg=color_scheme["application/window_and_frame_color"])
 
+    def quit_application(self):
+        # This method can be called directly by a button in any frame
+        self.on_close()  # Assuming this method closes the application cleanly
 
     def toggle_dark_mode(self):
         # This method would be bound to a button click to toggle dark mode

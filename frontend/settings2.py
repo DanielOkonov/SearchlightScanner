@@ -10,6 +10,7 @@ class SettingsFrame2(tk.Frame):
         self.color_scheme = color_scheme
         self.segments_frame = None
         self.segment_buttons = {}
+        self.is_toggled = True
         self.targets_selected_count = 0
         self.segmentation_switch_state = {"is_on": False}
         self.selected_targets_dict = {}
@@ -83,6 +84,11 @@ class SettingsFrame2(tk.Frame):
         self.apply_button_frame.configure(bg=color_scheme["apply_changes_background"])
         self.apply_changes_button.configure(bg=color_scheme["selected_color"])
 
+        self.priority_button_frame.configure(bg=color_scheme["apply_changes_background"])
+        self.priority_button_frame.configure(bg=color_scheme["selected_color"])
+
+        self.close_menu_button.configure(bg=color_scheme["apply_changes_background"])
+
 
     def targets_button_color(self, button):
         mode = "dark" if self.color_scheme["dark_mode"] else "light"
@@ -155,16 +161,12 @@ class SettingsFrame2(tk.Frame):
         )
         self.targets_label.grid(row=0, column=0, columnspan=3, padx=10, pady=10)
 
-        # self.targets_listbox = ReorderableListbox(self, font=font_used)
-        # self.targets_listbox = ReorderableListbox(self, font=font_used, application_callback=self.update_order_from_listbox)
         self.targets_listbox = ReorderableListbox(
             self,
             font=font_used,
             update_order_callback=self.update_order_from_listbox,
             update_display_callback=self.update_listbox_display,
         )
-        # self.targets_listbox.grid(row=1, column=0, columnspan=3, sticky="ew", padx=5, pady=5)
-        self.targets_listbox.place_forget()  # Initially hidden
 
         targets = [
             "PEOPLE",
@@ -186,8 +188,7 @@ class SettingsFrame2(tk.Frame):
                 text=target,
                 font=font_used,
                 width=18,
-                height=5,
-                # command=lambda t=target: self.toggle_target_selection(t)
+                height=5
             )
             button.grid(row=(i // 3) + 1, column=i % 3, padx=5, pady=5)
             button.config(
@@ -198,8 +199,17 @@ class SettingsFrame2(tk.Frame):
             )
             self.target_buttons[target] = button
 
-        # Initially, the Listbox is hidden as no target is selected
-        self.targets_listbox.place_forget()
+        self.priority_button_frame = tk.Button(
+            self.targets_frame,
+            bg="#24D215",
+            fg="white",
+            font = tkFont.Font(family="Helvetica", size=10, weight="bold"),
+            text="SET CATEGORY PRIORITY",
+            command=self.toggle_priority_list_visibility,
+            width=20,
+            height=2,
+        )
+        self.priority_button_frame.place_forget()
 
         #############################################################################################################
         # BUTTON FOR TOGGLING OPERATOR ALERTS ON OR OFF
@@ -416,7 +426,7 @@ class SettingsFrame2(tk.Frame):
         self.close_menu_button_frame.grid_propagate(False)
 
         x_button_font = tkFont.Font(family="Helvetica", size=20, weight="bold")
-        close_menu_button = tk.Button(
+        self.close_menu_button = tk.Button(
             self.close_menu_button_frame,
             text="X",
             bg="red",
@@ -424,7 +434,19 @@ class SettingsFrame2(tk.Frame):
             font=x_button_font,
             command=self.master.switch_main_frame,
         )
-        close_menu_button.pack(ipadx=5, ipady=5, expand=True)
+        self.close_menu_button.pack(ipadx=5, ipady=5, expand=True)
+
+    def toggle_priority_list_visibility(self):
+        if self.is_toggled:
+            self.targets_listbox.place(x=17, y=52, width=170, height=100)
+            for button in self.target_buttons.values():
+                button.config(state="disabled")
+        else:
+            self.targets_listbox.place_forget()
+            for button in self.target_buttons.values():
+                button.config(state="normal")
+        # Toggle the state
+        self.is_toggled = not self.is_toggled
 
     def toggle_target_selection(self, target):
         if target in self.selected_targets_dict:
@@ -451,8 +473,9 @@ class SettingsFrame2(tk.Frame):
 
         # Update visibility of the Listbox based on selected targets count
         if self.selected_targets_dict:
-            self.targets_listbox.place(x=5, y=300, width=580, height=100)
+            self.priority_button_frame.place(x=5, y=2)
         else:
+            self.priority_button_frame.place_forget()
             self.targets_listbox.place_forget()
 
     def populate_listbox_with_targets(self):

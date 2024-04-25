@@ -51,6 +51,18 @@ class MainFrame(tk.Frame):
                                     fg=color_scheme["label_font_color/fg"])
         self.gps_altitude.configure(bg=color_scheme["application/window_and_frame_color"],
                                     fg=color_scheme["label_font_color/fg"])
+        
+        self.stop_application_button.configure(bg=color_scheme["apply_changes_background"])
+
+        self.confirm_quit_app_frame.configure(bg=color_scheme["application/window_and_frame_color"],
+                                              highlightbackground=color_scheme["frame_outline_color"],
+                                              highlightcolor=color_scheme["frame_outline_color"])
+        
+        self.confirm_quit_label.configure(bg=color_scheme["application/window_and_frame_color"],
+                                          fg=color_scheme["label_font_color/fg"])
+        
+        self.confirm_quit.configure(bg=color_scheme["selected_color"])
+        self.dont_quit.configure(bg=color_scheme["apply_changes_background"])
 
 
     def update_confidence(self, value):
@@ -165,6 +177,56 @@ class MainFrame(tk.Frame):
         )
         self.gps_altitude.place(x=235, y=20)
         self.start_gps_thread()
+
+        # Quit application button
+        self.stop_application_button = tk.Button(
+            self,
+            bg = "red",
+            fg = "white",
+            font = custom_font,
+            text = "QUIT",
+            command = self.show_confirm_quit_app_frame,
+            width = 7,
+            height = 2
+        )
+
+        self.stop_application_button.place(x=1105, y=613)
+
+        # Confirm quit frame and buttons
+        self.confirm_quit_app_frame = tk.Frame(self, bg='#7C889C', width=305, height=100, highlightbackground="black", highlightcolor="black", highlightthickness=2)
+
+        self.confirm_quit_label = tk.Label(self.confirm_quit_app_frame, text="ARE YOU SURE YOU WANT TO QUIT\nTHE APPLICATION?", bg="#7C889C", fg="black", font=custom_font)
+        self.confirm_quit_label.place(x=7, y=10)
+
+        self.confirm_quit = tk.Button(
+            self.confirm_quit_app_frame,
+            bg="#24D215",
+            fg="white",
+            font=custom_font,
+            text="YES",
+            command=self.parent.quit_application,
+            width = 10,
+            height = 1
+            )
+        self.confirm_quit.place(x=30, y=60)
+
+        self.dont_quit = tk.Button(
+            self.confirm_quit_app_frame,
+            bg="red",
+            fg="white",
+            font=custom_font,
+            text="NO",
+            command=self.dont_quit_app,
+            width = 10,
+            height = 1
+        )
+        self.dont_quit.place(x=160, y=60)
+
+    def show_confirm_quit_app_frame(self):
+        self.confirm_quit_app_frame.place(x=500, y=416)
+
+    def dont_quit_app(self):
+        self.confirm_quit_app_frame.place_forget()
 
     # Camera methods
     def start_camera_feed(self):
