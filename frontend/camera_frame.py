@@ -1,10 +1,12 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import font as tkFont
+import asyncio
 
 from .shared_confidence_controller import shared_confidence
 from .settings1 import CustomSlider
 from backend.image_processor import ImageProcessor
+from backend.sound_manager import SoundManager
 
 
 class MainFrame(tk.Frame):
@@ -18,6 +20,7 @@ class MainFrame(tk.Frame):
         shared_confidence.register_observer(self.update_confidence)
         self.create_widgets()
         self.ai = ImageProcessor()
+        self.sound_manager = SoundManager()
 
         self.update_colors()
 
@@ -242,6 +245,7 @@ class MainFrame(tk.Frame):
             frame = self.parent.camera_feed.capture()
             if frame is not None:
                 detections = self.ai.detect(frame)
+                asyncio.run(self.sound_manager.play_sound(detections)) # play sounds based on detections
                 img_rgb = Image.frombytes("RGB", (frame.width, frame.height), frame)
                 self.photo = ImageTk.PhotoImage(image=img_rgb)
                 self.camera_label.config(image=self.photo)
