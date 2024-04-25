@@ -69,6 +69,7 @@ class MainFrame(tk.Frame):
         # This method updates the slider's position and the label's text
         self.confidence_slider.set_value(value, update=False)  # Update the slider
         self.confidence_label.config(text=f"CONFIDENCE: {int(round(value))}%")  # Update the label
+        self.ai.set_confidence(value/100)  # Update the AI model's confidence threshold
 
     def on_slider_change(self, value):
         from shared_confidence_controller import shared_confidence
