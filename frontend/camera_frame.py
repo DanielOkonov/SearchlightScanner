@@ -178,6 +178,7 @@ class MainFrame(tk.Frame):
         self.gps_altitude.place(x=235, y=20)
         self.start_gps_thread()
 
+        # Quit application button
         self.stop_application_button = tk.Button(
             self,
             bg = "red",
@@ -191,7 +192,7 @@ class MainFrame(tk.Frame):
 
         self.stop_application_button.place(x=1105, y=613)
 
-
+        # Confirm quit frame and buttons
         self.confirm_quit_app_frame = tk.Frame(self, bg='#7C889C', width=305, height=100, highlightbackground="black", highlightcolor="black", highlightthickness=2)
 
         self.confirm_quit_label = tk.Label(self.confirm_quit_app_frame, text="ARE YOU SURE YOU WANT TO QUIT\nTHE APPLICATION?", bg="#7C889C", fg="black", font=custom_font)
