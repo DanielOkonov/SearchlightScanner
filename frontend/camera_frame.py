@@ -122,7 +122,7 @@ class MainFrame(tk.Frame):
 
         self.confidence_label = tk.Label(
             self.confidence_slider_frame,
-            text="CONFIDENCE: 0%",
+            text="CONFIDENCE: 50%",
             bg="#7C889C",
             fg="black",
             font=custom_font,

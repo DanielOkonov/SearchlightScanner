@@ -16,7 +16,7 @@ class CustomSlider(tk.Canvas):
         self.min_val = min_val
         self.max_val = max_val
         self.id = id
-        self.value = min_val
+        self.value = max_val/2
         self.bg = bg
         self.bar_fill = bar_fill
         self.bar_outline = bar_outline
