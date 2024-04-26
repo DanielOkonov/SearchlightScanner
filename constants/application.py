@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
+from tkinter import messagebox
 from constantsmanager import ConstantsManager
 
 segmentation_options = [
@@ -186,6 +187,8 @@ class Application(tk.Tk):
         constants_manager.set_constant("path_to_model", self.default_model_path.get())
         constants_manager.set_constant("path_to_labels", self.default_labels_path.get())
         constants_manager.set_constant("default_targets", default_targets)
+
+        messagebox.showinfo("Success", "Constants saved successfully!")
         print("Constants saved successfully!")
 
     def create_form(self):
