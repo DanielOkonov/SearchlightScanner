@@ -253,7 +253,12 @@ class MainFrame(tk.Frame):
 
     def handle_detections(self, detections, img):
         if len(detections) > 0:
-            self.saver.add_image(img, detections, (0, 0))
+            gps_coords = None
+            try:
+                gps_coords = self.gps_manager.get_coords()
+            except ValueError:
+                pass
+            self.saver.add_image(img, detections, gps_coords)
 
     def start_gps_thread(self):
         self.gps_manager.start()
