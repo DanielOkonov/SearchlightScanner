@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import font as tkFont
 
 from .reorderable_listbox import ReorderableListbox
+from .shared_segmentation_controller import shared_segmentation
+
+from .reorderable_listbox import ReorderableListbox
 from .application_current_settings_route import current_settings_route
 from constants.constantsmanager import ConstantsManager
 
@@ -61,7 +64,6 @@ class SettingsFrame2(tk.Frame):
         self.settings1_button.configure(bg=color_scheme["unselected_settings_button"])
         self.settings2_button.configure(bg=color_scheme["selected_color"])
 
-        # self.operator_alerts_switch_state["is_on"] = not self.operator_alerts_switch_state["is_on"]
         self.operator_toggle_canvas.configure(
             bg=color_scheme["application/window_and_frame_color"]
         )
@@ -122,9 +124,6 @@ class SettingsFrame2(tk.Frame):
             )
             self.toggle_segment_visibility(False)
 
-        self.apply_button_frame.configure(bg=color_scheme["apply_changes_background"])
-        self.apply_changes_button.configure(bg=color_scheme["selected_color"])
-
         self.priority_button_frame.configure(
             bg=color_scheme["apply_changes_background"]
         )
@@ -181,6 +180,10 @@ class SettingsFrame2(tk.Frame):
 
     def create_widgets(self):
         font_used = tkFont.Font(family="Helvetica", size=12, weight="bold")
+
+        #############################################################################################################
+        # TARGETS FRAME AND BUTTONS
+
         self.targets_frame = tk.Frame(
             self,
             bg="#7C889C",
@@ -230,6 +233,9 @@ class SettingsFrame2(tk.Frame):
                 )
             )
             self.target_buttons[target] = button
+
+        #############################################################################################################
+        # PRIORITY BUTTON
 
         self.priority_button_frame = tk.Button(
             self.targets_frame,
@@ -301,11 +307,8 @@ class SettingsFrame2(tk.Frame):
         #############################################################################################################
         # BUTTONS FOR SELECTING WHICH SETTINGS MENU TO GO TO
 
-        # self.settings_toggle_frame = tk.Frame(self, bg="#7C889C", width=200, height=108)
         self.settings_toggle_frame = tk.Frame(self, width=100, height=108)
         self.settings_toggle_frame.grid(row=2, column=0, padx=10, pady=10, sticky="w")
-
-        # self.settings_toggle_frame.grid_propagate(False)
 
         self.settings1_button = tk.Button(
             self.settings_toggle_frame,
@@ -356,7 +359,7 @@ class SettingsFrame2(tk.Frame):
         )
         self.segments_label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
 
-        segments = [1, 25, 4, 40, 9, 60, 16, 84]
+        segments = [k for k in shared_segmentation.get_options().keys()]
 
         for i, segment in enumerate(segments):
             button = tk.Button(
@@ -369,7 +372,12 @@ class SettingsFrame2(tk.Frame):
                 height=3,
             )
             button.grid(row=(i // 2) + 1, column=i % 2, sticky="ew", padx=5, pady=5)
-            button.config(command=lambda b=button: self.set_button_active(b))
+            button.config(
+                command=lambda b=button, s=segment: (
+                    self.set_button_active(b),
+                    shared_segmentation.set_current(s),
+                )
+            )
             self.segment_buttons[segment] = button
 
         #############################################################################################################
@@ -428,24 +436,6 @@ class SettingsFrame2(tk.Frame):
         )
 
         #############################################################################################################
-        # APPLY CHANGES BUTTON
-
-        self.apply_button_frame = tk.Frame(self, bg="red", width=200, height=100)
-        self.apply_button_frame.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
-        self.apply_button_frame.grid_propagate(False)
-
-        self.apply_changes_button = tk.Button(
-            self.apply_button_frame,
-            text="APPLY CHANGES",
-            bg="#24D215",
-            fg="white",
-            font=font_used,
-            width=53,
-            height=4,
-        )
-        self.apply_changes_button.grid(row=0, column=0, padx=11, pady=9)
-
-        #############################################################################################################
         # CLOSE SETTINGS MENU BUTTON
 
         self.close_menu_button_frame = tk.Frame(
@@ -469,6 +459,8 @@ class SettingsFrame2(tk.Frame):
             command=self.master.switch_main_frame,
         )
         self.close_menu_button.pack(ipadx=5, ipady=5, expand=True)
+
+        #############################################################################################################
 
     def toggle_priority_list_visibility(self):
         if self.is_toggled:

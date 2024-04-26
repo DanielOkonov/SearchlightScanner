@@ -2,7 +2,7 @@ import threading
 import queue
 import time
 import os
-from scanner_image import ScannerImage
+from .scanner_image import ScannerImage
 
 
 class ImageSaver:
@@ -40,7 +40,8 @@ class ImageSaver:
         self.labels = labels
 
     def add_image(self, image, detections, gps_coords):
-        self.queue.put(ScannerImage(image, detections, gps_coords))
+        image_copy = image.copy()
+        self.queue.put(ScannerImage(image_copy, detections, gps_coords))
 
     def run(self):
         while self.running:
@@ -97,4 +98,4 @@ class ImageSaver:
         for i, scanner_image in enumerate(images, start=last_image_number + 1):
             image_name = f"DET_{scanner_image.date_time}"
             image_path = os.path.join(current_dir_path, f"{image_name}.jpg")
-            scanner_image.image.save(image_path)
+            scanner_image.save(image_path)

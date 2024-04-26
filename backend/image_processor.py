@@ -1,10 +1,6 @@
 from jetson_inference import detectNet
-from jetson_utils import (
-    cudaToNumpy,
-    cudaCrop,
-    cudaAllocMapped,
-    cudaResize,
-)
+from jetson_utils import (cudaToNumpy, cudaFromNumpy)
+from .scanner_detection import ScannerDetection
 from PIL import Image
 import tempfile
 import os
@@ -25,56 +21,51 @@ class ImageProcessor:
         if labels_path:
             os.remove(labels_path)
 
-    def detect(self, img_cuda):
-        # if grid_size is None:
-        # Process the whole image
-        return self.net.Detect(img_cuda, overlay="lines,labels,conf")
-        # else:
-        #     img_width = img_cuda.width
-        #     img_height = img_cuda.height
-        #     segment_width = img_width // grid_size[0]
-        #     segment_height = img_height // grid_size[1]
+    def detect(self, image, grid_size=None):
+        """
+        Detect objects in an image.
+        Args:
+            image (Image): The image to detect objects in.
+            grid_size (tuple[int, int], optional): The size of the grid to use for detection. If not provided, the whole image is used.
+        Returns:
+            list[Detection]: A list of detections.
+        """
+        detections = []
+        if grid_size is not None:
+            height, width = image.height, image.width
+            grid_height, grid_width = height // grid_size[0], width // grid_size[1]
+            image_np = cudaToNumpy(image)
+            for i in range(grid_size[0]):
+                for j in range(grid_size[1]):
+                    start_i, end_i = i * grid_height, (i + 1) * grid_height
+                    start_j, end_j = j * grid_width, (j + 1) * grid_width
+                    segment = image_np[start_i:end_i, start_j:end_j]
+                    segment = cudaFromNumpy(segment)
+                    segment_detections = self.net.Detect(segment, overlay="none")
+                    for detection in segment_detections:
+                        detection.Left += start_j
+                        detection.Right += start_j
+                        detection.Top += start_i
+                        detection.Bottom += start_i
+                    detections.extend(segment_detections)
+            self.net.Overlay(image, detections, overlay="lines,labels,conf")
+        else:
+            detections = self.net.Detect(image, overlay="lines,labels,conf")
+        return [
+            ScannerDetection(self.get_label(detection.ClassID), detection.Confidence)
+            for detection in detections
+        ]
+    
+    def get_label(self, label_id):
+        """
+        Get the label for a given label ID.
+        Args:
+            label_id (int): The ID of the label to get.
+        Returns:
+            str: The label for the given ID.
+        """
+        return self.net.GetClassDesc(label_id)
 
-        #     detections = []
-
-        #     for row in range(grid_size[1]):
-        #         for col in range(grid_size[0]):
-        #             x1, y1 = col * segment_width, row * segment_height
-        #             x2, y2 = x1 + segment_width, y1 + segment_height
-
-        #             # Crop segment while keeping it in CUDA memory
-        #             img_segment = cudaAllocMapped(
-        #                 width=segment_width,
-        #                 height=segment_height,
-        #                 format=img_cuda.format,
-        #             )
-        #             cudaCrop(img_cuda, img_segment, (x1, y1, x2, y2))
-
-        #             # Detect objects in the segment
-        #             segment_detections = self.net.Detect(
-        #                 img_segment, overlay="lines,labels,conf"
-        #             )
-
-        #             # Adjust detections to full image coordinates
-        #             for d in segment_detections:
-        #                 d.Left += x1
-        #                 d.Top += y1
-        #                 d.Right += x1
-        #                 d.Bottom += y1
-        #                 detections.append(d)
-
-        # Resize the original image to new dimensions
-        # return detections
-        # img_resized = cudaAllocMapped(
-        #     width=new_width, height=new_height, format=img_cuda.format
-        # )
-        # cudaResize(img_cuda, img_resized)
-
-        # # Convert to numpy array and then to PIL format
-        # image = Image.fromarray(cudaToNumpy(img_resized))
-
-        # # return img_resized, detections
-        # return image, detections
 
     def set_confidence(self, conf_level):
         """

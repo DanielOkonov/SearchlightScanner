@@ -1,10 +1,16 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import font as tkFont
+import asyncio
+import jetson_utils
+from PIL import Image
 
 from .shared_confidence_controller import shared_confidence
 from .settings1 import CustomSlider
 from backend.image_processor import ImageProcessor
+from backend.sound_manager import SoundManager
+from backend.image_saver import ImageSaver
+from .shared_segmentation_controller import shared_segmentation
 
 
 class MainFrame(tk.Frame):
@@ -18,6 +24,9 @@ class MainFrame(tk.Frame):
         shared_confidence.register_observer(self.update_confidence)
         self.create_widgets()
         self.ai = ImageProcessor()
+        self.sound_manager = SoundManager()
+        self.saver = ImageSaver(5, "images", 1, 100, {})
+        self.saver.start()
 
         self.update_colors()
 
@@ -69,14 +78,13 @@ class MainFrame(tk.Frame):
         # This method updates the slider's position and the label's text
         self.confidence_slider.set_value(value, update=False)  # Update the slider
         self.confidence_label.config(text=f"CONFIDENCE: {int(round(value))}%")  # Update the label
+        self.ai.set_confidence(value/100)  # Update the AI model's confidence threshold
 
     def on_slider_change(self, value):
         from shared_confidence_controller import shared_confidence
         shared_confidence.set_value(value)
 
     def create_widgets(self):
-        mode = "dark" if self.color_scheme["dark_mode"] else "light"
-        color_scheme = self.color_scheme["colors"][mode]
         # Camera feed label
         self.camera_label = tk.Label(self, bg="black")
         self.camera_label.grid(row=0, column=0, sticky="nws")
@@ -90,11 +98,15 @@ class MainFrame(tk.Frame):
 
         custom_font = tkFont.Font(family="Helvetica", size=12, weight="bold")
 
-        # Menu options frame
+        #############################################################################################################
+        # MENU OPTIONS FRAME
+
         self.menu_options_frame = tk.Frame(self, bg="#7C889C", width=1000, height=180)
         self.menu_options_frame.grid(row=1, column=0, sticky="sw", padx=3)
 
-        # Settings frame and button
+        #############################################################################################################
+        # SETTINGS FRAME AND BUTTON
+
         self.settings_button_frame = tk.Frame(self.menu_options_frame, bg='#7C889C', width=275, height=60)
         self.settings_button_frame.grid(row=0, column=0, sticky='nw', padx=3)
         self.settings_button_frame.grid_propagate(False)
@@ -111,7 +123,9 @@ class MainFrame(tk.Frame):
         )
         self.settings_button.grid(pady=3, padx=5)
 
-        # Confidence frame and slider
+        #############################################################################################################
+        # CONFIDENCE FRAME AND SLIDER
+
         self.confidence_slider_frame = tk.Frame(self.menu_options_frame, width= 400, height= 30, highlightbackground="black", highlightcolor="black", highlightthickness=2)
 
         self.confidence_slider_frame.grid(
@@ -121,13 +135,12 @@ class MainFrame(tk.Frame):
 
         self.confidence_label = tk.Label(
             self.confidence_slider_frame,
-            text="CONFIDENCE: 0%",
+            text="CONFIDENCE: 50%",
             bg="#7C889C",
             fg="black",
             font=custom_font,
         )
         self.confidence_label.grid(row=0, column=0, sticky='nsw', pady=0)
-
 
         self.confidence_slider = CustomSlider(
             self.confidence_slider_frame,
@@ -143,7 +156,9 @@ class MainFrame(tk.Frame):
         )
         self.confidence_slider.grid(row=0, column=0, padx=195, sticky='nse', pady=0)
 
-        # GPS frame and output
+        #############################################################################################################
+        # GPS FRAME AND OUTPUT
+
         self.gps_frame = tk.Frame(self.menu_options_frame, bg='#7C889C', width=400, height=53, highlightbackground="black", highlightcolor="black", highlightthickness=2)
 
         self.gps_frame.grid(row=0, column=2, sticky="nsew", padx=10, pady=4)
@@ -178,7 +193,9 @@ class MainFrame(tk.Frame):
         self.gps_altitude.place(x=235, y=20)
         self.start_gps_thread()
 
-        # Quit application button
+        #############################################################################################################
+        # QUIT APPLICATION BUTTON
+
         self.stop_application_button = tk.Button(
             self,
             bg = "red",
@@ -192,7 +209,9 @@ class MainFrame(tk.Frame):
 
         self.stop_application_button.place(x=1105, y=613)
 
-        # Confirm quit frame and buttons
+        #############################################################################################################
+        # CONFIRM QUIT FRAME AND BUTTONS
+
         self.confirm_quit_app_frame = tk.Frame(self, bg='#7C889C', width=305, height=100, highlightbackground="black", highlightcolor="black", highlightthickness=2)
 
         self.confirm_quit_label = tk.Label(self.confirm_quit_app_frame, text="ARE YOU SURE YOU WANT TO QUIT\nTHE APPLICATION?", bg="#7C889C", fg="black", font=custom_font)
@@ -222,6 +241,8 @@ class MainFrame(tk.Frame):
         )
         self.dont_quit.place(x=160, y=60)
 
+        #############################################################################################################
+
     def show_confirm_quit_app_frame(self):
         self.confirm_quit_app_frame.place(x=500, y=416)
 
@@ -240,12 +261,29 @@ class MainFrame(tk.Frame):
         if self.update_camera:
             frame = self.parent.camera_feed.capture()
             if frame is not None:
-                detections = self.ai.detect(frame)
-                img_rgb = Image.frombytes("RGB", (frame.width, frame.height), frame)
+                detections = self.ai.detect(frame, shared_segmentation.get_current())
+                asyncio.run(self.sound_manager.play_sound(detections)) # play sounds based on detections
+
+                # Resize image
+                numpy_image = jetson_utils.cudaToNumpy(frame)
+                pil_image = Image.fromarray(numpy_image)
+                pil_image = pil_image.resize((1280, 720))
+
+                img_rgb = pil_image.convert("RGB")
                 self.photo = ImageTk.PhotoImage(image=img_rgb)
+                self.handle_detections(detections, img_rgb)
                 self.camera_label.config(image=self.photo)
                 self.camera_label.image = self.photo  # Keep a reference to the image
             self.after(1, self.update_frame)
+
+    def handle_detections(self, detections, img):
+        if len(detections) > 0:
+            gps_coords = None
+            try:
+                gps_coords = self.gps_manager.get_coords()
+            except ValueError:
+                pass
+            self.saver.add_image(img, detections, gps_coords)
 
     def start_gps_thread(self):
         self.gps_manager.start()

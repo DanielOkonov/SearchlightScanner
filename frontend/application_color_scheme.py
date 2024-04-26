@@ -18,6 +18,7 @@ color_scheme = {
             "light_green_bg": "#24D215",
             "slider_knob_color": "#24D215",
             "frame_outline_color": "black",
+            "settings_select_buttons_inactive": "grey",
             "focus_button_bg_light_inactive":"grey",
             "focus_button_bg_light_active":"#24D215",
             "apply_changes_background": "red"
@@ -39,6 +40,7 @@ color_scheme = {
             "dark_green_bg": "#006400",
             "slider_knob_color": "#006400",
             "frame_outline_color": "white",
+            "settings_select_buttons_inactive": "#697283",
             "focus_button_bg_dark_inactive": "#697283",
             "focus_button_bg_dark_active": "#006400",
             "apply_changes_background": "#8B0000"
