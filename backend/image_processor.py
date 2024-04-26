@@ -33,7 +33,7 @@ class ImageProcessor:
 
             with open(temp_color_file.name, 'w') as f:
                 for color in colors:
-                    f.write(str(color) + '\n')
+                    f.write(f"{color[0]} {color[1]} {color[2]}\n")
 
             model = self.model_path if self.model_path else "ssd-mobilenet-v2"
             threshold = 0.5
