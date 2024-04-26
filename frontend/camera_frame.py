@@ -5,6 +5,7 @@ from tkinter import font as tkFont
 from .shared_confidence_controller import shared_confidence
 from .settings1 import CustomSlider
 from backend.image_processor import ImageProcessor
+from backend.image_saver import ImageSaver
 
 
 class MainFrame(tk.Frame):
@@ -18,6 +19,8 @@ class MainFrame(tk.Frame):
         shared_confidence.register_observer(self.update_confidence)
         self.create_widgets()
         self.ai = ImageProcessor()
+        self.saver = ImageSaver(5, "images", 1, 100, {})
+        self.saver.start()
 
         self.update_colors()
 
@@ -243,9 +246,14 @@ class MainFrame(tk.Frame):
                 detections = self.ai.detect(frame)
                 img_rgb = Image.frombytes("RGB", (frame.width, frame.height), frame)
                 self.photo = ImageTk.PhotoImage(image=img_rgb)
+                self.handle_detections(detections, img_rgb)
                 self.camera_label.config(image=self.photo)
                 self.camera_label.image = self.photo  # Keep a reference to the image
             self.after(1, self.update_frame)
+
+    def handle_detections(self, detections, img):
+        if len(detections) > 0:
+            self.saver.add_image(img, detections, (0, 0))
 
     def start_gps_thread(self):
         self.gps_manager.start()
