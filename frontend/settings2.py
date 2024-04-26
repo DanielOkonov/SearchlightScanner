@@ -10,9 +10,7 @@ from constants.constantsmanager import ConstantsManager
 class SettingsFrame2(tk.Frame):
     def __init__(self, parent, color_scheme, **kwargs):
         super().__init__(parent, **kwargs)
-        self.constants_manager = ConstantsManager(
-            filename=current_settings_route.filename
-        )
+        self.constants_manager = ConstantsManager(filename=current_settings_route)
         self.color_scheme = color_scheme
         self.segments_frame = None
         self.segment_buttons = {}
