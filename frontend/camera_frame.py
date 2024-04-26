@@ -2,6 +2,8 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import font as tkFont
 import asyncio
+import jetson_utils
+from PIL import Image
 
 from .shared_confidence_controller import shared_confidence
 from .settings1 import CustomSlider
@@ -249,7 +251,13 @@ class MainFrame(tk.Frame):
             if frame is not None:
                 detections = self.ai.detect(frame)
                 asyncio.run(self.sound_manager.play_sound(detections)) # play sounds based on detections
-                img_rgb = Image.frombytes("RGB", (frame.width, frame.height), frame)
+
+                # Resize image
+                numpy_image = jetson_utils.cudaToNumpy(frame)
+                pil_image = Image.fromarray(numpy_image)
+                pil_image = pil_image.resize((1280, 720))
+
+                img_rgb = pil_image.convert("RGB")
                 self.photo = ImageTk.PhotoImage(image=img_rgb)
                 self.handle_detections(detections, img_rgb)
                 self.camera_label.config(image=self.photo)
