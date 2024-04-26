@@ -4,6 +4,7 @@ from tkinter import font as tkFont
 import asyncio
 import jetson_utils
 from PIL import Image
+from backend.led_controller import LEDController
 
 from .shared_confidence_controller import shared_confidence
 from .settings1 import CustomSlider
@@ -26,6 +27,7 @@ class MainFrame(tk.Frame):
         self.sound_manager = SoundManager()
         self.saver = ImageSaver(5, "images", 1, 100, {})
         self.saver.start()
+        self.led_controller = LEDController()
 
         self.update_colors()
 
@@ -206,7 +208,7 @@ class MainFrame(tk.Frame):
             height = 2
         )
 
-        self.stop_application_button.place(x=1105, y=613)
+        self.stop_application_button.place(x=1135, y=725)
 
         #############################################################################################################
         # CONFIRM QUIT FRAME AND BUTTONS
@@ -277,6 +279,7 @@ class MainFrame(tk.Frame):
 
     def handle_detections(self, detections, img):
         if len(detections) > 0:
+            self.led_controller.flash_led()
             gps_coords = None
             try:
                 gps_coords = self.gps_manager.get_coords()
