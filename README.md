@@ -39,6 +39,12 @@ A tkinter-based graphical user interface (GUI) application that integrates the f
 
 This class manages video capture from a designated camera source using OpenCV. It provides functionalities to change the video source and capture frames which can be processed by other components of the application.
 
+## Notes
+
+Project deployment notes can be viewed at https://docs.google.com/document/d/1rzz0O65910Saukt-Ppdr1zIEvkJdUONx/edit
+
+Releae notes can be viewed at https://docs.google.com/document/d/1J6jRMFk4gDtfDnW0x19CBua5L9uNC4Ai/edit 
+
 ## Installation
 
 Ensure you have the following dependencies installed:
