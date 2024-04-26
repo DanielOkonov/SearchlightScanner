@@ -1,10 +1,12 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import font as tkFont
+import asyncio
 
 from .shared_confidence_controller import shared_confidence
 from .settings1 import CustomSlider
 from backend.image_processor import ImageProcessor
+from backend.sound_manager import SoundManager
 from backend.image_saver import ImageSaver
 
 
@@ -19,6 +21,7 @@ class MainFrame(tk.Frame):
         shared_confidence.register_observer(self.update_confidence)
         self.create_widgets()
         self.ai = ImageProcessor()
+        self.sound_manager = SoundManager()
         self.saver = ImageSaver(5, "images", 1, 100, {})
         self.saver.start()
 
@@ -72,6 +75,7 @@ class MainFrame(tk.Frame):
         # This method updates the slider's position and the label's text
         self.confidence_slider.set_value(value, update=False)  # Update the slider
         self.confidence_label.config(text=f"CONFIDENCE: {int(round(value))}%")  # Update the label
+        self.ai.set_confidence(value/100)  # Update the AI model's confidence threshold
 
     def on_slider_change(self, value):
         from shared_confidence_controller import shared_confidence
@@ -124,7 +128,7 @@ class MainFrame(tk.Frame):
 
         self.confidence_label = tk.Label(
             self.confidence_slider_frame,
-            text="CONFIDENCE: 0%",
+            text="CONFIDENCE: 50%",
             bg="#7C889C",
             fg="black",
             font=custom_font,
@@ -244,6 +248,7 @@ class MainFrame(tk.Frame):
             frame = self.parent.camera_feed.capture()
             if frame is not None:
                 detections = self.ai.detect(frame)
+                asyncio.run(self.sound_manager.play_sound(detections)) # play sounds based on detections
                 img_rgb = Image.frombytes("RGB", (frame.width, frame.height), frame)
                 self.photo = ImageTk.PhotoImage(image=img_rgb)
                 self.handle_detections(detections, img_rgb)
