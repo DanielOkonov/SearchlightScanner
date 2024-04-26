@@ -2,12 +2,14 @@ import tkinter as tk
 from tkinter import font as tkFont
 from .reorderable_listbox import ReorderableListbox
 from .shared_segmentation_controller import shared_segmentation
+from .shared_labels_controller import shared_labels
 
 
 
 class SettingsFrame2(tk.Frame):
-    def __init__(self, parent, color_scheme, **kwargs):
+    def __init__(self, parent, color_scheme, ai, **kwargs):
         super().__init__(parent, **kwargs)
+        self.ai = ai
         self.color_scheme = color_scheme
         self.segments_frame = None
         self.segment_buttons = {}
@@ -169,17 +171,7 @@ class SettingsFrame2(tk.Frame):
             update_display_callback=self.update_listbox_display,
         )
 
-        targets = [
-            "PEOPLE",
-            "CAR",
-            "BICYCLE",
-            "MOTORCYCLE",
-            "TRUCK",
-            "BUS",
-            "TRAIN",
-            "AIRPLANE",
-            "BOAT",
-        ]
+        targets = [k for k in shared_labels.get_all_labels().keys()]
         self.target_buttons = {}
         for i, target in enumerate(targets):
             button = tk.Button(
@@ -507,7 +499,8 @@ class SettingsFrame2(tk.Frame):
             self.selected_targets_dict[target] = order
             # Insert updated items back into the Listbox
             self.targets_listbox.insert(tk.END, f"{order}. {target}")
-
+        shared_labels.set_selected_labels(self.selected_targets_dict)
+        self.ai.update_labels(shared_labels.get_label_color())
         # Log to console for debugging
         print("Updated Selected Targets Dict:", self.selected_targets_dict)
 

@@ -6,6 +6,7 @@ import tkinter as tk
 import cv2
 from backend.video_source import CameraManager
 import platform
+from backend.image_processor import ImageProcessor
 
 # project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # if project_dir not in sys.path:
@@ -56,6 +57,7 @@ class CameraFeed:
 class Application(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.ai = ImageProcessor()
         self.color_scheme = color_scheme
         self.title("SearchLightScanner")
         self.update_colors()
@@ -80,7 +82,7 @@ class Application(tk.Tk):
                     self, self.camera_feed, self, self.color_scheme
                 )  # Assuming SettingsFrame1 also modified to accept camera_feed
             else:
-                frame = F(self, self.color_scheme)
+                frame = F(self, self.color_scheme, self.ai)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
