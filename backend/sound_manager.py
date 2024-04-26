@@ -11,7 +11,7 @@ class SoundManager:
         if detections:
             sound = self.sounds["default"]
             for detection in detections:
-                if detection.ClassID == 5:
+                if detection.label == 5:
                     sound = self.sounds["powerline"]
                     break
             os.system(f"mpg123 {sound}")
