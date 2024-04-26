@@ -142,6 +142,10 @@ class SettingsFrame2(tk.Frame):
 
     def create_widgets(self):
         font_used = tkFont.Font(family="Helvetica", size=12, weight="bold")
+
+        #############################################################################################################
+        # TARGETS FRAME AND BUTTONS
+
         self.targets_frame = tk.Frame(
             self,
             bg="#7C889C",
@@ -199,6 +203,9 @@ class SettingsFrame2(tk.Frame):
                 )
             )
             self.target_buttons[target] = button
+
+        #############################################################################################################
+        # PRIORITY BUTTON
 
         self.priority_button_frame = tk.Button(
             self.targets_frame,
@@ -395,24 +402,6 @@ class SettingsFrame2(tk.Frame):
         )
 
         #############################################################################################################
-        # APPLY CHANGES BUTTON
-
-        self.apply_button_frame = tk.Frame(self, bg="red", width=200, height=100)
-        self.apply_button_frame.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
-        self.apply_button_frame.grid_propagate(False)
-
-        self.apply_changes_button = tk.Button(
-            self.apply_button_frame,
-            text="APPLY CHANGES",
-            bg="#24D215",
-            fg="white",
-            font=font_used,
-            width=53,
-            height=4,
-        )
-        self.apply_changes_button.grid(row=0, column=0, padx=11, pady=9)
-
-        #############################################################################################################
         # CLOSE SETTINGS MENU BUTTON
 
         self.close_menu_button_frame = tk.Frame(
@@ -436,6 +425,8 @@ class SettingsFrame2(tk.Frame):
             command=self.master.switch_main_frame,
         )
         self.close_menu_button.pack(ipadx=5, ipady=5, expand=True)
+
+        #############################################################################################################
 
     def toggle_priority_list_visibility(self):
         if self.is_toggled:

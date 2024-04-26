@@ -239,15 +239,18 @@ class SettingsFrame1(tk.Frame):
         self.confidence_frame.grid(row=0, column=0, padx=10, pady=22)
         self.confidence_frame.grid_propagate(False)
 
+        #############################################################################################################
+        # CONFIDENCE SLIDER AND LABEL
 
-        # Confidence slider and label
         self.confidence_label = tk.Label(self.confidence_frame, text="CONFIDENCE: 0%", bg="#7C889C", fg="black", font=font_used)
         self.confidence_label.grid(row=0, column=0, sticky='nsew')
 
         self.confidence_slider = CustomSlider(self.confidence_frame, id='confidence_slider', length=605, width=120, handle_size=60, bar_fill="blue", bar_outline="yellow", handle_fill="green", bg="#7C889C", min_val=0, max_val=100, callback=self.on_slider_change)
         self.confidence_slider.grid(row=1, column=0, padx=2)
 
-        # Create a frame to hold the OptionMenu
+        #############################################################################################################
+        # RESOLUTIONS FRAME AND OPTION MENU
+
         self.resolution_frame_and_label = tk.Frame(self.sliders_frame, bg="#7C889C", highlightbackground="black", highlightcolor="black", highlightthickness=2, width=10, height=180)
         self.resolution_frame_and_label.grid(row=2, column=0, padx=(10, 0), pady=(17,0), sticky="ew")
         self.resolution_frame_and_label.grid_propagate(False)
@@ -284,7 +287,9 @@ class SettingsFrame1(tk.Frame):
         menu = self.option_menu['menu']
         menu.config(font=menu_font)  # Set the font for menu items
 
-        # Settings selection frame and buttons
+        #############################################################################################################
+        # SETTINGS SELECTION FRAME AND BUTTONS
+
         self.settings_select_buttons_frame = tk.Frame(self.sliders_frame, bg="#7C889C", width=70, height=108)
         self.settings_select_buttons_frame.place(x=120, y=435)
 
@@ -311,7 +316,9 @@ class SettingsFrame1(tk.Frame):
         
         self.custom_settings_button.grid(row=0, column=1)
 
-        # Operator Notes text frame
+        #############################################################################################################
+        # OPERATOR NOTES FRAME AND TEXT INPUT
+
         self.open_notes_button = tk.Button(self.sliders_frame,
                                            text="OPEN OPERATOR NOTES",
                                            bg="grey",
@@ -331,7 +338,9 @@ class SettingsFrame1(tk.Frame):
         self.save_button = tk.Button(self.text_field_frame, text="SAVE", bg="#24D215", fg="white", font=font_used, height=2, width=20, command=self.save_notes_input)
         self.save_button.place(x=955, y=439)
 
-        # Camera selection frame and buttons
+        #############################################################################################################
+        # CAMERA SELECTION FRAME AND BUTTONS
+
         self.cam_select_buttons_frame = tk.Frame(self.sliders_frame, bg="#7C889C", width=70, height=108)
         self.cam_select_buttons_frame.place(x=750, y=200)
 
@@ -344,7 +353,9 @@ class SettingsFrame1(tk.Frame):
         self.camera_two_button = tk.Button(self.cam_select_buttons_frame, text="CAMERA 2", bg="grey", fg="white", font=font_used, width=20, height=3, command=lambda: self.select_camera(2))
         self.camera_two_button.grid(row=1, column=1)
 
-        # Toggle dark mode button and label
+        #############################################################################################################
+        # TOGGLE DARK MODE FRAME AND BUTTON
+
         self.darkmode_toggle_frame = tk.Frame(
             self.sliders_frame,
             bg="#7C889C",
@@ -399,7 +410,9 @@ class SettingsFrame1(tk.Frame):
             ),
         )
 
-        # Settings frame and toggle
+        #############################################################################################################
+        # SETTINGS FRAME AND TOGGLE
+
         self.settings_toggle_frame = tk.Frame(self, width=100, height=108)
         self.settings_toggle_frame.grid(row=1, column=0, padx=10, pady=15, sticky="w")
 
@@ -427,23 +440,9 @@ class SettingsFrame1(tk.Frame):
         )
         self.settings2_button.grid(row=0, column=1, sticky="ew")
 
-        # Apply changes button
-        self.apply_button_frame = tk.Frame(self, bg="red", width=565, height=108)
-        self.apply_button_frame.grid(row=1, column=0, padx=10, pady=10, sticky="e")
-        self.apply_button_frame.grid_propagate(False)
+        #############################################################################################################
+        # CLOSE FRAME AND BUTTON
 
-        self.apply_changes_button = tk.Button(
-            self.apply_button_frame,
-            text="APPLY CHANGES",
-            bg="#24D215",
-            fg="white",
-            font=font_used,
-            width=53,
-            height=4,
-        )
-        self.apply_changes_button.grid(row=0, column=0, padx=11, pady=9)
-
-        # Close frame and button
         self.close_menu_button_frame = tk.Frame(
             self,
             highlightbackground="black",
@@ -465,6 +464,8 @@ class SettingsFrame1(tk.Frame):
             command=self.master.switch_main_frame,
         )
         self.close_menu_button.pack(ipadx=5, ipady=5, expand=True)
+
+        #############################################################################################################
 
     def default_setings_selection(self):
         mode = "dark" if self.color_scheme["dark_mode"] else "light"

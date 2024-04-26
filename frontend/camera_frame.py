@@ -85,8 +85,6 @@ class MainFrame(tk.Frame):
         shared_confidence.set_value(value)
 
     def create_widgets(self):
-        mode = "dark" if self.color_scheme["dark_mode"] else "light"
-        color_scheme = self.color_scheme["colors"][mode]
         # Camera feed label
         self.camera_label = tk.Label(self, bg="black")
         self.camera_label.grid(row=0, column=0, sticky="nws")
@@ -100,11 +98,15 @@ class MainFrame(tk.Frame):
 
         custom_font = tkFont.Font(family="Helvetica", size=12, weight="bold")
 
-        # Menu options frame
+        #############################################################################################################
+        # MENU OPTIONS FRAME
+
         self.menu_options_frame = tk.Frame(self, bg="#7C889C", width=1000, height=180)
         self.menu_options_frame.grid(row=1, column=0, sticky="sw", padx=3)
 
-        # Settings frame and button
+        #############################################################################################################
+        # SETTINGS FRAME AND BUTTON
+
         self.settings_button_frame = tk.Frame(self.menu_options_frame, bg='#7C889C', width=275, height=60)
         self.settings_button_frame.grid(row=0, column=0, sticky='nw', padx=3)
         self.settings_button_frame.grid_propagate(False)
@@ -121,7 +123,9 @@ class MainFrame(tk.Frame):
         )
         self.settings_button.grid(pady=3, padx=5)
 
-        # Confidence frame and slider
+        #############################################################################################################
+        # CONFIDENCE FRAME AND SLIDER
+
         self.confidence_slider_frame = tk.Frame(self.menu_options_frame, width= 400, height= 30, highlightbackground="black", highlightcolor="black", highlightthickness=2)
 
         self.confidence_slider_frame.grid(
@@ -138,7 +142,6 @@ class MainFrame(tk.Frame):
         )
         self.confidence_label.grid(row=0, column=0, sticky='nsw', pady=0)
 
-
         self.confidence_slider = CustomSlider(
             self.confidence_slider_frame,
             id="confidence_slider",
@@ -153,7 +156,9 @@ class MainFrame(tk.Frame):
         )
         self.confidence_slider.grid(row=0, column=0, padx=195, sticky='nse', pady=0)
 
-        # GPS frame and output
+        #############################################################################################################
+        # GPS FRAME AND OUTPUT
+
         self.gps_frame = tk.Frame(self.menu_options_frame, bg='#7C889C', width=400, height=53, highlightbackground="black", highlightcolor="black", highlightthickness=2)
 
         self.gps_frame.grid(row=0, column=2, sticky="nsew", padx=10, pady=4)
@@ -188,7 +193,9 @@ class MainFrame(tk.Frame):
         self.gps_altitude.place(x=235, y=20)
         self.start_gps_thread()
 
-        # Quit application button
+        #############################################################################################################
+        # QUIT APPLICATION BUTTON
+
         self.stop_application_button = tk.Button(
             self,
             bg = "red",
@@ -202,7 +209,9 @@ class MainFrame(tk.Frame):
 
         self.stop_application_button.place(x=1105, y=613)
 
-        # Confirm quit frame and buttons
+        #############################################################################################################
+        # CONFIRM QUIT FRAME AND BUTTONS
+
         self.confirm_quit_app_frame = tk.Frame(self, bg='#7C889C', width=305, height=100, highlightbackground="black", highlightcolor="black", highlightthickness=2)
 
         self.confirm_quit_label = tk.Label(self.confirm_quit_app_frame, text="ARE YOU SURE YOU WANT TO QUIT\nTHE APPLICATION?", bg="#7C889C", fg="black", font=custom_font)
@@ -231,6 +240,8 @@ class MainFrame(tk.Frame):
             height = 1
         )
         self.dont_quit.place(x=160, y=60)
+
+        #############################################################################################################
 
     def show_confirm_quit_app_frame(self):
         self.confirm_quit_app_frame.place(x=500, y=416)
