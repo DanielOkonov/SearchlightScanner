@@ -14,4 +14,4 @@ class SoundManager:
                 if detection.label == 5:
                     sound = self.sounds["powerline"]
                     break
-            os.system(f"mpg123 {sound}")
+            os.system(f"mpg123 {sound} > /dev/null 2>&1")
