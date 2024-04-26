@@ -42,19 +42,19 @@ segmentation_options = [
 resolution_options = [
     {
         "text": "280x720 pixels",
-        "value": "280x720",
+        "value": "280x720 pixels",
     },
     {
         "text": "1920x1080 pixels",
-        "value": "1920x1080",
+        "value": "1920x1080 pixels",
     },
     {
         "text": "2560x1440 pixels",
-        "value": "2560x1440",
+        "value": "2560x1440 pixels",
     },
     {
         "text": "3840x2160 pixels",
-        "value": "3840x2160",
+        "value": "3840x2160 pixels",
     },
 ]
 

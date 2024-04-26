@@ -11,7 +11,7 @@ class ConstantsManager:
     {
         "default_confidence_level": 50,
         "default_distance": 1,
-        "default_resolution": "280x720",
+        "default_resolution": "280x720 pixels",
         "default_segmentation": 1,
         "notes1": "",
         "notes2": "",

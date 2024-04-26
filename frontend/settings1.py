@@ -139,6 +139,7 @@ class CustomSlider(tk.Canvas):
 class SettingsFrame1(tk.Frame):
     def __init__(self, parent, camera_feed, application, color_scheme, **kwargs):
         super().__init__(parent, **kwargs)
+        self.constants_manager = ConstantsManager(filename=current_settings_route)
         self.application = application
         self.color_scheme = color_scheme
         self.focus_mode = tk.StringVar(value="Automatic")
@@ -334,6 +335,7 @@ class SettingsFrame1(tk.Frame):
         shared_confidence.set_value(value)
 
     def selection_changed(self, value):
+        self.constants_manager.set_constant("default_resolution", value)
         print("Selected:", value)
 
     def create_widgets(self):
@@ -432,7 +434,9 @@ class SettingsFrame1(tk.Frame):
         frame.pack(padx=10, pady=10)
 
         # Create a Tkinter variable
-        selected_option = tk.StringVar(value="280x720 pixels")
+        selected_option = tk.StringVar(
+            value=self.constants_manager.get_constant("default_resolution")
+        )
 
         # Set the list of choices
         options = [
