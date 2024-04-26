@@ -74,13 +74,17 @@ class ImageProcessor:
                         detection.Top += start_i
                         detection.Bottom += start_i
                     detections.extend(segment_detections)
+            detections = [detection for detection in detections if self.get_label(detection.ClassID) != 'void']
             self.net.Overlay(image, detections, overlay="lines,labels,conf")
         else:
-            detections = self.net.Detect(image, overlay="lines,labels,conf")
+            detections = self.net.Detect(image, overlay="none")
+            detections = [detection for detection in detections if self.get_label(detection.ClassID) != 'void']
+            self.net.Overlay(image, detections, overlay="lines,labels,conf")
         return [
             ScannerDetection(self.get_label(detection.ClassID), detection.Confidence)
             for detection in detections
         ]
+
     
     def get_label(self, label_id):
         """
