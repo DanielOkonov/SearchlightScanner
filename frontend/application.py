@@ -7,10 +7,6 @@ import cv2
 from backend.video_source import CameraManager
 import platform
 
-# project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# if project_dir not in sys.path:
-#     sys.path.insert(0, project_dir)
-
 from backend.gps_manager import GPSManager
 
 
@@ -61,11 +57,9 @@ class Application(tk.Tk):
         self.update_colors()
 
         self.bind("<Escape>", self.minimize_window)
-        # self.geometry("1200x800")
         self.maximize_window()
 
         # Set default camera to /dev/video0
-
 
         self.camera_feed = CameraManager(source="/dev/video0", width=1280, height=720)
         self.gps_manager = GPSManager()  # Initialize GPS device
@@ -117,7 +111,6 @@ class Application(tk.Tk):
             self.frames[MainFrame].stop_camera_feed()
 
     def switch_settings1(self):
-        # self.frames[SettingsFrame1] = SettingsFrame1(self, self.camera_feed)
         self.switch_frame(SettingsFrame1)
 
     def switch_settings2(self):

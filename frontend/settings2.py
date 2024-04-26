@@ -49,7 +49,6 @@ class SettingsFrame2(tk.Frame):
         self.settings1_button.configure(bg=color_scheme["unselected_settings_button"])
         self.settings2_button.configure(bg=color_scheme["selected_color"])
         
-        # self.operator_alerts_switch_state["is_on"] = not self.operator_alerts_switch_state["is_on"]
         self.operator_toggle_canvas.configure(bg=color_scheme["application/window_and_frame_color"])
         if self.operator_alerts_switch_state["is_on"]:
             self.operator_toggle_canvas.itemconfig(self.operator_switch_background, fill=color_scheme["selected_color"])
@@ -277,11 +276,8 @@ class SettingsFrame2(tk.Frame):
         #############################################################################################################
         # BUTTONS FOR SELECTING WHICH SETTINGS MENU TO GO TO
 
-        # self.settings_toggle_frame = tk.Frame(self, bg="#7C889C", width=200, height=108)
         self.settings_toggle_frame = tk.Frame(self, width=100, height=108)
         self.settings_toggle_frame.grid(row=2, column=0, padx=10, pady=10, sticky="w")
-
-        # self.settings_toggle_frame.grid_propagate(False)
 
         self.settings1_button = tk.Button(
             self.settings_toggle_frame,

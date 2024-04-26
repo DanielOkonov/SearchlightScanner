@@ -362,13 +362,12 @@ class SettingsFrame1(tk.Frame):
             highlightbackground="black",
             highlightcolor="black",
             highlightthickness=2,
-            # width=225,
             width=420,
             height=149,
         )  # Adjusted height for layout
         self.darkmode_toggle_frame.place(
             x=750, y=346
-        )  # Placed in row=1, added more pady for spacing
+        )
 
 
         self.darkmode_toggle_label = tk.Label(

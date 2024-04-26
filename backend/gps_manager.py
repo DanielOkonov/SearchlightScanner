@@ -24,9 +24,6 @@ class GPSManager:
                 print(f"Failed to connect to GPS on {port}: {e}")
                 continue
 
-        # if self.gps is None:
-        #     raise ValueError("Unable to connect to GPS on any provided port")
-            
         if not self.gps_connected:
             print("No GPS device connected. The program will run without GPS functionality.")
 
