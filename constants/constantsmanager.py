@@ -21,7 +21,7 @@ class ConstantsManager:
     }
     """
 
-    def __init__(self, filename="values.json"):
+    def __init__(self, filename="default_settings.json"):
         """
         Initializer for ConstantsManager.
 
