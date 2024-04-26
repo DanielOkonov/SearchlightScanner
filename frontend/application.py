@@ -6,6 +6,7 @@ import tkinter as tk
 import cv2
 from backend.video_source import CameraManager
 import platform
+from backend.image_processor import ImageProcessor
 
 from backend.gps_manager import GPSManager
 
@@ -52,6 +53,7 @@ class CameraFeed:
 class Application(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.ai = ImageProcessor(model_path="models/ssd-mobilenet.onnx")
         self.color_scheme = color_scheme
         self.title("SearchLightScanner")
         self.update_colors()

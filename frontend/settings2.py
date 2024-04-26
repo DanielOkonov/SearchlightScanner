@@ -3,6 +3,7 @@ from tkinter import font as tkFont
 
 from .reorderable_listbox import ReorderableListbox
 from .shared_segmentation_controller import shared_segmentation
+from .shared_labels_controller import shared_labels
 from .application_current_settings_route import current_settings_route
 from constants.constantsmanager import ConstantsManager
 
@@ -10,6 +11,7 @@ from constants.constantsmanager import ConstantsManager
 class SettingsFrame2(tk.Frame):
     def __init__(self, parent, color_scheme, **kwargs):
         super().__init__(parent, **kwargs)
+        self.parent = parent
         self.constants_manager = ConstantsManager(filename=current_settings_route)
         self.color_scheme = color_scheme
         self.segments_frame = None
@@ -207,9 +209,9 @@ class SettingsFrame2(tk.Frame):
             update_display_callback=self.update_listbox_display,
         )
 
-        default_targets = self.constants_manager.get_constant("default_targets")
-        targets = targets = [item["target"] for item in default_targets[:9]]
-
+        targets = [
+            k for k in shared_labels.get_all_labels().keys() if k != "BACKGROUND"
+        ]
         self.target_buttons = {}
         for i, target in enumerate(targets):
             button = tk.Button(
@@ -500,6 +502,9 @@ class SettingsFrame2(tk.Frame):
             self.priority_button_frame.place_forget()
             self.targets_listbox.place_forget()
 
+        shared_labels.set_selected_labels(self.selected_targets_dict)
+        self.parent.ai.update_labels()
+
     def populate_listbox_with_targets(self):
         # Clear the Listbox
         self.targets_listbox.delete(0, "end")
@@ -528,7 +533,6 @@ class SettingsFrame2(tk.Frame):
             self.selected_targets_dict[target] = order
             # Insert updated items back into the Listbox
             self.targets_listbox.insert(tk.END, f"{order}. {target}")
-
         # Log to console for debugging
         print("Updated Selected Targets Dict:", self.selected_targets_dict)
 

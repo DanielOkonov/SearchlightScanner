@@ -4,22 +4,48 @@ from .scanner_detection import ScannerDetection
 from PIL import Image
 import tempfile
 import os
+from frontend.shared_labels_controller import shared_labels
 
 
 class ImageProcessor:
-    def __init__(self, model_path=None, labels=None, threshold=0.5):
-        labels_path = None
-        if labels:
-            with tempfile.NamedTemporaryFile(delete=False, mode="w+t") as f:
-                labels_path = f.name
-                f.writelines([f"{label}\n" for label in labels])
-        if model_path:
-            self.net = detectNet(model_path, labels_path, threshold)
-        else:
-            self.net = detectNet("ssd-mobilenet-v2", threshold=threshold)
 
-        if labels_path:
-            os.remove(labels_path)
+    def __init__(self, model_path=None):
+        self.model_path = model_path
+        self.detect_net = None
+        self.update_labels(init=True)
+
+    def update_labels(self, init=False):
+        if init:
+            labels_and_colors = shared_labels.get_init_labels()  
+        else:
+            labels_and_colors = shared_labels.get_label_color() 
+        
+        labels = [label for label, _ in labels_and_colors]
+        colors = [color for _, color in labels_and_colors]
+
+        temp_label_file = tempfile.NamedTemporaryFile(delete=False)
+        temp_color_file = tempfile.NamedTemporaryFile(delete=False)
+
+        try:
+            with open(temp_label_file.name, 'w') as f:
+                for label in labels:
+                    f.write(label + '\n')
+
+            with open(temp_color_file.name, 'w') as f:
+                for color in colors:
+                    f.write(str(color) + '\n')
+
+            model = self.model_path if self.model_path else "ssd-mobilenet-v2"
+            threshold = 0.5
+
+            if model == "ssd-mobilenet-v2":
+                self.net = detectNet("ssd-mobilenet-v2", threshold=threshold)
+            else:
+                self.net = detectNet(model=model, labels=temp_label_file.name, colors=temp_color_file.name, threshold=threshold, input_blob="input_0", output_cvg="scores", output_bbox="boxes")
+
+        finally:
+            os.unlink(temp_label_file.name)  
+            os.unlink(temp_color_file.name)  
 
     def detect(self, image, grid_size=None):
         """
@@ -48,13 +74,17 @@ class ImageProcessor:
                         detection.Top += start_i
                         detection.Bottom += start_i
                     detections.extend(segment_detections)
+            detections = [detection for detection in detections if self.get_label(detection.ClassID) != 'void']
             self.net.Overlay(image, detections, overlay="lines,labels,conf")
         else:
-            detections = self.net.Detect(image, overlay="lines,labels,conf")
+            detections = self.net.Detect(image, overlay="none")
+            detections = [detection for detection in detections if self.get_label(detection.ClassID) != 'void']
+            self.net.Overlay(image, detections, overlay="lines,labels,conf")
         return [
             ScannerDetection(self.get_label(detection.ClassID), detection.Confidence)
             for detection in detections
         ]
+
     
     def get_label(self, label_id):
         """

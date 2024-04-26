@@ -300,6 +300,12 @@ class SettingsFrame1(tk.Frame):
 
         self.save_button.configure(bg=color_scheme["selected_color"])
 
+        self.open_comments_button.configure(
+            bg=color_scheme["settings_select_buttons_inactive"]
+        )
+
+        self.save_comments_button.configure(bg=color_scheme["selected_color"])
+
     def update_confidence(self, value):
         # This method updates the slider's position and the label's text
         self.confidence_slider.set_value(value, update=False)  # Update the slider
@@ -350,6 +356,11 @@ class SettingsFrame1(tk.Frame):
         print(input_value)
         self.text_field_frame.place_forget()
         # This function should be responsible for saving what's written in the notes section
+
+    def save_comments_input(self):
+        input_value = self.comments_text_field.get("1.0", tk.END)
+        print(input_value)
+        self.comments_text_field_frame.place_forget()
 
     def create_widgets(self):
         font_used = tkFont.Font(family="Helvetica", size=12, weight="bold")
@@ -559,6 +570,53 @@ class SettingsFrame1(tk.Frame):
         self.save_button.place(x=955, y=439)
 
         #############################################################################################################
+        # OPERATOR COMMENTS FRAME AND TEXT INPUT
+
+        self.open_comments_button = tk.Button(
+            self.sliders_frame,
+            text="OPEN OPERATOR COMMENTS",
+            bg="grey",
+            fg="white",
+            font=font_used,
+            width=24,
+            height=3,
+            command=self.show_operator_comments,
+        )
+        self.open_comments_button.place(x=845, y=110)
+
+        self.comments_text_field_frame = tk.Frame(
+            self,
+            bg="black",
+            height=495,
+            width=1170,
+            highlightbackground="black",
+            highlightcolor="black",
+            highlightthickness=2,
+        )
+
+        self.comments_text_field = tk.Text(
+            self.comments_text_field_frame,
+            bg="white",
+            font=("Helvetica", 12),
+            fg="black",
+            height=24,
+            width=129,
+        )
+        self.comments_text_field.place(x=0, y=0)
+
+        self.save_comments_button = tk.Button(
+            self.comments_text_field_frame,
+            text="SAVE COMMENTS",
+            bg="#24D215",
+            fg="white",
+            font=font_used,
+            height=2,
+            width=20,
+            command=self.save_comments_input,
+        )
+        self.save_comments_button.place(x=955, y=439)
+
+        #############################################################################################################
         # CAMERA SELECTION FRAME AND BUTTONS
 
         self.cam_select_buttons_frame = tk.Frame(
@@ -731,3 +789,6 @@ class SettingsFrame1(tk.Frame):
 
     def show_operator_notes(self):
         self.text_field_frame.place(x=20, y=18)
+
+    def show_operator_comments(self):
+        self.comments_text_field_frame.place(x=20, y=18)

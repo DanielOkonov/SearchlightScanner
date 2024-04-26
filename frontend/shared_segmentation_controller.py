@@ -13,14 +13,6 @@ class SharedSegmentation:
             84: (7, 12),
         }
         self._current = self._options[1]
-        self._observers = []
-
-    def register_observer(self, observer_callback):
-        self._observers.append(observer_callback)
-
-    def notify_observers(self):
-        for callback in self._observers:
-            callback(self._options)
 
     def get_options(self):
         return self._options
