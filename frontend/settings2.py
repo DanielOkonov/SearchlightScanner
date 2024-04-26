@@ -3,8 +3,6 @@ from tkinter import font as tkFont
 
 from .reorderable_listbox import ReorderableListbox
 from .shared_segmentation_controller import shared_segmentation
-
-from .reorderable_listbox import ReorderableListbox
 from .application_current_settings_route import current_settings_route
 from constants.constantsmanager import ConstantsManager
 
