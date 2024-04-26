@@ -258,7 +258,6 @@ class SettingsFrame1(tk.Frame):
 
         # Set the list of choices
         options = [
-            "960x540 pixels",
             "1280x720 pixels",
             "1920x1080 pixels",
             "2560x1440 pixels",
