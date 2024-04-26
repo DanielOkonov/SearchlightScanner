@@ -147,9 +147,6 @@ class SettingsFrame1(tk.Frame):
         self.settings1_button.configure(bg=color_scheme["selected_color"])
         self.settings2_button.configure(bg=color_scheme["unselected_settings_button"])
 
-        self.apply_button_frame.configure(bg=color_scheme["apply_changes_background"])
-        self.apply_changes_button.configure(bg=color_scheme["selected_color"])
-
         self.resolution_frame_and_label.configure(bg=color_scheme["application/window_and_frame_color"],
                                               highlightbackground=color_scheme["frame_outline_color"],
                                               highlightcolor=color_scheme["frame_outline_color"])

@@ -81,9 +81,6 @@ class SettingsFrame2(tk.Frame):
             self.segmentation_toggle_canvas.coords(self.segmentation_switch, 10, 10, 40, 40)
             self.toggle_segment_visibility(False)
 
-        self.apply_button_frame.configure(bg=color_scheme["apply_changes_background"])
-        self.apply_changes_button.configure(bg=color_scheme["selected_color"])
-
         self.priority_button_frame.configure(bg=color_scheme["apply_changes_background"])
         self.priority_button_frame.configure(bg=color_scheme["selected_color"])
 
