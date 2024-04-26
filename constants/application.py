@@ -74,10 +74,13 @@ def get_resolution_value(text):
 
 def read_csv_and_convert_to_json(csv_file_path):
     data = []
-    with open(csv_file_path, newline="") as csvfile:
-        for line in csvfile:
-            category, color = line.strip().split(",")
-            data.append({"target": category, "color": color.upper()})
+    try:
+        with open(csv_file_path, newline="") as csvfile:
+            for line in csvfile:
+                category, color = line.strip().split(",")
+                data.append({"target": category, "color": color.upper()})
+    except FileNotFoundError:
+        print(f"File not found: {csv_file_path}")
     return data
 
 
@@ -86,7 +89,7 @@ class Application(tk.Tk):
         super().__init__()
         self.title("Constants")
         self.configure(bg="#7C889C")
-        self.geometry("600x400")
+        self.geometry("600x500")
 
         # Instance variables to store values
         # settings 1
@@ -96,6 +99,10 @@ class Application(tk.Tk):
 
         # settings 2
         self.default_segmentation = tk.StringVar(value="1 segment")
+
+        # notes
+        self.notes1 = tk.StringVar(value="")
+        self.notes2 = tk.StringVar(value="")
 
         # paths
         self.default_model_path = tk.StringVar(value="")
@@ -153,6 +160,12 @@ class Application(tk.Tk):
     def update_resolution(self, event):
         self.default_resolution.set(self.resolution_entry.get())
 
+    def update_notes1(self, event):
+        self.notes1.set(self.notes1_entry.get("1.0", "end-1c"))
+
+    def update_notes2(self, event):
+        self.notes2.set(self.notes2_entry.get("1.0", "end-1c"))
+
     def save_constants(self):
         default_targets = read_csv_and_convert_to_json(self.default_labels_path.get())
 
@@ -168,6 +181,8 @@ class Application(tk.Tk):
             "default_segmentation",
             get_segmentation_value(self.default_segmentation.get()),
         )
+        constants_manager.set_constant("notes1", self.notes1.get())
+        constants_manager.set_constant("notes2", self.notes2.get())
         constants_manager.set_constant("path_to_model", self.default_model_path.get())
         constants_manager.set_constant("path_to_labels", self.default_labels_path.get())
         constants_manager.set_constant("default_targets", default_targets)
@@ -247,6 +262,22 @@ class Application(tk.Tk):
         )
         self.segmentation_entry.grid(row=row, column=1, padx=10, pady=5)
         self.segmentation_entry.bind("<<ComboboxSelected>>", self.update_segmentation)
+        row += 1
+
+        # Notes 1
+        notes1_label = tk.Label(form_frame, text="Notes 1:", bg="#7C889C", fg="white")
+        notes1_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+        self.notes1_entry = tk.Text(form_frame, height=3, width=30)
+        self.notes1_entry.grid(row=row, column=1, padx=10, pady=5, columnspan=2)
+        self.notes1_entry.bind("<KeyRelease>", self.update_notes1)
+        row += 1
+
+        # Notes 2
+        notes2_label = tk.Label(form_frame, text="Notes 2:", bg="#7C889C", fg="white")
+        notes2_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+        self.notes2_entry = tk.Text(form_frame, height=3, width=30)
+        self.notes2_entry.grid(row=row, column=1, padx=10, pady=5, columnspan=2)
+        self.notes2_entry.bind("<KeyRelease>", self.update_notes2)
         row += 1
 
         # Model Frame

@@ -13,6 +13,8 @@ class ConstantsManager:
         "default_distance": 1,
         "default_resolution": "280x720",
         "default_segmentation": 1,
+        "notes1": "",
+        "notes2": "",
         "path_to_model": "",
         "path_to_labels": "",
         "default_targets": []
