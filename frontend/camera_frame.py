@@ -8,6 +8,7 @@ from .settings1 import CustomSlider
 from backend.image_processor import ImageProcessor
 from backend.sound_manager import SoundManager
 from backend.image_saver import ImageSaver
+from .shared_segmentation_controller import shared_segmentation
 
 
 class MainFrame(tk.Frame):
@@ -247,7 +248,7 @@ class MainFrame(tk.Frame):
         if self.update_camera:
             frame = self.parent.camera_feed.capture()
             if frame is not None:
-                detections = self.ai.detect(frame)
+                detections = self.ai.detect(frame, shared_segmentation.get_current())
                 asyncio.run(self.sound_manager.play_sound(detections)) # play sounds based on detections
                 img_rgb = Image.frombytes("RGB", (frame.width, frame.height), frame)
                 self.photo = ImageTk.PhotoImage(image=img_rgb)
