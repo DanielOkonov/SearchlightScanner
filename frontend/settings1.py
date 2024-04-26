@@ -177,6 +177,10 @@ class SettingsFrame1(tk.Frame):
             self.default_settings_button.configure(bg=color_scheme["settings_select_buttons_inactive"])
             self.custom_settings_button.configure(bg=color_scheme["selected_color"])
 
+        self.open_notes_button.configure(bg=color_scheme["settings_select_buttons_inactive"])
+
+        self.save_button.configure(bg=color_scheme["selected_color"])
+
     def update_confidence(self, value):
         # This method updates the slider's position and the label's text
         self.confidence_slider.set_value(value, update=False)  # Update the slider
@@ -215,6 +219,12 @@ class SettingsFrame1(tk.Frame):
         print("Selected:", value)
         res = value.split()[0].split("x")
         self.camera_feed.change_resolution(res[0], res[1])
+
+    def save_notes_input(self):
+        input_value = self.text_field.get("1.0", tk.END)  # Retrieves the text from the Text widget
+        print(input_value)
+        self.text_field_frame.place_forget()
+        # This function should be responsible for saving what's written in the notes section
 
     def create_widgets(self):
         font_used = tkFont.Font(family="Helvetica", size=12, weight="bold")
@@ -300,6 +310,26 @@ class SettingsFrame1(tk.Frame):
                                                 command=self.custom_settings_selection)
         
         self.custom_settings_button.grid(row=0, column=1)
+
+        # Operator Notes text frame
+        self.open_notes_button = tk.Button(self.sliders_frame,
+                                           text="OPEN OPERATOR NOTES",
+                                           bg="grey",
+                                           fg="white",
+                                           font=font_used,
+                                           width=20,
+                                           height=3,
+                                           command=self.show_operator_notes
+                                           )
+        self.open_notes_button.place(x=845, y=50)
+
+        self.text_field_frame = tk.Frame(self, bg="black", height=495, width=1170, highlightbackground="black", highlightcolor="black", highlightthickness=2,)
+
+        self.text_field = tk.Text(self.text_field_frame, bg="white", font=("Helvetica", 12), fg="black", height=24, width=129)
+        self.text_field.place(x=0, y=0)
+
+        self.save_button = tk.Button(self.text_field_frame, text="SAVE", bg="#24D215", fg="white", font=font_used, height=2, width=20, command=self.save_notes_input)
+        self.save_button.place(x=955, y=439)
 
         # Camera selection frame and buttons
         self.cam_select_buttons_frame = tk.Frame(self.sliders_frame, bg="#7C889C", width=70, height=108)
@@ -449,3 +479,6 @@ class SettingsFrame1(tk.Frame):
         self.default_settings_button.configure(bg=color_scheme["settings_select_buttons_inactive"])
         self.custom_settings_button.configure(bg=color_scheme["selected_color"])
         self.default_settings_pushed = False
+
+    def show_operator_notes(self):
+        self.text_field_frame.place(x=20, y=18)
