@@ -17,7 +17,48 @@ class ConstantsManager:
         "notes2": "",
         "path_to_model": "",
         "path_to_labels": "",
-        "default_targets": []
+        "default_targets": [
+        {
+        "target": "BACKGROUND",
+        "color": "#2E0E05"
+        },
+        {
+        "target": "vehicle",
+        "color": "#0AEB38"
+        },
+        {
+        "target": "ocean debris",
+        "color": "#6B18C9"
+        },
+        {
+        "target": "person",
+        "color": "#180C4A"
+        },
+        {
+        "target": "powerline",
+        "color": "#5D8C63"
+        },
+        {
+        "target": "dog",
+        "color": "#6F3987"
+        },
+        {
+        "target": "ship wake",
+        "color": "#E76807"
+        },
+        {
+        "target": "airplane",
+        "color": "#1B02D3"
+        },
+        {
+        "target": "helicopter",
+        "color": "#C4CF23"
+        },
+        {
+        "target": "Persons_Thermal",
+        "color": "#485843"
+        }
+    ]
     }
     """
 
