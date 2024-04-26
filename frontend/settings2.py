@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import font as tkFont
 from .reorderable_listbox import ReorderableListbox
+from .shared_segmentation_controller import shared_segmentation
 
 
 
@@ -324,7 +325,7 @@ class SettingsFrame2(tk.Frame):
         )
         self.segments_label.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
 
-        segments = [1, 25, 4, 40, 9, 60, 16, 84]
+        segments = [k for k in shared_segmentation.get_options().keys()]
 
         for i, segment in enumerate(segments):
             button = tk.Button(
@@ -337,7 +338,7 @@ class SettingsFrame2(tk.Frame):
                 height=3,
             )
             button.grid(row=(i // 2) + 1, column=i % 2, sticky="ew", padx=5, pady=5)
-            button.config(command=lambda b=button: self.set_button_active(b))
+            button.config(command=lambda b=button, s=segment: (self.set_button_active(b), shared_segmentation.set_current(s)))            
             self.segment_buttons[segment] = button
 
         #############################################################################################################

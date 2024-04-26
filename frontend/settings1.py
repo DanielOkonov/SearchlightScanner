@@ -16,7 +16,7 @@ class CustomSlider(tk.Canvas):
         self.min_val = min_val
         self.max_val = max_val
         self.id = id
-        self.value = min_val
+        self.value = max_val/2
         self.bg = bg
         self.bar_fill = bar_fill
         self.bar_outline = bar_outline
@@ -200,7 +200,7 @@ class SettingsFrame1(tk.Frame):
 
     def select_camera(self, cam_index):
         # Update camera source in CameraFeed
-        self.camera_feed.set_video_source(cam_index)
+        self.camera_feed.change_camera(f"/dev/video{cam_index}")
         self.current_cam.set(cam_index)
         self.update_camera_selection()
 
@@ -213,6 +213,8 @@ class SettingsFrame1(tk.Frame):
 
     def selection_changed(self, value):
         print("Selected:", value)
+        res = value.split()[0].split("x")
+        self.camera_feed.change_resolution(res[0], res[1])
 
     def create_widgets(self):
         font_used = tkFont.Font(family="Helvetica", size=12, weight="bold")
@@ -252,11 +254,11 @@ class SettingsFrame1(tk.Frame):
         frame.pack(padx=10, pady=10)
 
         # Create a Tkinter variable
-        selected_option = tk.StringVar(value="280x720 pixels")
+        selected_option = tk.StringVar(value="1280x720 pixels")
 
         # Set the list of choices
         options = [
-            "280x720 pixels",
+            "1280x720 pixels",
             "1920x1080 pixels",
             "2560x1440 pixels",
             "3840x2160 pixels"
@@ -309,7 +311,7 @@ class SettingsFrame1(tk.Frame):
         self.camera_one_button = tk.Button(self.cam_select_buttons_frame, text="CAMERA 1", bg="#24D215", fg="white", font=font_used, width=20, height=3, command=lambda: self.select_camera(0))
         self.camera_one_button.grid(row=1, column=0)
 
-        self.camera_two_button = tk.Button(self.cam_select_buttons_frame, text="CAMERA 2", bg="grey", fg="white", font=font_used, width=20, height=3, command=lambda: self.select_camera(1))
+        self.camera_two_button = tk.Button(self.cam_select_buttons_frame, text="CAMERA 2", bg="grey", fg="white", font=font_used, width=20, height=3, command=lambda: self.select_camera(2))
         self.camera_two_button.grid(row=1, column=1)
 
         # Toggle dark mode button and label
