@@ -208,7 +208,7 @@ class MainFrame(tk.Frame):
             height = 2
         )
 
-        self.stop_application_button.place(x=1105, y=613)
+        self.stop_application_button.place(x=1135, y=725)
 
         #############################################################################################################
         # CONFIRM QUIT FRAME AND BUTTONS
