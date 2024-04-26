@@ -301,7 +301,7 @@ class SettingsFrame1(tk.Frame):
 
         # Camera selection frame and buttons
         self.cam_select_buttons_frame = tk.Frame(self.sliders_frame, bg="#7C889C", width=70, height=108)
-        self.cam_select_buttons_frame.place(x=750, y=176)
+        self.cam_select_buttons_frame.place(x=750, y=200)
 
         self.cam_select_label = tk.Label(self.cam_select_buttons_frame, text="SELECT CAMERA INPUT", bg="#7C889C", fg="black", font=font_used)
         self.cam_select_label.grid(row=0, column=0, columnspan=2, pady=(0, 22))
