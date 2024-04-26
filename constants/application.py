@@ -6,7 +6,7 @@ from constantsmanager import ConstantsManager
 
 segmentation_options = [
     {
-        "text": "1 segment",
+        "text": "1 segments",
         "value": 1,
     },
     {
@@ -92,22 +92,37 @@ class Application(tk.Tk):
         self.configure(bg="#7C889C")
         self.geometry("600x500")
 
+        self.constants_manager = ConstantsManager()
+
         # Instance variables to store values
         # settings 1
-        self.default_confidence_level = tk.IntVar(value=90)
-        self.default_distance = tk.IntVar(value=0)
-        self.default_resolution = tk.StringVar(value="280x720 pixels")
+        self.default_confidence_level = tk.IntVar(
+            value=int(self.constants_manager.get_constant("default_confidence_level"))
+        )
+        self.default_distance = tk.IntVar(
+            value=int(self.constants_manager.get_constant("default_distance"))
+        )
+        self.default_resolution = tk.StringVar(
+            value=self.constants_manager.get_constant("default_resolution") + " pixels"
+        )
 
         # settings 2
-        self.default_segmentation = tk.StringVar(value="1 segment")
+        self.default_segmentation = tk.StringVar(
+            value=str(self.constants_manager.get_constant("default_segmentation"))
+            + " segments"
+        )
 
         # notes
-        self.notes1 = tk.StringVar(value="")
-        self.notes2 = tk.StringVar(value="")
+        self.notes1 = tk.StringVar(value=self.constants_manager.get_constant("notes1"))
+        self.notes2 = tk.StringVar(value=self.constants_manager.get_constant("notes2"))
 
         # paths
-        self.default_model_path = tk.StringVar(value="")
-        self.default_labels_path = tk.StringVar(value="")
+        self.default_model_path = tk.StringVar(
+            value=self.constants_manager.get_constant("path_to_model")
+        )
+        self.default_labels_path = tk.StringVar(
+            value=self.constants_manager.get_constant("path_to_labels")
+        )
 
         self.create_form()
 
@@ -170,23 +185,28 @@ class Application(tk.Tk):
     def save_constants(self):
         default_targets = read_csv_and_convert_to_json(self.default_labels_path.get())
 
-        constants_manager = ConstantsManager()
-        constants_manager.set_constant(
+        self.constants_manager.set_constant(
             "default_confidence_level", self.default_confidence_level.get()
         )
-        constants_manager.set_constant("default_distance", self.default_distance.get())
-        constants_manager.set_constant(
+        self.constants_manager.set_constant(
+            "default_distance", self.default_distance.get()
+        )
+        self.constants_manager.set_constant(
             "default_resolution", get_resolution_value(self.default_resolution.get())
         )
-        constants_manager.set_constant(
+        self.constants_manager.set_constant(
             "default_segmentation",
             get_segmentation_value(self.default_segmentation.get()),
         )
-        constants_manager.set_constant("notes1", self.notes1.get())
-        constants_manager.set_constant("notes2", self.notes2.get())
-        constants_manager.set_constant("path_to_model", self.default_model_path.get())
-        constants_manager.set_constant("path_to_labels", self.default_labels_path.get())
-        constants_manager.set_constant("default_targets", default_targets)
+        self.constants_manager.set_constant("notes1", self.notes1.get())
+        self.constants_manager.set_constant("notes2", self.notes2.get())
+        self.constants_manager.set_constant(
+            "path_to_model", self.default_model_path.get()
+        )
+        self.constants_manager.set_constant(
+            "path_to_labels", self.default_labels_path.get()
+        )
+        self.constants_manager.set_constant("default_targets", default_targets)
 
         messagebox.showinfo("Success", "Constants saved successfully!")
         print("Constants saved successfully!")
@@ -271,6 +291,7 @@ class Application(tk.Tk):
         notes1_label = tk.Label(form_frame, text="Notes 1:", bg="#7C889C", fg="white")
         notes1_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
         self.notes1_entry = tk.Text(form_frame, height=3, width=30)
+        self.notes1_entry.insert("1.0", self.notes1.get())
         self.notes1_entry.grid(row=row, column=1, padx=10, pady=5, columnspan=2)
         self.notes1_entry.bind("<KeyRelease>", self.update_notes1)
         row += 1
@@ -279,6 +300,7 @@ class Application(tk.Tk):
         notes2_label = tk.Label(form_frame, text="Notes 2:", bg="#7C889C", fg="white")
         notes2_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
         self.notes2_entry = tk.Text(form_frame, height=3, width=30)
+        self.notes2_entry.insert("1.0", self.notes2.get())
         self.notes2_entry.grid(row=row, column=1, padx=10, pady=5, columnspan=2)
         self.notes2_entry.bind("<KeyRelease>", self.update_notes2)
         row += 1

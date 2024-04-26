@@ -9,7 +9,7 @@ class ConstantsManager:
 
     BACKUP_JSON_STRING = """
     {
-        "default_confidence_level": 90,
+        "default_confidence_level": 50,
         "default_distance": 1,
         "default_resolution": "280x720",
         "default_segmentation": 1,
