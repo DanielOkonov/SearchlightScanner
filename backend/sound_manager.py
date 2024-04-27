@@ -18,11 +18,11 @@ class SoundManager:
         # play sound based on detections
         if detections:
             sound = self.sounds["default"]
-            self.cooldown = 2
+            self.cooldown = 3
             for detection in detections:
                 if detection.label == 5:
                     sound = self.sounds["powerline"]
-                    self.cooldown = 9
+                    self.cooldown = 10
                     break
             os.system(f"mpg123 {sound} > /dev/null 2>&1")
             self.last_play_time = time.time()
