@@ -3,6 +3,7 @@ import queue
 import time
 import os
 from .scanner_image import ScannerImage
+from frontend.shared_labels_controller import shared_labels
 
 
 class ImageSaver:
@@ -58,6 +59,8 @@ class ImageSaver:
         self.save_images(images)
 
     def collect_and_sort_images(self):
+        self.labels = shared_labels.get_selected_labels()
+        print(f"Selected labels: {self.labels}")
         print(f"Collecting {self.queue.qsize()} images")
         images = []
         while not self.queue.empty():

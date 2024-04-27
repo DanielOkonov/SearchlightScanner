@@ -1,13 +1,16 @@
 import tkinter as tk
 from tkinter import font as tkFont
 from .reorderable_listbox import ReorderableListbox
+from .shared_alert_controller import shared_alert
 from .shared_segmentation_controller import shared_segmentation
+from .shared_labels_controller import shared_labels
 
 
 
 class SettingsFrame2(tk.Frame):
     def __init__(self, parent, color_scheme, **kwargs):
         super().__init__(parent, **kwargs)
+        self.parent = parent
         self.color_scheme = color_scheme
         self.segments_frame = None
         self.segment_buttons = {}
@@ -107,6 +110,7 @@ class SettingsFrame2(tk.Frame):
     ):
         switch_state["is_on"] = not switch_state["is_on"]
         self.update_colors()
+        shared_alert.set_value(switch_state["is_on"])
 
 
     def toggle_segmentation_switch(
@@ -169,19 +173,8 @@ class SettingsFrame2(tk.Frame):
             update_display_callback=self.update_listbox_display,
         )
 
-        targets = [
-            "VEHICLES",
-            "OCEAN DEBRIS",
-            "PEOPLE",
-            "POWER LINES",
-            "DOGS",
-            "SHIP WAKES",
-            "AIRPLANE",
-            "HELICOPTER",
-            "PEOPLE (THERMAL)",
-            "CRASHED AIRCRAFT",
-            "CRASHED HELI"
-        ]
+
+        targets = [k for k in shared_labels.get_all_labels().keys() if k != 'BACKGROUND']
         self.target_buttons = {}
         for i, target in enumerate(targets):
             button = tk.Button(
@@ -465,6 +458,9 @@ class SettingsFrame2(tk.Frame):
             self.priority_button_frame.place_forget()
             self.targets_listbox.place_forget()
 
+        shared_labels.set_selected_labels(self.selected_targets_dict)
+        self.parent.ai.update_labels()
+
     def populate_listbox_with_targets(self):
         # Clear the Listbox
         self.targets_listbox.delete(0, "end")
@@ -493,7 +489,6 @@ class SettingsFrame2(tk.Frame):
             self.selected_targets_dict[target] = order
             # Insert updated items back into the Listbox
             self.targets_listbox.insert(tk.END, f"{order}. {target}")
-
         # Log to console for debugging
         print("Updated Selected Targets Dict:", self.selected_targets_dict)
 

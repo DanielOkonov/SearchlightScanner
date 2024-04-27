@@ -2,3 +2,4 @@
 /jetson-inference
 /backend/images/*
 images/*
+models/*
