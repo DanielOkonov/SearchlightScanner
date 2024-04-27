@@ -48,7 +48,7 @@ class SoundManager:
             sound = self.sounds["default"]
             self.cooldown = 2
             for detection in detections:
-                if detection.label == 5:
+                if detection.label == "powerline":
                     sound = self.sounds["powerline"]
                     self.cooldown = 9
                     break
