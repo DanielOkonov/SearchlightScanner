@@ -12,14 +12,8 @@ class ImageProcessor:
     def __init__(self, model_path=None):
         self.model_path = model_path
         self.detect_net = None
-        self.update_labels(init=True)
 
-    def update_labels(self, init=False):
-        if init:
-            labels_and_colors = shared_labels.get_init_labels()  
-        else:
-            labels_and_colors = shared_labels.get_label_color() 
-        
+        labels_and_colors = shared_labels.get_init_labels()  
         labels = [label for label, _ in labels_and_colors]
         colors = [color for _, color in labels_and_colors]
 
@@ -33,7 +27,7 @@ class ImageProcessor:
 
             with open(temp_color_file.name, 'w') as f:
                 for color in colors:
-                    f.write(str(color) + '\n')
+                    f.write(f"{color[0]} {color[1]} {color[2]}\n")
 
             model = self.model_path if self.model_path else "ssd-mobilenet-v2"
             threshold = 0.5
@@ -42,11 +36,23 @@ class ImageProcessor:
                 self.net = detectNet("ssd-mobilenet-v2", threshold=threshold)
             else:
                 self.net = detectNet(model=model, labels=temp_label_file.name, colors=temp_color_file.name, threshold=threshold, input_blob="input_0", output_cvg="scores", output_bbox="boxes")
+                self.net.SetClusteringThreshold(0.3)
 
         finally:
             os.unlink(temp_label_file.name)  
             os.unlink(temp_color_file.name)  
 
+    def filter_detections(self, detections):
+        selected_labels = shared_labels.get_selected_labels()
+        if selected_labels:
+            detections = [detection for detection in detections if self.get_label(detection.ClassID) in selected_labels]
+        return detections
+    
+    def detect_and_collect(self, image_segment):
+        detections = self.net.Detect(image_segment, overlay="none")
+        detections = self.filter_detections(detections)
+        return detections
+    
     def detect(self, image, grid_size=None):
         """
         Detect objects in an image.
@@ -67,19 +73,18 @@ class ImageProcessor:
                     start_j, end_j = j * grid_width, (j + 1) * grid_width
                     segment = image_np[start_i:end_i, start_j:end_j]
                     segment = cudaFromNumpy(segment)
-                    segment_detections = self.net.Detect(segment, overlay="none")
+                    segment_detections = self.detect_and_collect(segment)
                     for detection in segment_detections:
                         detection.Left += start_j
                         detection.Right += start_j
                         detection.Top += start_i
                         detection.Bottom += start_i
                     detections.extend(segment_detections)
-            detections = [detection for detection in detections if self.get_label(detection.ClassID) != 'void']
-            self.net.Overlay(image, detections, overlay="lines,labels,conf")
         else:
-            detections = self.net.Detect(image, overlay="none")
-            detections = [detection for detection in detections if self.get_label(detection.ClassID) != 'void']
-            self.net.Overlay(image, detections, overlay="lines,labels,conf")
+            detections = self.detect_and_collect(image)
+
+        self.net.Overlay(image, detections, overlay="lines,labels,conf")
+
         return [
             ScannerDetection(self.get_label(detection.ClassID), detection.Confidence)
             for detection in detections

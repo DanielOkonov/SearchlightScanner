@@ -5,3 +5,5 @@ values.json
 targets.csv
 images/*
 models/*
+.DS_Store
+

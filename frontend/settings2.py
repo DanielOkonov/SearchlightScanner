@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import font as tkFont
 
 from .reorderable_listbox import ReorderableListbox
+from .shared_alert_controller import shared_alert
 from .shared_segmentation_controller import shared_segmentation
 from .shared_labels_controller import shared_labels
 from .application_current_settings_route import current_settings_route
@@ -149,6 +150,7 @@ class SettingsFrame2(tk.Frame):
     ):
         switch_state["is_on"] = not switch_state["is_on"]
         self.update_colors()
+        shared_alert.set_value(switch_state["is_on"])
 
     def toggle_segmentation_switch(
         self, switch_canvas, switch_background, switch_indicator, switch_state
@@ -221,9 +223,9 @@ class SettingsFrame2(tk.Frame):
                 text=target,
                 font=font_used,
                 width=18,
-                height=5,
+                height=3
             )
-            button.grid(row=(i // 3) + 1, column=i % 3, padx=5, pady=5)
+            button.grid(row=(i // 3) + 1, column=i % 3, padx=5, pady=6)
             button.config(
                 command=lambda b=button, t=target: (
                     self.targets_button_color(b),
@@ -239,10 +241,10 @@ class SettingsFrame2(tk.Frame):
             self.targets_frame,
             bg="#24D215",
             fg="white",
-            font=tkFont.Font(family="Helvetica", size=10, weight="bold"),
+            font = tkFont.Font(family="Helvetica", size=8, weight="bold"),
             text="SET CATEGORY PRIORITY",
             command=self.toggle_priority_list_visibility,
-            width=20,
+            width=21,
             height=2,
         )
         self.priority_button_frame.place_forget()
@@ -367,7 +369,7 @@ class SettingsFrame2(tk.Frame):
                 text=str(segment),
                 font=font_used,
                 width=26,
-                height=3,
+                height=2,
             )
             button.grid(row=(i // 2) + 1, column=i % 2, sticky="ew", padx=5, pady=5)
             button.config(
@@ -503,7 +505,6 @@ class SettingsFrame2(tk.Frame):
             self.targets_listbox.place_forget()
 
         shared_labels.set_selected_labels(self.selected_targets_dict)
-        self.parent.ai.update_labels()
 
     def populate_listbox_with_targets(self):
         # Clear the Listbox
