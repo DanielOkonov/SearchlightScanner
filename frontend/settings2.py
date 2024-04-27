@@ -459,7 +459,6 @@ class SettingsFrame2(tk.Frame):
             self.targets_listbox.place_forget()
 
         shared_labels.set_selected_labels(self.selected_targets_dict)
-        self.parent.ai.update_labels()
 
     def populate_listbox_with_targets(self):
         # Clear the Listbox
