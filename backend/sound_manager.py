@@ -34,7 +34,6 @@ class SoundManager:
             time.sleep(0.1)  # Adjust the sleep time as needed
 
     def _play_sound(self, sound):
-        print(f"Playing sound: {sound}")
         os.system(f"mpg123 {sound} > /dev/null 2>&1")
         self.last_play_time = time.time()
 
