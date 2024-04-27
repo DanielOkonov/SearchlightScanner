@@ -3,3 +3,5 @@
 /backend/images/*
 images/*
 models/*
+.DS_Store
+
