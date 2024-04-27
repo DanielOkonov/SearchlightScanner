@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import font as tkFont
 from .reorderable_listbox import ReorderableListbox
+from .shared_alert_controller import shared_alert
 from .shared_segmentation_controller import shared_segmentation
 from .shared_labels_controller import shared_labels
 
@@ -109,6 +110,7 @@ class SettingsFrame2(tk.Frame):
     ):
         switch_state["is_on"] = not switch_state["is_on"]
         self.update_colors()
+        shared_alert.set_value(switch_state["is_on"])
 
 
     def toggle_segmentation_switch(

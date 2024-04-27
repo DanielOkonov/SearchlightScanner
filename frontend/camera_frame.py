@@ -6,6 +6,7 @@ import jetson_utils
 from PIL import Image
 from backend.led_controller import LEDController
 
+from .shared_alert_controller import shared_alert
 from .shared_confidence_controller import shared_confidence
 from .settings1 import CustomSlider
 # from backend.image_processor import ImageProcessor
@@ -263,8 +264,9 @@ class MainFrame(tk.Frame):
             frame = self.parent.camera_feed.capture()
             if frame is not None:
                 detections = self.parent.ai.detect(frame, shared_segmentation.get_current())
-                sound_thread = threading.Thread(target=self.sound_manager.play_sound, args=(detections,))
-                sound_thread.start()
+                if shared_alert.get_value():
+                    sound_thread = threading.Thread(target=self.sound_manager.play_sound, args=(detections,))
+                    sound_thread.start()
 
                 # Resize image
                 numpy_image = jetson_utils.cudaToNumpy(frame)
