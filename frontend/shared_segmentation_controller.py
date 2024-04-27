@@ -23,7 +23,6 @@ class SharedSegmentation:
     def set_current(self, new_value):
         print('SharedSegmentation: set_current:', self._options[new_value])
         self._current = self._options[new_value]
-        self.notify_observers()
 
 # This will be the shared instance
 shared_segmentation = SharedSegmentation()

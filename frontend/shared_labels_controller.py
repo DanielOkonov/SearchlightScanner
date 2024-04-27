@@ -11,6 +11,8 @@ class SharedLabels:
         'airplane': (237, 28, 36),
         'helicopter': (0, 162, 232),
         'Persons_Thermal': (63, 72, 204),
+        'crashed aircraft': (255, 127, 39),
+        'crashed helicopter': (255, 127, 39),
     }
 
     def __init__(self):
