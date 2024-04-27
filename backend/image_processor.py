@@ -42,6 +42,7 @@ class ImageProcessor:
                 self.net = detectNet("ssd-mobilenet-v2", threshold=threshold)
             else:
                 self.net = detectNet(model=model, labels=temp_label_file.name, colors=temp_color_file.name, threshold=threshold, input_blob="input_0", output_cvg="scores", output_bbox="boxes")
+                self.net.SetClusteringThreshold(0.3)
 
         finally:
             os.unlink(temp_label_file.name)  
