@@ -170,15 +170,17 @@ class SettingsFrame2(tk.Frame):
         )
 
         targets = [
+            "VEHICLES",
+            "OCEAN DEBRIS",
             "PEOPLE",
-            "CAR",
-            "BICYCLE",
-            "MOTORCYCLE",
-            "TRUCK",
-            "BUS",
-            "TRAIN",
+            "POWER LINES",
+            "DOGS",
+            "SHIP WAKES",
             "AIRPLANE",
-            "BOAT",
+            "HELICOPTER",
+            "PEOPLE (THERMAL)",
+            "CRASHED AIRCRAFT",
+            "CRASHED HELI"
         ]
         self.target_buttons = {}
         for i, target in enumerate(targets):
@@ -189,9 +191,9 @@ class SettingsFrame2(tk.Frame):
                 text=target,
                 font=font_used,
                 width=18,
-                height=5
+                height=3
             )
-            button.grid(row=(i // 3) + 1, column=i % 3, padx=5, pady=5)
+            button.grid(row=(i // 3) + 1, column=i % 3, padx=5, pady=6)
             button.config(
                 command=lambda b=button, t=target: (
                     self.targets_button_color(b),
@@ -207,10 +209,10 @@ class SettingsFrame2(tk.Frame):
             self.targets_frame,
             bg="#24D215",
             fg="white",
-            font = tkFont.Font(family="Helvetica", size=10, weight="bold"),
+            font = tkFont.Font(family="Helvetica", size=8, weight="bold"),
             text="SET CATEGORY PRIORITY",
             command=self.toggle_priority_list_visibility,
-            width=20,
+            width=21,
             height=2,
         )
         self.priority_button_frame.place_forget()
@@ -335,9 +337,9 @@ class SettingsFrame2(tk.Frame):
                 text=str(segment),
                 font=font_used,
                 width=26,
-                height=3,
+                height=2,
             )
-            button.grid(row=(i // 2) + 1, column=i % 2, sticky="ew", padx=5, pady=5)
+            button.grid(row=(i // 2) + 1, column=i % 2, sticky="ew", padx=5, pady=7)
             button.config(command=lambda b=button, s=segment: (self.set_button_active(b), shared_segmentation.set_current(s)))            
             self.segment_buttons[segment] = button
 
