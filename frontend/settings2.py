@@ -1,16 +1,19 @@
 import tkinter as tk
 from tkinter import font as tkFont
+
 from .reorderable_listbox import ReorderableListbox
 from .shared_alert_controller import shared_alert
 from .shared_segmentation_controller import shared_segmentation
 from .shared_labels_controller import shared_labels
-
+from .application_current_settings_route import current_settings_route
+from constants.constantsmanager import ConstantsManager
 
 
 class SettingsFrame2(tk.Frame):
     def __init__(self, parent, color_scheme, **kwargs):
         super().__init__(parent, **kwargs)
         self.parent = parent
+        self.constants_manager = ConstantsManager(filename=current_settings_route)
         self.color_scheme = color_scheme
         self.segments_frame = None
         self.segment_buttons = {}
@@ -28,11 +31,15 @@ class SettingsFrame2(tk.Frame):
         color_scheme = self.color_scheme["colors"][mode]
         self.configure(bg=color_scheme["application/window_and_frame_color"])
 
-        self.targets_frame.configure(bg=color_scheme["application/window_and_frame_color"],
-                                        highlightbackground=color_scheme["frame_outline_color"])
+        self.targets_frame.configure(
+            bg=color_scheme["application/window_and_frame_color"],
+            highlightbackground=color_scheme["frame_outline_color"],
+        )
 
-        self.targets_label.configure(bg=color_scheme["application/window_and_frame_color"],
-                                        fg=color_scheme["label_font_color/fg"])
+        self.targets_label.configure(
+            bg=color_scheme["application/window_and_frame_color"],
+            fg=color_scheme["label_font_color/fg"],
+        )
 
         selected_color = self.color_scheme["colors"][mode]["selected_color"]
         unselected_color = self.color_scheme["colors"][mode]["button_bg"]
@@ -43,52 +50,85 @@ class SettingsFrame2(tk.Frame):
             else:
                 button.config(bg=unselected_color)
 
-        self.operator_alerts_toggle_frame.configure(bg=color_scheme["application/window_and_frame_color"],
-                                        highlightbackground=color_scheme["frame_outline_color"])
+        self.operator_alerts_toggle_frame.configure(
+            bg=color_scheme["application/window_and_frame_color"],
+            highlightbackground=color_scheme["frame_outline_color"],
+        )
 
-        self.operator_toggle_label.configure(bg=color_scheme["application/window_and_frame_color"],
-                                        fg=color_scheme["label_font_color/fg"])
-        
+        self.operator_toggle_label.configure(
+            bg=color_scheme["application/window_and_frame_color"],
+            fg=color_scheme["label_font_color/fg"],
+        )
+
         self.settings1_button.configure(bg=color_scheme["unselected_settings_button"])
         self.settings2_button.configure(bg=color_scheme["selected_color"])
-        
-        self.operator_toggle_canvas.configure(bg=color_scheme["application/window_and_frame_color"])
+
+        self.operator_toggle_canvas.configure(
+            bg=color_scheme["application/window_and_frame_color"]
+        )
         if self.operator_alerts_switch_state["is_on"]:
-            self.operator_toggle_canvas.itemconfig(self.operator_switch_background, fill=color_scheme["selected_color"])
-            self.operator_toggle_canvas.coords(self.operator_switch, 60, 10, 90, 40)  # Move to the right
+            self.operator_toggle_canvas.itemconfig(
+                self.operator_switch_background, fill=color_scheme["selected_color"]
+            )
+            self.operator_toggle_canvas.coords(
+                self.operator_switch, 60, 10, 90, 40
+            )  # Move to the right
         else:
-            self.operator_toggle_canvas.itemconfig(self.operator_switch_background, fill=color_scheme["button_bg"])
-            self.operator_toggle_canvas.coords(self.operator_switch, 10, 10, 40, 40)  # Move to the left
+            self.operator_toggle_canvas.itemconfig(
+                self.operator_switch_background, fill=color_scheme["button_bg"]
+            )
+            self.operator_toggle_canvas.coords(
+                self.operator_switch, 10, 10, 40, 40
+            )  # Move to the left
 
-        self.segments_frame.configure(bg=color_scheme["application/window_and_frame_color"],
-                                        highlightbackground=color_scheme["frame_outline_color"],
-                                        highlightcolor=color_scheme["frame_outline_color"])
-        
-        self.segments_label.configure(bg=color_scheme["application/window_and_frame_color"],
-                                        fg=color_scheme["label_font_color/fg"])
-        
-        self.segmentation_toggle_frame.configure(bg=color_scheme["application/window_and_frame_color"],
-                                        highlightbackground=color_scheme["frame_outline_color"],
-                                        highlightcolor=color_scheme["frame_outline_color"])
-        
-        self.segmentation_toggle_label.configure(bg=color_scheme["application/window_and_frame_color"],
-                                        fg=color_scheme["label_font_color/fg"])
+        self.segments_frame.configure(
+            bg=color_scheme["application/window_and_frame_color"],
+            highlightbackground=color_scheme["frame_outline_color"],
+            highlightcolor=color_scheme["frame_outline_color"],
+        )
 
-        self.segmentation_toggle_canvas.configure(bg=color_scheme["application/window_and_frame_color"])
+        self.segments_label.configure(
+            bg=color_scheme["application/window_and_frame_color"],
+            fg=color_scheme["label_font_color/fg"],
+        )
+
+        self.segmentation_toggle_frame.configure(
+            bg=color_scheme["application/window_and_frame_color"],
+            highlightbackground=color_scheme["frame_outline_color"],
+            highlightcolor=color_scheme["frame_outline_color"],
+        )
+
+        self.segmentation_toggle_label.configure(
+            bg=color_scheme["application/window_and_frame_color"],
+            fg=color_scheme["label_font_color/fg"],
+        )
+
+        self.segmentation_toggle_canvas.configure(
+            bg=color_scheme["application/window_and_frame_color"]
+        )
         if self.segmentation_switch_state["is_on"]:
-            self.segmentation_toggle_canvas.itemconfig(self.segmentation_switch_background, fill=color_scheme["selected_color"])
-            self.segmentation_toggle_canvas.coords(self.segmentation_switch, 60, 10, 90, 40)
+            self.segmentation_toggle_canvas.itemconfig(
+                self.segmentation_switch_background, fill=color_scheme["selected_color"]
+            )
+            self.segmentation_toggle_canvas.coords(
+                self.segmentation_switch, 60, 10, 90, 40
+            )
             self.toggle_segment_visibility(True)
         else:
-            self.segmentation_toggle_canvas.itemconfig(self.segmentation_switch_background, fill=color_scheme["button_bg"])
-            self.segmentation_toggle_canvas.coords(self.segmentation_switch, 10, 10, 40, 40)
+            self.segmentation_toggle_canvas.itemconfig(
+                self.segmentation_switch_background, fill=color_scheme["button_bg"]
+            )
+            self.segmentation_toggle_canvas.coords(
+                self.segmentation_switch, 10, 10, 40, 40
+            )
             self.toggle_segment_visibility(False)
 
-        self.priority_button_frame.configure(bg=color_scheme["apply_changes_background"])
+        self.priority_button_frame.configure(
+            bg=color_scheme["apply_changes_background"]
+        )
         self.priority_button_frame.configure(bg=color_scheme["selected_color"])
 
         self.close_menu_button.configure(bg=color_scheme["apply_changes_background"])
-
 
     def targets_button_color(self, button):
         mode = "dark" if self.color_scheme["dark_mode"] else "light"
@@ -112,13 +152,11 @@ class SettingsFrame2(tk.Frame):
         self.update_colors()
         shared_alert.set_value(switch_state["is_on"])
 
-
     def toggle_segmentation_switch(
         self, switch_canvas, switch_background, switch_indicator, switch_state
     ):
         switch_state["is_on"] = not switch_state["is_on"]
         self.update_colors()
-
 
     def set_button_active(self, selected_button):
         mode = "dark" if self.color_scheme["dark_mode"] else "light"
@@ -173,8 +211,9 @@ class SettingsFrame2(tk.Frame):
             update_display_callback=self.update_listbox_display,
         )
 
-
-        targets = [k for k in shared_labels.get_all_labels().keys() if k != 'BACKGROUND']
+        targets = [
+            k for k in shared_labels.get_all_labels().keys() if k != "BACKGROUND"
+        ]
         self.target_buttons = {}
         for i, target in enumerate(targets):
             button = tk.Button(
@@ -332,8 +371,13 @@ class SettingsFrame2(tk.Frame):
                 width=26,
                 height=2,
             )
-            button.grid(row=(i // 2) + 1, column=i % 2, sticky="ew", padx=5, pady=7)
-            button.config(command=lambda b=button, s=segment: (self.set_button_active(b), shared_segmentation.set_current(s)))            
+            button.grid(row=(i // 2) + 1, column=i % 2, sticky="ew", padx=5, pady=5)
+            button.config(
+                command=lambda b=button, s=segment: (
+                    self.set_button_active(b),
+                    shared_segmentation.set_current(s),
+                )
+            )
             self.segment_buttons[segment] = button
 
         #############################################################################################################
@@ -372,8 +416,10 @@ class SettingsFrame2(tk.Frame):
         )
         self.segmentation_toggle_canvas.place(x=440, y=17)
 
-        self.segmentation_switch_background = self.segmentation_toggle_canvas.create_rectangle(
-            5, 10, 95, 40, outline="black", fill="#697283"
+        self.segmentation_switch_background = (
+            self.segmentation_toggle_canvas.create_rectangle(
+                5, 10, 95, 40, outline="black", fill="#697283"
+            )
         )
         self.segmentation_switch = self.segmentation_toggle_canvas.create_oval(
             10, 10, 40, 40, outline="black", fill="white"

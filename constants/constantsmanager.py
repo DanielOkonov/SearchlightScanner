@@ -9,11 +9,60 @@ class ConstantsManager:
 
     BACKUP_JSON_STRING = """
     {
-        "default_key": "default_value"
+        "default_confidence_level": 50,
+        "default_distance": 1,
+        "default_resolution": "280x720 pixels",
+        "default_segmentation": 1,
+        "notes1": "",
+        "notes2": "",
+        "path_to_model": "",
+        "path_to_labels": "",
+        "default_targets": [
+        {
+        "target": "BACKGROUND",
+        "color": "#2E0E05"
+        },
+        {
+        "target": "vehicle",
+        "color": "#0AEB38"
+        },
+        {
+        "target": "ocean debris",
+        "color": "#6B18C9"
+        },
+        {
+        "target": "person",
+        "color": "#180C4A"
+        },
+        {
+        "target": "powerline",
+        "color": "#5D8C63"
+        },
+        {
+        "target": "dog",
+        "color": "#6F3987"
+        },
+        {
+        "target": "ship wake",
+        "color": "#E76807"
+        },
+        {
+        "target": "airplane",
+        "color": "#1B02D3"
+        },
+        {
+        "target": "helicopter",
+        "color": "#C4CF23"
+        },
+        {
+        "target": "Persons_Thermal",
+        "color": "#485843"
+        }
+    ]
     }
     """
 
-    def __init__(self, filename="values.json"):
+    def __init__(self, filename="default_settings.json"):
         """
         Initializer for ConstantsManager.
 
