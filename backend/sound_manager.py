@@ -4,8 +4,8 @@ import time
 class SoundManager:
     def __init__(self):
         self.sounds = {
-            "default": "../sounds/beep.mp3",
-            "powerline": "../sounds/Alarm__Missile_Jettison.ogg.mp3"
+            "default": "/home/sar/SearchlightScanner-dev/sounds/beep.mp3",
+            "powerline": "/home/sar/SearchlightScanner-dev/sounds/Alarm__Missile_Jettison.ogg.mp3"
         }
         self.last_play_time = 0
         self.cooldown = 0
