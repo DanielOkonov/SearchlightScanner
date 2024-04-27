@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import font as tkFont
-import asyncio
+import threading
 import jetson_utils
 from PIL import Image
 from backend.led_controller import LEDController
@@ -263,7 +263,8 @@ class MainFrame(tk.Frame):
             frame = self.parent.camera_feed.capture()
             if frame is not None:
                 detections = self.parent.ai.detect(frame, shared_segmentation.get_current())
-                asyncio.run(self.sound_manager.play_sound(detections)) # play sounds based on detections
+                sound_thread = threading.Thread(target=self.sound_manager.play_sound, args=(detections,))
+                sound_thread.start()
 
                 # Resize image
                 numpy_image = jetson_utils.cudaToNumpy(frame)
