@@ -1,7 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import font as tkFont
-import threading
 import jetson_utils
 from PIL import Image
 from backend.led_controller import LEDController
@@ -26,6 +25,7 @@ class MainFrame(tk.Frame):
         shared_confidence.register_observer(self.update_confidence)
         self.create_widgets()
         self.sound_manager = SoundManager()
+        self.sound_manager.start()
         self.saver = ImageSaver(5, "images", 1, 100, {})
         self.saver.start()
         self.led_controller = LEDController()
@@ -265,8 +265,7 @@ class MainFrame(tk.Frame):
             if frame is not None:
                 detections = self.parent.ai.detect(frame, shared_segmentation.get_current())
                 if shared_alert.get_value():
-                    sound_thread = threading.Thread(target=self.sound_manager.play_sound, args=(detections,))
-                    sound_thread.start()
+                    self.sound_manager.play_sound(detections)
 
                 # Resize image
                 numpy_image = jetson_utils.cudaToNumpy(frame)

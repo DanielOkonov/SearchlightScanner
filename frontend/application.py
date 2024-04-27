@@ -141,6 +141,7 @@ class Application(tk.Tk):
             self.gps_manager.stop()  # Stop the GPS manager
         self.frames[MainFrame].stop_camera_feed()
         self.camera_feed.release()  # Release the camera resource
+        self.frames[MainFrame].sound_manager.stop()  # Stop the sound manager
         self.destroy()
 
 
