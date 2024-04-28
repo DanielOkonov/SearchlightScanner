@@ -41,9 +41,11 @@ This class manages video capture from a designated camera source using OpenCV. I
 
 ## Notes
 
+The model can be downloaded at https://drive.google.com/drive/folders/1cSUit-qn6RUP69SZKrJayjlbVZrnEtsf?usp=sharing 
+
 Project deployment notes can be viewed at https://docs.google.com/document/d/1rzz0O65910Saukt-Ppdr1zIEvkJdUONx/edit
 
-Releae notes can be viewed at https://docs.google.com/document/d/1J6jRMFk4gDtfDnW0x19CBua5L9uNC4Ai/edit 
+Release notes can be viewed at https://docs.google.com/document/d/1J6jRMFk4gDtfDnW0x19CBua5L9uNC4Ai/edit 
 
 ## Installation
 
