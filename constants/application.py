@@ -103,7 +103,7 @@ class Application(tk.Tk):
             value=int(self.constants_manager.get_constant("default_distance"))
         )
         self.default_resolution = tk.StringVar(
-            value=self.constants_manager.get_constant("default_resolution") + " pixels"
+            value=self.constants_manager.get_constant("default_resolution")
         )
 
         # settings 2
@@ -215,7 +215,7 @@ class Application(tk.Tk):
         row = 0
         root_label = tk.Label(
             self,
-            text="Constants:",
+            text="Searchlight Scanner Constants",
             font=("Arial", 14, "bold"),
             bg="#7C889C",
             fg="white",
@@ -227,7 +227,7 @@ class Application(tk.Tk):
 
         # Default Confidence Level
         confidence_level_label = tk.Label(
-            form_frame, text="Default Confidence Level:", bg="#7C889C", fg="white"
+            form_frame, text="Default confidence level (25%):", bg="#7C889C", fg="white"
         )
         confidence_level_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
         self.confidence_level_entry = tk.Entry(
@@ -244,7 +244,10 @@ class Application(tk.Tk):
 
         # Defult distance
         distance_label = tk.Label(
-            form_frame, text="Default Distance:", bg="#7C889C", fg="white"
+            form_frame,
+            text="Default distance/focal length (pixels):",
+            bg="#7C889C",
+            fg="white",
         )
         distance_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
         self.default_distance_entry = tk.Entry(
@@ -261,7 +264,7 @@ class Application(tk.Tk):
 
         # Default Resolution
         resolution_label = tk.Label(
-            form_frame, text="Default Resolution:", bg="#7C889C", fg="white"
+            form_frame, text="Default resolution (1920x1080):", bg="#7C889C", fg="white"
         )
         resolution_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
         self.resolution_entry = ttk.Combobox(
@@ -275,7 +278,10 @@ class Application(tk.Tk):
 
         # Default Segmentation (Single-select)
         segmentation_label = tk.Label(
-            form_frame, text="Default Segmentation:", bg="#7C889C", fg="white"
+            form_frame,
+            text="Default segmentation (9 segments):",
+            bg="#7C889C",
+            fg="white",
         )
         segmentation_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
         self.segmentation_entry = ttk.Combobox(
@@ -288,7 +294,9 @@ class Application(tk.Tk):
         row += 1
 
         # Notes 1
-        notes1_label = tk.Label(form_frame, text="Notes 1:", bg="#7C889C", fg="white")
+        notes1_label = tk.Label(
+            form_frame, text="Constants notes 1:", bg="#7C889C", fg="white"
+        )
         notes1_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
         self.notes1_entry = tk.Text(form_frame, height=3, width=30)
         self.notes1_entry.insert("1.0", self.notes1.get())
@@ -297,7 +305,9 @@ class Application(tk.Tk):
         row += 1
 
         # Notes 2
-        notes2_label = tk.Label(form_frame, text="Notes 2:", bg="#7C889C", fg="white")
+        notes2_label = tk.Label(
+            form_frame, text="Constants notes 2:", bg="#7C889C", fg="white"
+        )
         notes2_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
         self.notes2_entry = tk.Text(form_frame, height=3, width=30)
         self.notes2_entry.insert("1.0", self.notes2.get())
@@ -310,7 +320,7 @@ class Application(tk.Tk):
         model_frame.grid(row=row, columnspan=2, pady=(10, 5))
 
         path_to_model_label = tk.Label(
-            model_frame, text="Path to Model:", bg="#7C889C", fg="white"
+            model_frame, text="Path to new model:", bg="#7C889C", fg="white"
         )
         path_to_model_label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
         self.model_entry = tk.Entry(
@@ -328,7 +338,7 @@ class Application(tk.Tk):
         labels_frame.grid(row=row, columnspan=2, pady=(5, 10))
 
         path_to_label_file_label = tk.Label(
-            labels_frame, text="Path to Labels File:", bg="#7C889C", fg="white"
+            labels_frame, text="Path to labels file:", bg="#7C889C", fg="white"
         )
         path_to_label_file_label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
         self.labels_entry = tk.Entry(
