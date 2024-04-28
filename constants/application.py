@@ -74,12 +74,12 @@ def get_resolution_value(text):
 
 
 def read_csv_and_convert_to_json(csv_file_path):
-    data = []
+    data = {}
     try:
         with open(csv_file_path, newline="") as csvfile:
             for line in csvfile:
                 category, color = line.strip().split(",")
-                data.append({"target": category, "color": color.upper()})
+                data[category] = color
     except FileNotFoundError:
         print(f"File not found: {csv_file_path}")
     return data
@@ -90,12 +90,12 @@ class Application(tk.Tk):
         super().__init__()
         self.title("Constants")
         self.configure(bg="#7C889C")
-        self.geometry("600x500")
+        self.geometry("700x800")
 
         self.constants_manager = ConstantsManager()
 
         # Instance variables to store values
-        # settings 1
+        # scanning constants
         self.default_confidence_level = tk.IntVar(
             value=int(self.constants_manager.get_constant("default_confidence_level"))
         )
@@ -105,11 +105,39 @@ class Application(tk.Tk):
         self.default_resolution = tk.StringVar(
             value=self.constants_manager.get_constant("default_resolution")
         )
-
-        # settings 2
         self.default_segmentation = tk.StringVar(
             value=str(self.constants_manager.get_constant("default_segmentation"))
             + " segments"
+        )
+
+        # gps constants
+        self.gps_name = tk.StringVar(
+            value=str(self.constants_manager.get_constant("gps_name"))
+        )
+        self.gps_baud_rate = tk.IntVar(
+            value=int(self.constants_manager.get_constant("gps_baud_rate"))
+        )
+
+        # led constants
+        self.led_name = tk.StringVar(
+            value=str(self.constants_manager.get_constant("led_name"))
+        )
+        self.led_baud_rate = tk.IntVar(
+            value=int(self.constants_manager.get_constant("led_baud_rate"))
+        )
+
+        # image save constants
+        self.image_save_dir = tk.StringVar(
+            value=str(self.constants_manager.get_constant("image_save_dir"))
+        )
+        self.image_save_rate = tk.DoubleVar(
+            value=float(self.constants_manager.get_constant("image_save_rate"))
+        )
+        self.images_per_rate = tk.IntVar(
+            value=int(self.constants_manager.get_constant("images_per_rate"))
+        )
+        self.images_per_directory = tk.IntVar(
+            value=int(self.constants_manager.get_constant("images_per_dir"))
         )
 
         # notes
@@ -129,6 +157,11 @@ class Application(tk.Tk):
     def on_close(self):
         self.destroy()
 
+    def browse_image_save_dir(self):
+        image_save_dir_path = filedialog.askdirectory()
+        if image_save_dir_path:
+            self.image_save_dir.set(image_save_dir_path)
+
     def browse_model(self):
         model_path = filedialog.askopenfilename(
             filetypes=[("ONYX files", "*.onyx"), ("All files", "*.*")]
@@ -145,6 +178,12 @@ class Application(tk.Tk):
 
     def validate_numeric_input(self, P):
         if str.isdigit(P) or P == "":
+            return True
+        else:
+            return False
+
+    def validate_decimal_input(self, P):
+        if str.isdecimal(P) or P == "":
             return True
         else:
             return False
@@ -176,6 +215,62 @@ class Application(tk.Tk):
     def update_resolution(self, event):
         self.default_resolution.set(self.resolution_entry.get())
 
+    def update_gps_name(self, event):
+        self.gps_name.set(self.gps_name_entry.get())
+
+    def update_gps_baud_rate(self, event):
+        value = self.gps_baud_rate_entry.get()
+        if self.validate_numeric_input(value):
+            int_value = int(value)
+            if int_value < 0:
+                self.gps_baud_rate_entry.delete(0, tk.END)
+            self.gps_baud_rate.set(int(value))
+        else:
+            self.gps_baud_rate_entry.delete(0, tk.END)
+
+    def update_image_save_rate(self, event):
+        value = self.image_save_rate_entry.get()
+        if self.validate_decimal_input(value):
+            float_value = float(value)
+            if float_value < 0.1 or float_value > 86400:
+                self.image_save_rate_entry.delete(0, tk.END)
+            self.image_save_rate.set(float(value))
+        else:
+            self.image_save_rate_entry.delete(0, tk.END)
+
+    def update_images_per_rate(self, event):
+        value = self.images_per_rate_entry.get()
+        if self.validate_numeric_input(value):
+            int_value = int(value)
+            if int_value < 0:
+                self.images_per_rate_entry.delete(0, tk.END)
+            self.images_per_rate.set(int(value))
+        else:
+            self.images_per_rate_entry.delete(0, tk.END)
+
+    def update_images_per_directory(self, event):
+        value = self.images_per_directory_entry.get()
+        if self.validate_numeric_input(value):
+            int_value = int(value)
+            if int_value < 0:
+                self.images_per_directory_entry.delete(0, tk.END)
+            self.images_per_directory.set(int(value))
+        else:
+            self.images_per_directory_entry.delete(0, tk.END)
+
+    def update_led_name(self, event):
+        self.led_name.set(self.led_name_entry.get())
+
+    def update_led_baud_rate(self, event):
+        value = self.led_baud_rate_entry.get()
+        if self.validate_numeric_input(value):
+            int_value = int(value)
+            if int_value < 0:
+                self.led_baud_rate_entry.delete(0, tk.END)
+            self.led_baud_rate.set(int(value))
+        else:
+            self.led_baud_rate_entry.delete(0, tk.END)
+
     def update_notes1(self, event):
         self.notes1.set(self.notes1_entry.get("1.0", "end-1c"))
 
@@ -197,6 +292,20 @@ class Application(tk.Tk):
         self.constants_manager.set_constant(
             "default_segmentation",
             get_segmentation_value(self.default_segmentation.get()),
+        )
+        self.constants_manager.set_constant("gps_name", self.gps_name.get())
+        self.constants_manager.set_constant("gps_baud_rate", self.gps_baud_rate.get())
+        self.constants_manager.set_constant("led_name", self.led_name.get())
+        self.constants_manager.set_constant("led_baud_rate", self.led_baud_rate.get())
+        self.constants_manager.set_constant("image_save_dir", self.image_save_dir.get())
+        self.constants_manager.set_constant(
+            "image_save_rate", self.image_save_rate.get()
+        )
+        self.constants_manager.set_constant(
+            "images_per_rate", self.images_per_rate.get()
+        )
+        self.constants_manager.set_constant(
+            "images_per_dir", self.images_per_directory.get()
         )
         self.constants_manager.set_constant("notes1", self.notes1.get())
         self.constants_manager.set_constant("notes2", self.notes2.get())
@@ -224,6 +333,17 @@ class Application(tk.Tk):
 
         form_frame = tk.Frame(self, bg="#7C889C")
         form_frame.pack(pady=(0, 10))
+
+        # Scanning Constants Header
+        scanning_constants_header = tk.Label(
+            form_frame,
+            text="Scanning Constants",
+            font=("Arial", 10, "bold"),
+            bg="#7C889C",
+            fg="white",
+        )
+        scanning_constants_header.grid(row=row, columnspan=2, pady=(20, 5), sticky="w")
+        row += 1
 
         # Default Confidence Level
         confidence_level_label = tk.Label(
@@ -293,12 +413,176 @@ class Application(tk.Tk):
         self.segmentation_entry.bind("<<ComboboxSelected>>", self.update_segmentation)
         row += 1
 
+        # GPS Constants Header
+        gps_constants_header = tk.Label(
+            form_frame,
+            text="GPS Constants",
+            font=("Arial", 10, "bold"),
+            bg="#7C889C",
+            fg="white",
+        )
+        gps_constants_header.grid(row=row, columnspan=2, pady=(20, 5), sticky="w")
+        row += 1
+
+        # GPS Name
+        gps_name_label = tk.Label(form_frame, text="GPS Name", bg="#7C889C", fg="white")
+        gps_name_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+        self.gps_name_entry = tk.Entry(form_frame, textvariable=self.gps_name)
+        self.gps_name_entry.grid(row=row, column=1, padx=10, pady=5)
+        self.gps_name_entry.bind("<KeyRelease>", self.update_gps_name)
+        self.gps_name_entry.config(validate="key")
+        row += 1
+
+        # GPS Baud Rate
+        gps_baud_rate_label = tk.Label(
+            form_frame,
+            text="GPS Baud Rate:",
+            bg="#7C889C",
+            fg="white",
+        )
+        gps_baud_rate_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+        self.gps_baud_rate_entry = tk.Entry(form_frame, textvariable=self.gps_baud_rate)
+        self.gps_baud_rate_entry.grid(row=row, column=1, padx=10, pady=5)
+        self.gps_baud_rate_entry.bind("<KeyRelease>", self.update_gps_baud_rate)
+        self.gps_baud_rate_entry.config(validate="key")
+        self.gps_baud_rate_entry["validatecommand"] = (
+            self.gps_baud_rate_entry.register(self.validate_numeric_input),
+            "%P",
+        )
+        row += 1
+
+        # LED Constants Header
+        led_constants_header = tk.Label(
+            form_frame,
+            text="LED Constants",
+            font=("Arial", 10, "bold"),
+            bg="#7C889C",
+            fg="white",
+        )
+        led_constants_header.grid(row=row, columnspan=2, pady=(20, 5), sticky="w")
+        row += 1
+
+        # LED Name
+        led_name_label = tk.Label(form_frame, text="LED Name", bg="#7C889C", fg="white")
+        led_name_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+        self.led_name_entry = tk.Entry(form_frame, textvariable=self.led_name)
+        self.led_name_entry.grid(row=row, column=1, padx=10, pady=5)
+        self.led_name_entry.bind("<KeyRelease>", self.update_led_name)
+        self.led_name_entry.config(validate="key")
+        row += 1
+
+        # LED Baud Rate
+        led_baud_rate_label = tk.Label(
+            form_frame,
+            text="LED Baud Rate:",
+            bg="#7C889C",
+            fg="white",
+        )
+        led_baud_rate_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+        self.led_baud_rate_entry = tk.Entry(form_frame, textvariable=self.led_baud_rate)
+        self.led_baud_rate_entry.grid(row=row, column=1, padx=10, pady=5)
+        self.led_baud_rate_entry.bind("<KeyRelease>", self.update_led_baud_rate)
+        self.led_baud_rate_entry.config(validate="key")
+        row += 1
+
+        # Image Save Constants Header
+        image_save_constants_header = tk.Label(
+            form_frame,
+            text="Image Save Constants",
+            font=("Arial", 10, "bold"),
+            bg="#7C889C",
+            fg="white",
+        )
+        image_save_constants_header.grid(
+            row=row, columnspan=2, pady=(20, 5), sticky="w"
+        )
+        row += 1
+
+        # Image Save Directory
+        image_frame = tk.Frame(form_frame, bg="#7C889C")
+        image_frame.grid(row=row, columnspan=2, pady=(10, 5))
+
+        image_save_dir_label = tk.Label(
+            image_frame, text="Image save directory:", bg="#7C889C", fg="white"
+        )
+        image_save_dir_label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
+        self.image_save_dir_entry = tk.Entry(
+            image_frame, width=30, textvariable=self.image_save_dir
+        )
+        self.image_save_dir_entry.grid(row=0, column=1, padx=10, pady=5)
+        browse_image_save_dir_button = tk.Button(
+            image_frame, text="Browse", command=self.browse_image_save_dir
+        )
+        browse_image_save_dir_button.grid(row=0, column=2, padx=5, pady=5)
+        row += 1
+
+        # Image Save Rate
+        image_save_rate_label = tk.Label(
+            form_frame,
+            text="Image Save Rate:",
+            bg="#7C889C",
+            fg="white",
+        )
+        image_save_rate_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+        self.image_save_rate_entry = tk.Entry(
+            form_frame, textvariable=self.image_save_rate
+        )
+        self.image_save_rate_entry.grid(row=row, column=1, padx=10, pady=5)
+        self.image_save_rate_entry.bind("<KeyRelease>", self.update_image_save_rate)
+        self.image_save_rate_entry.config(validate="key")
+        row += 1
+
+        # Images Per Rate
+        images_per_rate_label = tk.Label(
+            form_frame,
+            text="Images Per Rate:",
+            bg="#7C889C",
+            fg="white",
+        )
+        images_per_rate_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+        self.images_per_rate_entry = tk.Entry(
+            form_frame, textvariable=self.images_per_rate
+        )
+        self.images_per_rate_entry.grid(row=row, column=1, padx=10, pady=5)
+        self.images_per_rate_entry.bind("<KeyRelease>", self.update_images_per_rate)
+        self.images_per_rate_entry.config(validate="key")
+        row += 1
+
+        # Images Per Directory
+        images_per_directory_label = tk.Label(
+            form_frame,
+            text="Images Per Directory:",
+            bg="#7C889C",
+            fg="white",
+        )
+        images_per_directory_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+        self.images_per_directory_entry = tk.Entry(
+            form_frame, textvariable=self.images_per_directory
+        )
+        self.images_per_directory_entry.grid(row=row, column=1, padx=10, pady=5)
+        self.images_per_directory_entry.bind(
+            "<KeyRelease>", self.update_images_per_directory
+        )
+        self.images_per_directory_entry.config(validate="key")
+        row += 1
+
+        # Notes Header
+        notes_header = tk.Label(
+            form_frame,
+            text="Notes",
+            font=("Arial", 10, "bold"),
+            bg="#7C889C",
+            fg="white",
+        )
+        notes_header.grid(row=row, columnspan=2, pady=(20, 5), sticky="w")
+        row += 1
+
         # Notes 1
         notes1_label = tk.Label(
             form_frame, text="Constants notes 1:", bg="#7C889C", fg="white"
         )
         notes1_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
-        self.notes1_entry = tk.Text(form_frame, height=3, width=30)
+        self.notes1_entry = tk.Text(form_frame, height=5, width=50)
         self.notes1_entry.insert("1.0", self.notes1.get())
         self.notes1_entry.grid(row=row, column=1, padx=10, pady=5, columnspan=2)
         self.notes1_entry.bind("<KeyRelease>", self.update_notes1)
@@ -309,10 +593,21 @@ class Application(tk.Tk):
             form_frame, text="Constants notes 2:", bg="#7C889C", fg="white"
         )
         notes2_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
-        self.notes2_entry = tk.Text(form_frame, height=3, width=30)
+        self.notes2_entry = tk.Text(form_frame, height=5, width=50)
         self.notes2_entry.insert("1.0", self.notes2.get())
         self.notes2_entry.grid(row=row, column=1, padx=10, pady=5, columnspan=2)
         self.notes2_entry.bind("<KeyRelease>", self.update_notes2)
+        row += 1
+
+        # File Paths Header
+        file_paths_header = tk.Label(
+            form_frame,
+            text="File Paths",
+            font=("Arial", 10, "bold"),
+            bg="#7C889C",
+            fg="white",
+        )
+        file_paths_header.grid(row=row, columnspan=2, pady=(20, 5), sticky="w")
         row += 1
 
         # Model Frame
