@@ -90,7 +90,28 @@ class Application(tk.Tk):
         super().__init__()
         self.title("Constants")
         self.configure(bg="#7C889C")
-        self.geometry("700x800")
+        self.geometry("663x700")
+
+        # Create a Main Frame
+        main_frame = tk.Frame(self)
+        main_frame.pack(fill=tk.BOTH, expand=1)
+
+        # Create a Canvas
+        self.my_canvas = tk.Canvas(main_frame)
+        self.my_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        # Add a Scrollbar to the Canvas
+        my_scrollbar = ttk.Scrollbar(
+            main_frame, orient=tk.VERTICAL, command=self.my_canvas.yview
+        )
+        my_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Configure the Canvas
+        self.my_canvas.configure(yscrollcommand=my_scrollbar.set)
+        self.my_canvas.bind(
+            "<Configure>",
+            lambda e: self.my_canvas.configure(scrollregion=self.my_canvas.bbox("all")),
+        )
 
         self.constants_manager = ConstantsManager()
 
@@ -321,18 +342,22 @@ class Application(tk.Tk):
         print("Constants saved successfully!")
 
     def create_form(self):
+        form_frame = tk.Frame(self.my_canvas, bg="#7C889C")
+        self.my_canvas.create_window((0, 0), window=form_frame, anchor="nw")
+
         row = 0
         root_label = tk.Label(
-            self,
+            form_frame,
             text="Searchlight Scanner Constants",
             font=("Arial", 14, "bold"),
             bg="#7C889C",
             fg="white",
         )
-        root_label.pack(pady=(10, 5))
+        root_label.grid(row=row, columnspan=2, pady=(10, 25), sticky="w")
+        row += 1
 
-        form_frame = tk.Frame(self, bg="#7C889C")
-        form_frame.pack(pady=(0, 10))
+        # form_frame = tk.Frame(self, bg="#7C889C")
+        # form_frame.pack(pady=(0, 10))
 
         # Scanning Constants Header
         scanning_constants_header = tk.Label(
