@@ -39,7 +39,10 @@ class ConstantsManager:
             "airplane": "(237, 28, 36)",
             "helicopter": "(0, 162, 232)",
             "Persons_Thermal": "(63, 72, 204)"
-        }
+        },
+        "operator_notes": "",
+        "operator_comments": "",
+        "camera_feed": "/dev/video0"
     }
     """
 

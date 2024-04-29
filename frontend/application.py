@@ -7,8 +7,9 @@ import cv2
 from backend.video_source import CameraManager
 import platform
 from backend.image_processor import ImageProcessor
-
 from backend.gps_manager import GPSManager
+from .application_current_settings_route import current_settings_route
+from constants.constantsmanager import ConstantsManager
 
 
 class CameraFeed:
@@ -53,6 +54,7 @@ class CameraFeed:
 class Application(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.constants_manager = ConstantsManager(filename=current_settings_route)
         self.ai = ImageProcessor(model_path="models/ssd-mobilenet.onnx")
         self.color_scheme = color_scheme
         self.title("SearchLightScanner")
@@ -63,9 +65,12 @@ class Application(tk.Tk):
 
         # Set default camera to /dev/video0
 
-        self.camera_feed = CameraManager(source="/dev/video0", width=1280, height=720)
+        self.camera_feed = CameraManager(
+            source=self.constants_manager.get_constant("camera_feed"),
+            width=1280,
+            height=720,
+        )
         self.gps_manager = GPSManager()  # Initialize GPS device
-
 
         self.frames = {}
         for F in (MainFrame, SettingsFrame1, SettingsFrame2):

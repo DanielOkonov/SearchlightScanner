@@ -331,7 +331,9 @@ class SettingsFrame1(tk.Frame):
 
     def select_camera(self, cam_index):
         # Update camera source in CameraFeed
-        self.camera_feed.change_camera(f"/dev/video{cam_index}")
+        new_camera_feed = f"/dev/video{cam_index}"
+        self.constants_manager.set_constant("camera_feed", new_camera_feed)
+        self.camera_feed.change_camera(new_camera_feed)
         self.current_cam.set(cam_index)
         self.update_camera_selection()
 
@@ -460,9 +462,7 @@ class SettingsFrame1(tk.Frame):
         frame.pack(padx=10, pady=10)
 
         # Create a Tkinter variable
-        selected_option = tk.StringVar(
-            value=self.constants_manager.get_constant("default_resolution")
-        )
+        selected_option = "1920x1080 pixels"
 
         # Set the list of choices
         options = [
