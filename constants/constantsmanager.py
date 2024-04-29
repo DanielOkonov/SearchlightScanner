@@ -13,6 +13,8 @@ class ConstantsManager:
         "default_distance": 1,
         "default_resolution": "1920x1080 pixels",
         "default_segmentation": 9,
+        "camera_feed_1": "/dev/video0",
+        "camera_feed_2": "/dev/video2",
         "gps_name": "/dev/ttyACM0",
         "gps_baud_rate": 115200,
         "led_name": "/dev/ttyUSB0",
@@ -42,8 +44,7 @@ class ConstantsManager:
         },
         "selected_targets": {},
         "operator_notes": "",
-        "operator_comments": "",
-        "camera_feed": "/dev/video0"
+        "operator_comments": ""
     }
     """
 

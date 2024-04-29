@@ -141,6 +141,12 @@ class Application(tk.Tk):
             value=str(self.constants_manager.get_constant("default_segmentation"))
             + " segments"
         )
+        self.camera_feed_1 = tk.StringVar(
+            value=str(self.constants_manager.get_constant("camera_feed_1"))
+        )
+        self.camera_feed_2 = tk.StringVar(
+            value=str(self.constants_manager.get_constant("camera_feed_2"))
+        )
 
         # gps constants
         self.gps_name = tk.StringVar(
@@ -262,6 +268,12 @@ class Application(tk.Tk):
 
     def update_resolution(self, event):
         self.default_resolution.set(self.resolution_entry.get())
+
+    def update_camera_feed_1(self, event):
+        self.camera_feed_1.set(self.camera_feed_1_entry.get())
+
+    def update_camera_feed_2(self, event):
+        self.camera_feed_2.set(self.camera_feed_2_entry.get())
 
     def update_gps_name(self, event):
         self.gps_name.set(self.gps_name_entry.get())
@@ -497,6 +509,34 @@ class Application(tk.Tk):
         )
         self.segmentation_entry.grid(row=row, column=1, padx=10, pady=5)
         self.segmentation_entry.bind("<<ComboboxSelected>>", self.update_segmentation)
+        row += 1
+
+        # Camera Feed 1
+        camera_feed_1_label = tk.Label(
+            form_frame,
+            text="Camera Feed 1:",
+            bg="#7C889C",
+            fg="white",
+        )
+        camera_feed_1_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+        self.camera_feed_1_entry = tk.Entry(form_frame, textvariable=self.camera_feed_1)
+        self.camera_feed_1_entry.grid(row=row, column=1, padx=10, pady=5)
+        self.camera_feed_1_entry.bind("<KeyRelease>", self.update_camera_feed_1)
+        self.camera_feed_1_entry.config(validate="key")
+        row += 1
+
+        # Camera Feed 2
+        camera_feed_2_label = tk.Label(
+            form_frame,
+            text="Camera Feed 2:",
+            bg="#7C889C",
+            fg="white",
+        )
+        camera_feed_2_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+        self.camera_feed_2_entry = tk.Entry(form_frame, textvariable=self.camera_feed_2)
+        self.camera_feed_2_entry.grid(row=row, column=1, padx=10, pady=5)
+        self.camera_feed_2_entry.bind("<KeyRelease>", self.update_camera_feed_2)
+        self.camera_feed_2_entry.config(validate="key")
         row += 1
 
         # GPS Constants Header
