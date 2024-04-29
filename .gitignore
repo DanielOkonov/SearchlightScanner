@@ -2,6 +2,7 @@
 /jetson-inference
 /backend/images/*
 default_settings.json
+current_settings.json
 targets.csv
 images/*
 models/*

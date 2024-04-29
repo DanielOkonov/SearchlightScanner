@@ -17,6 +17,7 @@ class ConstantsManager:
         "gps_baud_rate": 115200,
         "led_name": "/dev/ttyUSB0",
         "led_baud_rate": 9600,
+        "led_light_duration": 2,
         "image_save_dir": "",
         "image_save_rate": 2,
         "images_per_rate": 1,

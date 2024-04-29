@@ -146,6 +146,9 @@ class Application(tk.Tk):
         self.led_baud_rate = tk.IntVar(
             value=int(self.constants_manager.get_constant("led_baud_rate"))
         )
+        self.led_light_duration = tk.DoubleVar(
+            value=float(self.constants_manager.get_constant("led_light_duration"))
+        )
 
         # image save constants
         self.image_save_dir = tk.StringVar(
@@ -292,6 +295,16 @@ class Application(tk.Tk):
         else:
             self.led_baud_rate_entry.delete(0, tk.END)
 
+    def update_led_light_duration(self, event):
+        value = self.led_light_duration_entry.get()
+        if self.validate_decimal_input(value):
+            float_value = float(value)
+            if float_value < 0.1 or float_value > 86400:
+                self.led_light_duration_entry.delete(0, tk.END)
+            self.led_light_duration.set(float(value))
+        else:
+            self.led_light_duration_entry.delete(0, tk.END)
+
     def update_notes1(self, event):
         self.notes1.set(self.notes1_entry.get("1.0", "end-1c"))
 
@@ -318,6 +331,9 @@ class Application(tk.Tk):
         self.constants_manager.set_constant("gps_baud_rate", self.gps_baud_rate.get())
         self.constants_manager.set_constant("led_name", self.led_name.get())
         self.constants_manager.set_constant("led_baud_rate", self.led_baud_rate.get())
+        self.constants_manager.set_constant(
+            "led_light_duration", self.led_light_duration.get()
+        )
         self.constants_manager.set_constant("image_save_dir", self.image_save_dir.get())
         self.constants_manager.set_constant(
             "image_save_rate", self.image_save_rate.get()
@@ -508,6 +524,24 @@ class Application(tk.Tk):
         self.led_baud_rate_entry.grid(row=row, column=1, padx=10, pady=5)
         self.led_baud_rate_entry.bind("<KeyRelease>", self.update_led_baud_rate)
         self.led_baud_rate_entry.config(validate="key")
+        row += 1
+
+        # LED Light Duration
+        led_light_duration_label = tk.Label(
+            form_frame,
+            text="LED Light Duration:",
+            bg="#7C889C",
+            fg="white",
+        )
+        led_light_duration_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+        self.led_light_duration_entry = tk.Entry(
+            form_frame, textvariable=self.led_light_duration
+        )
+        self.led_light_duration_entry.grid(row=row, column=1, padx=10, pady=5)
+        self.led_light_duration_entry.bind(
+            "<KeyRelease>", self.update_led_light_duration
+        )
+        self.led_light_duration_entry.config(validate="key")
         row += 1
 
         # Image Save Constants Header
