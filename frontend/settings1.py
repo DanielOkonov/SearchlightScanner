@@ -357,11 +357,13 @@ class SettingsFrame1(tk.Frame):
         )  # Retrieves the text from the Text widget
         print(input_value)
         self.text_field_frame.place_forget()
+        self.constants_manager.set_constant("operator_notes", input_value)
         # This function should be responsible for saving what's written in the notes section
 
     def save_comments_input(self):
         input_value = self.comments_text_field.get("1.0", tk.END)
         print(input_value)
+        self.constants_manager.set_constant("operator_comments", input_value)
         self.comments_text_field_frame.place_forget()
 
     def create_widgets(self):
@@ -556,6 +558,9 @@ class SettingsFrame1(tk.Frame):
             width=129,
         )
         self.text_field.place(x=0, y=0)
+        self.text_field.insert(
+            "1.0", self.constants_manager.get_constant("operator_notes")
+        )
 
         self.save_button = tk.Button(
             self.text_field_frame,
@@ -603,6 +608,9 @@ class SettingsFrame1(tk.Frame):
             width=129,
         )
         self.comments_text_field.place(x=0, y=0)
+        self.comments_text_field.insert(
+            "1.0", self.constants_manager.get_constant("operator_comments")
+        )
 
         self.save_comments_button = tk.Button(
             self.comments_text_field_frame,
