@@ -13,9 +13,10 @@ from constants.constantsmanager import ConstantsManager
 
 
 def get_resolution(pixels):
-    width_str, height_str = pixels.split("x")
-    width = int(width_str)
-    height = int(height_str)
+    dimensions = pixels.split()
+    width_height_str = dimensions[0].split("x")
+    width = int(width_height_str[0])
+    height = int(width_height_str[1])
     return (width, height)
 
 
