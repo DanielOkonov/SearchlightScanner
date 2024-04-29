@@ -464,7 +464,7 @@ class SettingsFrame1(tk.Frame):
         frame.pack(padx=10, pady=10)
 
         # Create a Tkinter variable
-        selected_option = "1920x1080 pixels"
+        selected_option = tk.StringVar(value="1920x1080 pixels")
 
         # Set the list of choices
         options = [
@@ -478,7 +478,7 @@ class SettingsFrame1(tk.Frame):
         self.option_menu = ttk.OptionMenu(
             frame,
             selected_option,
-            selected_option,
+            selected_option.get(),
             *options,
             command=self.selection_changed,
         )
