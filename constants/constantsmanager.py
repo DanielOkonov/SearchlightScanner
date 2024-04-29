@@ -9,56 +9,44 @@ class ConstantsManager:
 
     BACKUP_JSON_STRING = """
     {
-        "default_confidence_level": 50,
-        "default_distance": 1,
-        "default_resolution": "280x720 pixels",
-        "default_segmentation": 1,
-        "notes1": "",
-        "notes2": "",
-        "path_to_model": "",
-        "path_to_labels": "",
-        "default_targets": [
-        {
-        "target": "BACKGROUND",
-        "color": "#2E0E05"
-        },
-        {
-        "target": "vehicle",
-        "color": "#0AEB38"
-        },
-        {
-        "target": "ocean debris",
-        "color": "#6B18C9"
-        },
-        {
-        "target": "person",
-        "color": "#180C4A"
-        },
-        {
-        "target": "powerline",
-        "color": "#5D8C63"
-        },
-        {
-        "target": "dog",
-        "color": "#6F3987"
-        },
-        {
-        "target": "ship wake",
-        "color": "#E76807"
-        },
-        {
-        "target": "airplane",
-        "color": "#1B02D3"
-        },
-        {
-        "target": "helicopter",
-        "color": "#C4CF23"
-        },
-        {
-        "target": "Persons_Thermal",
-        "color": "#485843"
-        }
-    ]
+    "default_confidence_level": 25,
+    "default_distance": 1,
+    "default_resolution": "1920x1080 pixels",
+    "default_segmentation": 9,
+    "camera_feed_1": "/dev/video0",
+    "camera_feed_2": "/dev/video2",
+    "gps_name": "/dev/ttyACM0",
+    "gps_baud_rate": 115200,
+    "led_name": "/dev/ttyUSB0",
+    "led_baud_rate": 9600,
+    "led_light_duration": 2,
+    "image_save_dir": "",
+    "image_save_rate": 2,
+    "images_per_rate": 1,
+    "images_per_dir": 100,
+    "image_font_size": 16,
+    "image_font_color": "(170, 255, 0)",
+    "notes1": "",
+    "notes2": "",
+    "path_to_model": "",
+    "path_to_labels": "",
+    "default_targets": {
+        "BACKGROUND": "(255, 255, 255)",
+        "vehicle": "(34, 177, 76)",
+        "ocean debris": "(255, 242, 0)",
+        "person": "(163, 73, 164)",
+        "powerline": "(255, 174, 201)",
+        "dog": "(185, 122, 87)",
+        "ship wake": "(136, 0, 21)",
+        "airplane": "(237, 28, 36)",
+        "helicopter": "(0, 162, 232)",
+        "Persons_Thermal": "(63, 72, 204)",
+        "crashed aircraft": "(255, 127, 39)",
+        "crashed helicopter": "(255, 127, 39)"
+    },
+    "selected_targets": {},
+    "operator_notes": "",
+    "operator_comments": ""
     }
     """
 

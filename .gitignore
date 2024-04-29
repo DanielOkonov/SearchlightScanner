@@ -1,9 +1,9 @@
 **/__pycache__/
 /jetson-inference
 /backend/images/*
-values.json
+default_settings.json
+current_settings.json
 targets.csv
 images/*
 models/*
 .DS_Store
-

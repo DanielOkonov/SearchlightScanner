@@ -99,9 +99,7 @@ class CustomSlider(tk.Canvas):
     def set_value(self, value, update=True):
         curr_value = max(self.min_val, min(self.max_val, value))
         self.value = curr_value
-        self.constants_manager.set_constant(
-            "default_confidence_level", curr_value * 100
-        )
+        self.constants_manager.set_constant("default_confidence_level", curr_value)
         self.draw_slider()
         # Only call the callback if update is True, which should be the case
         # only when the slider is moved by the user, not when synchronizing sliders.
@@ -331,7 +329,12 @@ class SettingsFrame1(tk.Frame):
 
     def select_camera(self, cam_index):
         # Update camera source in CameraFeed
-        self.camera_feed.change_camera(f"/dev/video{cam_index}")
+        new_camera_feed = None
+        if cam_index == 0:
+            new_camera_feed = self.constants_manager.get_constant("camera_feed_1")
+        else:
+            new_camera_feed = self.constants_manager.get_constant("camera_feed_2")
+        self.camera_feed.change_camera(new_camera_feed)
         self.current_cam.set(cam_index)
         self.update_camera_selection()
 
@@ -355,11 +358,13 @@ class SettingsFrame1(tk.Frame):
         )  # Retrieves the text from the Text widget
         print(input_value)
         self.text_field_frame.place_forget()
+        self.constants_manager.set_constant("operator_notes", input_value)
         # This function should be responsible for saving what's written in the notes section
 
     def save_comments_input(self):
         input_value = self.comments_text_field.get("1.0", tk.END)
         print(input_value)
+        self.constants_manager.set_constant("operator_comments", input_value)
         self.comments_text_field_frame.place_forget()
 
     def create_widgets(self):
@@ -460,9 +465,7 @@ class SettingsFrame1(tk.Frame):
         frame.pack(padx=10, pady=10)
 
         # Create a Tkinter variable
-        selected_option = tk.StringVar(
-            value=self.constants_manager.get_constant("default_resolution")
-        )
+        selected_option = tk.StringVar(value="1920x1080 pixels")
 
         # Set the list of choices
         options = [
@@ -556,6 +559,9 @@ class SettingsFrame1(tk.Frame):
             width=129,
         )
         self.text_field.place(x=0, y=0)
+        self.text_field.insert(
+            "1.0", self.constants_manager.get_constant("operator_notes")
+        )
 
         self.save_button = tk.Button(
             self.text_field_frame,
@@ -603,6 +609,9 @@ class SettingsFrame1(tk.Frame):
             width=129,
         )
         self.comments_text_field.place(x=0, y=0)
+        self.comments_text_field.insert(
+            "1.0", self.constants_manager.get_constant("operator_comments")
+        )
 
         self.save_comments_button = tk.Button(
             self.comments_text_field_frame,

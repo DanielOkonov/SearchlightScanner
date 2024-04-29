@@ -4,6 +4,8 @@ import time
 import os
 from .scanner_image import ScannerImage
 from frontend.shared_labels_controller import shared_labels
+from frontend.application_current_settings_route import current_settings_route
+from constants.constantsmanager import ConstantsManager
 
 
 class ImageSaver:
@@ -17,11 +19,12 @@ class ImageSaver:
         6: 0.60,
     }
 
-    def __init__(self, save_rate, save_dir, images_per_rate, images_per_dir, labels):
-        self.save_rate = save_rate
-        self.save_dir = save_dir
-        self.images_per_rate = images_per_rate
-        self.images_per_dir = images_per_dir
+    def __init__(self, labels):
+        self.constants_manager = ConstantsManager(filename=current_settings_route)
+        self.save_rate = self.constants_manager.get_constant("image_save_rate")
+        self.save_dir = self.constants_manager.get_constant("image_save_dir")
+        self.images_per_rate = self.constants_manager.get_constant("images_per_rate")
+        self.images_per_dir = self.constants_manager.get_constant("images_per_dir")
         self.labels = labels
         self.queue = queue.Queue()
         self.thread = threading.Thread(target=self.run, args=())
