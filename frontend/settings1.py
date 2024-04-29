@@ -99,9 +99,7 @@ class CustomSlider(tk.Canvas):
     def set_value(self, value, update=True):
         curr_value = max(self.min_val, min(self.max_val, value))
         self.value = curr_value
-        self.constants_manager.set_constant(
-            "default_confidence_level", curr_value * 100
-        )
+        self.constants_manager.set_constant("default_confidence_level", curr_value)
         self.draw_slider()
         # Only call the callback if update is True, which should be the case
         # only when the slider is moved by the user, not when synchronizing sliders.
@@ -331,8 +329,11 @@ class SettingsFrame1(tk.Frame):
 
     def select_camera(self, cam_index):
         # Update camera source in CameraFeed
-        new_camera_feed = f"/dev/video{cam_index}"
-        self.constants_manager.set_constant("camera_feed", new_camera_feed)
+        new_camera_feed = None
+        if cam_index == 0:
+            new_camera_feed = self.constants_manager.get_constant("camera_feed_1")
+        else:
+            new_camera_feed = self.constants_manager.get_constant("camera_feed_2")
         self.camera_feed.change_camera(new_camera_feed)
         self.current_cam.set(cam_index)
         self.update_camera_selection()
