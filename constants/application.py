@@ -89,8 +89,8 @@ def read_csv_and_convert_to_json(csv_file_path):
     try:
         with open(csv_file_path, newline="") as csvfile:
             for line in csvfile:
-                category, color = line.strip().split(",")
-                data[category] = color
+                category, r, g, b = line.strip().split(",")
+                data[category] = str((int(r), int(g), int(b)))
     except FileNotFoundError:
         print(f"File not found: {csv_file_path}")
     return data
