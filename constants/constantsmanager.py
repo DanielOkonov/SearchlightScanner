@@ -22,6 +22,8 @@ class ConstantsManager:
         "image_save_rate": 2,
         "images_per_rate": 1,
         "images_per_dir": 100,
+        "image_font_size": 16,
+        "image_font_color": "(170, 255, 0)",
         "notes1": "",
         "notes2": "",
         "path_to_model": "",

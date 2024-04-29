@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter import colorchooser
 from constantsmanager import ConstantsManager
 
 segmentation_options = [
@@ -71,6 +72,16 @@ def get_resolution_value(text):
         if option["text"] == text:
             return option["value"]
     return None  # Return None if text is not found
+
+
+def rgb_to_hex(rgb_color_string):
+    # Extract RGB values from the string
+    rgb_values = tuple(map(int, rgb_color_string.strip("()").split(", ")))
+
+    # Convert RGB values to hexadecimal format
+    hex_color = "#%02x%02x%02x" % rgb_values
+
+    return hex_color
 
 
 def read_csv_and_convert_to_json(csv_file_path):
@@ -163,6 +174,13 @@ class Application(tk.Tk):
         self.images_per_directory = tk.IntVar(
             value=int(self.constants_manager.get_constant("images_per_dir"))
         )
+        self.image_font_size = tk.IntVar(
+            value=int(self.constants_manager.get_constant("image_font_size"))
+        )
+        self.image_font_color = tk.StringVar(
+            value=str(self.constants_manager.get_constant("image_font_color"))
+        )
+        self.image_font_color.trace("w", self.update_image_font_color)
 
         # notes
         self.notes1 = tk.StringVar(value=self.constants_manager.get_constant("notes1"))
@@ -185,6 +203,12 @@ class Application(tk.Tk):
         image_save_dir_path = filedialog.askdirectory()
         if image_save_dir_path:
             self.image_save_dir.set(image_save_dir_path)
+
+    def browse_font_color(self):
+        color_code = colorchooser.askcolor(title="Choose Color")
+        if color_code[0] is not None:
+            rgb_color_code, _ = color_code
+            self.image_font_color.set(str(rgb_color_code))
 
     def browse_model(self):
         model_path = filedialog.askopenfilename(
@@ -282,6 +306,21 @@ class Application(tk.Tk):
         else:
             self.images_per_directory_entry.delete(0, tk.END)
 
+    def update_image_font_size(self, event):
+        value = self.image_font_size_entry.get()
+        if self.validate_numeric_input(value):
+            int_value = int(value)
+            if int_value < 0:
+                self.image_font_size_entry.delete(0, tk.END)
+            self.image_font_size.set(int(value))
+        else:
+            self.image_font_size_entry.delete(0, tk.END)
+
+    def update_image_font_color(self, *args):
+        rgb_color_string = self.image_font_color.get()
+        hex_color = rgb_to_hex(rgb_color_string)
+        self.image_font_color_box.config(bg=hex_color)
+
     def update_led_name(self, event):
         self.led_name.set(self.led_name_entry.get())
 
@@ -343,6 +382,12 @@ class Application(tk.Tk):
         )
         self.constants_manager.set_constant(
             "images_per_dir", self.images_per_directory.get()
+        )
+        self.constants_manager.set_constant(
+            "image_font_size", self.image_font_size.get()
+        )
+        self.constants_manager.set_constant(
+            "image_font_color", self.image_font_color.get()
         )
         self.constants_manager.set_constant("notes1", self.notes1.get())
         self.constants_manager.set_constant("notes2", self.notes2.get())
@@ -623,6 +668,46 @@ class Application(tk.Tk):
             "<KeyRelease>", self.update_images_per_directory
         )
         self.images_per_directory_entry.config(validate="key")
+        row += 1
+
+        # Image Font Size
+        image_font_size_label = tk.Label(
+            form_frame,
+            text="Image Font Size:",
+            bg="#7C889C",
+            fg="white",
+        )
+        image_font_size_label.grid(row=row, column=0, padx=10, pady=5, sticky="w")
+        self.image_font_size_entry = tk.Entry(
+            form_frame, textvariable=self.image_font_size
+        )
+        self.image_font_size_entry.grid(row=row, column=1, padx=10, pady=5)
+        self.image_font_size_entry.bind("<KeyRelease>", self.update_image_font_size)
+        self.image_font_size_entry.config(validate="key")
+        row += 1
+
+        # Image Font Color
+        image_font_color_frame = tk.Frame(form_frame, bg="#7C889C")
+        image_font_color_frame.grid(row=row, columnspan=2, pady=(5, 10))
+
+        image_font_color_label = tk.Label(
+            image_font_color_frame,
+            text="Image Font Color:",
+            bg="#7C889C",
+            fg="white",
+        )
+        image_font_color_label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
+        self.image_font_color_box = tk.Label(
+            image_font_color_frame,
+            width=4,
+            height=1,
+            bg=rgb_to_hex(self.image_font_color.get()),
+        )
+        self.image_font_color_box.grid(row=0, column=1, padx=10, pady=5)
+        choose_image_font_color_button = tk.Button(
+            image_font_color_frame, text="Choose Color", command=self.browse_font_color
+        )
+        choose_image_font_color_button.grid(row=0, column=2, padx=5, pady=5)
         row += 1
 
         # Notes Header
