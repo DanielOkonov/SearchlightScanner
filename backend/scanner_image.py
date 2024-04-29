@@ -3,15 +3,19 @@ from PIL import ImageDraw, ImageFont
 import piexif
 import os
 
+from frontend.application_current_settings_route import current_settings_route
+from constants.constantsmanager import ConstantsManager
+
 
 class ScannerImage:
 
-    font_color = (0, 255, 0)
     custom_font_path = None
-    font_size = 16
     potential_font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
     def __init__(self, image, detections, gps_coords):
+        self.constants_manager = ConstantsManager(filename=current_settings_route)
+        self.font_color = eval(self.constants_manager.get_constant("image_font_color"))
+        self.font_size = self.constants_manager.get_constant("image_font_size")
         self.image = image
         self.detections = detections
         self.gps_coords = gps_coords
@@ -25,7 +29,9 @@ class ScannerImage:
         draw = ImageDraw.Draw(self.image)
         text = f"{self.date_time}   {self.gps_coords if self.gps_coords else '-'}"
         if ScannerImage.custom_font_path:
-            font = ImageFont.truetype(ScannerImage.custom_font_path, size=ScannerImage.font_size)
+            font = ImageFont.truetype(
+                ScannerImage.custom_font_path, size=self.font_size
+            )
         else:
             font = ImageFont.load_default()
         draw.text((0, 0), text, self.font_color, font=font)
