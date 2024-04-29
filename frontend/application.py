@@ -12,6 +12,13 @@ from .application_current_settings_route import current_settings_route
 from constants.constantsmanager import ConstantsManager
 
 
+def get_resolution(pixels):
+    width_str, height_str = pixels.split("x")
+    width = int(width_str)
+    height = int(height_str)
+    return (width, height)
+
+
 class CameraFeed:
     def __init__(self, video_source=0):
         # Initialize the video capture with the default source
@@ -64,11 +71,13 @@ class Application(tk.Tk):
         self.maximize_window()
 
         # Set default camera to /dev/video0
-
+        width, height = get_resolution(
+            self.constants_manager.get_constant("default_resolution")
+        )
         self.camera_feed = CameraManager(
-            source=self.constants_manager.get_constant("camera_feed"),
-            width=1280,
-            height=720,
+            source=self.constants_manager.get_constant("camera_feed_1"),
+            width=width,
+            height=height,
         )
         self.gps_manager = GPSManager()  # Initialize GPS device
 
