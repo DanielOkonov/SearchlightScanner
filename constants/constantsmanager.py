@@ -40,6 +40,7 @@ class ConstantsManager:
             "helicopter": "(0, 162, 232)",
             "Persons_Thermal": "(63, 72, 204)"
         },
+        "selected_targets": {},
         "operator_notes": "",
         "operator_comments": "",
         "camera_feed": "/dev/video0"

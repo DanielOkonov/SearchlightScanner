@@ -2,22 +2,39 @@ from .application_current_settings_route import current_settings_route
 from constants.constantsmanager import ConstantsManager
 
 
+def json_to_dict(json):
+    labels = {}
+    for key, value in json.items():
+        labels[key] = eval(value)
+    return labels
+
+
+def dict_to_json(dict):
+    json = {}
+    for key, value in dict.items():
+        json[key] = str(value)
+    return json
+
+
 class SharedLabels:
 
     def __init__(self):
         self.constants_manager = ConstantsManager(filename=current_settings_route)
-        self.labels = {}
-        self.selected_labels = {}
 
         targets = self.constants_manager.get_constant("default_targets")
-        for key, value in targets.items():
-            self.labels[key] = eval(value)
+        self.labels = json_to_dict(targets)
+
+        selected_targets = self.constants_manager.get_constant("selected_targets")
+        self.selected_labels = json_to_dict(selected_targets)
 
     def get_selected_labels(self):
         return self.selected_labels
 
     def set_selected_labels(self, new_labels):
         self.selected_labels = new_labels
+        self.constants_manager.set_constant(
+            "selected_targets", dict_to_json(new_labels)
+        )
 
     def get_all_labels(self):
         return self.labels
