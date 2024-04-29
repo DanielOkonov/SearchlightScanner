@@ -2,12 +2,17 @@ import serial
 import time
 import threading
 
+from frontend.application_current_settings_route import current_settings_route
+from constants.constantsmanager import ConstantsManager
+
+
 class LEDController:
     def __init__(self):
-        self.com_port = '/dev/ttyUSB0'
-        self.baud_rate = 9600
+        self.constants_manager = ConstantsManager(filename=current_settings_route)
+        self.com_port = self.constants_manager.get_constant("led_name")
+        self.baud_rate = self.constants_manager.get_constant("led_baud_rate")
         self.flash_event = threading.Event()
-        self.flash_duration = 1  # Default duration
+        self.flash_duration = self.constants_manager.get_constant("led_light_duration")
         try:
             self.serial = serial.Serial(self.com_port, self.baud_rate, timeout=1)
             self.running = True
