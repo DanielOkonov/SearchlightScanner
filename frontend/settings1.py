@@ -478,7 +478,7 @@ class SettingsFrame1(tk.Frame):
         self.option_menu = ttk.OptionMenu(
             frame,
             selected_option,
-            selected_option.get(),
+            selected_option,
             *options,
             command=self.selection_changed,
         )
