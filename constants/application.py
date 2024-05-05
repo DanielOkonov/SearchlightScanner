@@ -105,7 +105,7 @@ def is_incomplete_decimal(string):
     # Check if the string is empty
     if not string:
         return True
-    elif str.is_decimal(string):
+    elif str.isdigit(string):
         return True
     # Check if the string ends with a decimal point
     elif string.endswith("."):
