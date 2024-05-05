@@ -379,6 +379,8 @@ class SettingsFrame2(tk.Frame):
                 )
             )
             self.segment_buttons[segment] = button
+            if segment == 9:
+                self.set_button_active(button)
 
         #############################################################################################################
         # BUTTON FOR TOGGLING SEGMENTATION ON OR OFF
