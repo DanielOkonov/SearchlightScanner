@@ -12,17 +12,18 @@ class SharedSegmentation:
             60: (6, 10),
             84: (7, 12),
         }
-        self._current = self._options[1]
+        self._current = self._options[9]
 
     def get_options(self):
         return self._options
-    
+
     def get_current(self):
         return self._current
 
     def set_current(self, new_value):
-        print('SharedSegmentation: set_current:', self._options[new_value])
+        print("SharedSegmentation: set_current:", self._options[new_value])
         self._current = self._options[new_value]
+
 
 # This will be the shared instance
 shared_segmentation = SharedSegmentation()

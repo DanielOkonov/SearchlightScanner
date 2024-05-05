@@ -19,7 +19,7 @@ class SettingsFrame2(tk.Frame):
         self.segment_buttons = {}
         self.is_toggled = True
         self.targets_selected_count = 0
-        self.segmentation_switch_state = {"is_on": False}
+        self.segmentation_switch_state = {"is_on": True}
         self.selected_targets_dict = {}
         self.selected_buttons = set()
         self.create_widgets()
@@ -223,7 +223,7 @@ class SettingsFrame2(tk.Frame):
                 text=target,
                 font=font_used,
                 width=18,
-                height=3
+                height=3,
             )
             button.grid(row=(i // 3) + 1, column=i % 3, padx=5, pady=6)
             button.config(
@@ -241,7 +241,7 @@ class SettingsFrame2(tk.Frame):
             self.targets_frame,
             bg="#24D215",
             fg="white",
-            font = tkFont.Font(family="Helvetica", size=8, weight="bold"),
+            font=tkFont.Font(family="Helvetica", size=8, weight="bold"),
             text="SET CATEGORY PRIORITY",
             command=self.toggle_priority_list_visibility,
             width=21,
