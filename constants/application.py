@@ -105,6 +105,8 @@ def is_incomplete_decimal(string):
     # Check if the string is empty
     if not string:
         return True
+    elif str.is_decimal(string):
+        return True
     # Check if the string ends with a decimal point
     elif string.endswith("."):
         return True
@@ -369,6 +371,8 @@ class Application(tk.Tk):
 
     def update_led_light_duration(self, event):
         value = self.led_light_duration_entry.get()
+        print(value)
+        print(is_incomplete_decimal(value))
         if is_incomplete_decimal(value):
             return
         if self.validate_decimal_input(value):
