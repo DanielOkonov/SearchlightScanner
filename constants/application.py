@@ -644,7 +644,7 @@ class Application(tk.Tk):
         # LED Light Duration
         led_light_duration_label = tk.Label(
             form_frame,
-            text="LED Light Duration:",
+            text="LED Light Duration (seconds):",
             bg="#7C889C",
             fg="white",
         )
@@ -693,7 +693,7 @@ class Application(tk.Tk):
         # Image Save Rate
         image_save_rate_label = tk.Label(
             form_frame,
-            text="Image Save Rate:",
+            text="Image Save Rate (seconds):",
             bg="#7C889C",
             fg="white",
         )
