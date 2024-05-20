@@ -7,3 +7,4 @@ targets.csv
 images/*
 models/*
 .DS_Store
+settings.json

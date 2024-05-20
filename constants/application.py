@@ -3,7 +3,8 @@ from tkinter import filedialog
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter import colorchooser
-from constantsmanager import ConstantsManager
+
+from constants.constantsmanager import ConstantsManager
 
 segmentation_options = [
     {
@@ -94,6 +95,27 @@ def read_csv_and_convert_to_json(csv_file_path):
     except FileNotFoundError:
         print(f"File not found: {csv_file_path}")
     return data
+
+
+def is_decimal(string):
+    # Check if the string has only one decimal point and all characters are digits
+    return string.replace(".", "", 1).isdigit() and string.count(".") <= 1
+
+
+def is_incomplete_decimal(string):
+    # Check if the string is empty
+    if not string:
+        return True
+    elif str.isdigit(string):
+        return True
+    # Check if the string ends with a decimal point
+    elif string.endswith("."):
+        return True
+    # Check if the string has a decimal point but no digits after it
+    elif "." in string and not string.rstrip("0").endswith("."):
+        return True
+    else:
+        return False
 
 
 class Application(tk.Tk):
@@ -237,7 +259,7 @@ class Application(tk.Tk):
             return False
 
     def validate_decimal_input(self, P):
-        if str.isdecimal(P) or P == "":
+        if is_decimal(P) or P == "":
             return True
         else:
             return False
@@ -290,6 +312,8 @@ class Application(tk.Tk):
 
     def update_image_save_rate(self, event):
         value = self.image_save_rate_entry.get()
+        if is_incomplete_decimal(value):
+            return
         if self.validate_decimal_input(value):
             float_value = float(value)
             if float_value < 0.1 or float_value > 86400:
@@ -348,6 +372,10 @@ class Application(tk.Tk):
 
     def update_led_light_duration(self, event):
         value = self.led_light_duration_entry.get()
+        print(value)
+        print(is_incomplete_decimal(value))
+        if is_incomplete_decimal(value):
+            return
         if self.validate_decimal_input(value):
             float_value = float(value)
             if float_value < 0.1 or float_value > 86400:
@@ -378,6 +406,8 @@ class Application(tk.Tk):
             "default_segmentation",
             get_segmentation_value(self.default_segmentation.get()),
         )
+        self.constants_manager.set_constant("camera_feed_1", self.camera_feed_1.get())
+        self.constants_manager.set_constant("camera_feed_2", self.camera_feed_2.get())
         self.constants_manager.set_constant("gps_name", self.gps_name.get())
         self.constants_manager.set_constant("gps_baud_rate", self.gps_baud_rate.get())
         self.constants_manager.set_constant("led_name", self.led_name.get())
@@ -614,7 +644,7 @@ class Application(tk.Tk):
         # LED Light Duration
         led_light_duration_label = tk.Label(
             form_frame,
-            text="LED Light Duration:",
+            text="LED Light Duration (seconds):",
             bg="#7C889C",
             fg="white",
         )
@@ -663,7 +693,7 @@ class Application(tk.Tk):
         # Image Save Rate
         image_save_rate_label = tk.Label(
             form_frame,
-            text="Image Save Rate:",
+            text="Image Save Rate (seconds):",
             bg="#7C889C",
             fg="white",
         )
